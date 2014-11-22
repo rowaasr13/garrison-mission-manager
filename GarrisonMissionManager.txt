@@ -12,5 +12,8 @@ Planned features:
  * add teams to every mission on mission list screen to let you see at a glance which missions are good for your currently available followers
 
 Change log:
+2014-11-21 v2
+ * Fix problem with successive setting of parties that have same follower in different position leaving an empty slot until you press button second time.
+
 2014-11-21 v1
  * Initial implementation: suggestions at mission page.
