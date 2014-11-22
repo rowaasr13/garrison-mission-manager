@@ -171,6 +171,10 @@ local function PartyButtonOnClick(self)
    if self[1] then
       local MissionPageFollowers = GarrisonMissionFrame.MissionTab.MissionPage.Followers
       for idx = 1, #MissionPageFollowers do
+         GarrisonMissionPage_ClearFollower(MissionPageFollowers[idx])
+      end
+      
+      for idx = 1, #MissionPageFollowers do
          local followerFrame = MissionPageFollowers[idx]
          local follower = self[idx]
          if follower then
