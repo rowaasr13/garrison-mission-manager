@@ -1,11 +1,12 @@
 ## Interface: 60000
 
 ## Title: Garrison Mission Manager
-## Version: v2
+## Version: v3
 ## Notes: Assists you with selecting best team for garrison missions
 ## Author: Oleg "Rowaa[SR13]" Volkov
 
-## OptionalDeps: Blizzard_GarrisonUI
+## LoadOnDemand: 1
+## LoadWith: Blizzard_GarrisonUI
 
 ## SavedVariables: 
 
