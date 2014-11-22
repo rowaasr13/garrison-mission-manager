@@ -115,13 +115,9 @@ end
 local filtered_followers = {}
 local filtered_followers_count
 local available_missions = {}
-function GMM_BestForCurrentSelectedMission()
-   local GarrisonMissionFrame = GarrisonMissionFrame
-   if not GarrisonMissionFrame then return end
+local function GMM_BestForCurrentSelectedMission()
    local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
-   if not MissionPage then return end
    local missionInfo = MissionPage.missionInfo
-   if not missionInfo then return end
    local mission_id = missionInfo.missionID
 
    -- print("Mission ID:", mission_id)
@@ -187,7 +183,7 @@ local function PartyButtonOnClick(self)
    GarrisonMissionPage_UpdateMissionForParty()
 end
 
-function GMM_ButtonsInit()
+local function GMM_ButtonsInit()
    local prev
    for idx = 1, 3 do
       if not buttons['MissionPage' .. idx] then
@@ -207,9 +203,8 @@ function GMM_ButtonsInit()
       end
    end
 end
+
 if GarrisonMissionFrame and GarrisonMissionFrame.MissionTab.MissionPage then
    GMM_ButtonsInit()
    hooksecurefunc("GarrisonMissionPage_ShowMission", GMM_BestForCurrentSelectedMission)
 end
-
--- TODO: init in ADDON_LOADED instead
