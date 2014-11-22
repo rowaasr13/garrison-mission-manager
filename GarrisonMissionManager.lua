@@ -5,15 +5,19 @@ local pairs = pairs
 
 local buttons = {}
 
--- function dumpl(pattern, ...)
---    local names = { strsplit(",", pattern) }
---    for idx = 1, select('#', ...) do
---       local name = names[idx]
---       if name then name = name:gsub("^%s+", ""):gsub("%s+$", "") end
---       print(GREEN_FONT_COLOR_CODE, idx, name, FONT_COLOR_CODE_CLOSE)
---       dump(select(idx, ...))
---    end
--- end
+function GMM_dumpl(pattern, ...)
+   local names = { strsplit(",", pattern) }
+   for idx = 1, select('#', ...) do
+      local name = names[idx]
+      if name then name = name:gsub("^%s+", ""):gsub("%s+$", "") end
+      print(GREEN_FONT_COLOR_CODE, idx, name, FONT_COLOR_CODE_CLOSE)
+      dump(select(idx, ...))
+   end
+end
+
+local _, _, garrison_currency_texture = GetCurrencyInfo(GARRISON_CURRENCY)
+garrison_currency_texture = "|T" .. garrison_currency_texture .. ":0|t"
+local time_texture = "|TInterface\\Icons\\spell_holy_borrowedtime:0|t"
 
 local min, max = {}, {}
 local top = {{}, {}, {}, {}}
@@ -89,8 +93,10 @@ local function FindBestFollowersForMission(mission, followers)
                      new[3] = follower3
                      new.successChance = successChance
                      new.materialMultiplier = materialMultiplier
+                     new.currency_rewards = currency_rewards
                      new.xpBonus = xpBonus
                      new.totalTimeSeconds = totalTimeSeconds
+                     new.isMissionTimeImproved = isMissionTimeImproved
                      tinsert(top, idx, new)
                      top[5] = nil
                      break
@@ -107,8 +113,8 @@ local function FindBestFollowersForMission(mission, followers)
 
    -- dump(top)
    -- local location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionID);
-   -- /run dumpl("location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies", C_Garrison.GetMissionInfo(GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID))
-   -- /run dumpl("totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier", C_Garrison.GetPartyMissionInfo(GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID))
+   -- /run GMM_dumpl("location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies", C_Garrison.GetMissionInfo(GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID))
+   -- /run GMM_dumpl("totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier", C_Garrison.GetPartyMissionInfo(GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID))
    -- /run GMM_BestForCurrentSelectedMission()
 end
 
@@ -158,7 +164,17 @@ local function GMM_BestForCurrentSelectedMission()
       button[1] = top_entry[1] and top_entry[1].followerID or nil
       button[2] = top_entry[2] and top_entry[2].followerID or nil
       button[3] = top_entry[3] and top_entry[3].followerID or nil
-      if top_entry.successChance then button:SetFormattedText("%d%%", top_entry.successChance) else button:SetText("") end
+      if top_entry.successChance then
+         button:SetFormattedText(
+            "%d%%\n%s%s%s",
+            top_entry.successChance,
+            top_entry.xpBonus > 0 and top_entry.xpBonus .. " |TInterface\\Icons\\XPBonus_Icon:0|t" or "",
+            (top_entry.currency_rewards and top_entry.materialMultiplier > 1) and garrison_currency_texture or "",
+            top_entry.isMissionTimeImproved and time_texture or ""
+         )
+      else
+         button:SetText("")
+      end
    end
 
 end
