@@ -7,13 +7,16 @@ It takes care of each and every trait and ability your followers have, present a
 Suggestions will try to maximize success rate first, material multiplier (garrison resources) second, then XP bonus and then reduced time.
 
 Planned features:
- * add info about material/XP/time bonuses to buttons
  * option to risk lower chance missions with XP/material multiplier party for better average yield
  * add teams to every mission on mission list screen to let you see at a glance which missions are good for your currently available followers
 
 Change log:
 
-2014-11-21 v2
+2014-11-23 v3
+ * Add XP/GR/time bonus icons to buttons
+ * On-demand loading with Garrison UI
+
+2014-11-22 v2
  * Fix problem with successive setting of parties that have same follower in different position leaving an empty slot until you press button second time.
 
 2014-11-21 v1
