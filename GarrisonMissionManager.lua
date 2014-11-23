@@ -131,15 +131,10 @@ local function FindBestFollowersForMission(mission, followers)
    -- /run GMM_BestForCurrentSelectedMission()
 end
 
+-- TODO: don't update list if it is not dirty
 local filtered_followers = {}
 local filtered_followers_count
-local available_missions = {}
-local function GMM_BestForCurrentSelectedMission()
-   local missionInfo = MissionPage.missionInfo
-   local mission_id = missionInfo.missionID
-
-   -- print("Mission ID:", mission_id)
-
+local function GetFilteredFollowers()
    local followers = C_Garrison.GetFollowers()
    wipe(filtered_followers)
    filtered_followers_count = 0
@@ -154,7 +149,19 @@ local function GMM_BestForCurrentSelectedMission()
          filtered_followers[filtered_followers_count] = follower
       until true
    end
+
    -- dump(filtered_followers)
+   return filtered_followers, filtered_followers_count
+end
+
+local available_missions = {}
+local function GMM_BestForCurrentSelectedMission()
+   local missionInfo = MissionPage.missionInfo
+   local mission_id = missionInfo.missionID
+
+   -- print("Mission ID:", mission_id)
+
+   local filtered_followers, filtered_followers_count = GetFilteredFollowers()
 
    C_Garrison.GetAvailableMissions(available_missions)
    local mission
@@ -211,6 +218,42 @@ local function PartyButtonOnClick(self)
    GarrisonMissionPage_UpdateMissionForParty()
 end
 
+-- Add more data to mission list over Blizzard's own
+-- GarrisonMissionList_Update
+local function GarrisonMissionList_Update_More()
+   local self = GarrisonMissionFrame.MissionTab.MissionList
+   if (self.showInProgress) then return end
+   
+   local missions = self.availableMissions
+   local numMissions = #missions
+   if (numMissions == 0) then return end
+
+   local missions = self.availableMissions
+   local scrollFrame = self.listScroll
+   local offset = HybridScrollFrame_GetOffset(scrollFrame)
+   local buttons = scrollFrame.buttons
+   local numButtons = #buttons
+
+   local filtered_followers, filtered_followers_count = GetFilteredFollowers()
+   
+   for i = 1, numButtons do
+      local button = buttons[i]
+      local alpha = 1
+      local index = offset + i
+      if index <= numMissions then
+         local mission = missions[index]
+         -- dump(mission)
+         if mission.numFollowers > filtered_followers_count then
+            alpha = 0.3
+         else
+            -- buttons will be added here
+         end
+      end
+      button:SetAlpha(alpha)
+   end
+end
+-- hooksecurefunc("GarrisonMissionList_Update", GarrisonMissionList_Update_More)
+
 local function GMM_ButtonsInit()
    local prev
    for idx = 1, 3 do
@@ -232,9 +275,7 @@ local function GMM_ButtonsInit()
    end
 end
 
-if GarrisonMissionFrame and GarrisonMissionFrame.MissionTab.MissionPage then
-   GMM_ButtonsInit()
-   hooksecurefunc("GarrisonMissionPage_ShowMission", GMM_BestForCurrentSelectedMission)
-   -- local count = 0
-   -- hooksecurefunc("GarrisonFollowerList_UpdateFollowers", function(self) count = count + 1 print("GarrisonFollowerList_UpdateFollowers", count, self:GetName(), self:GetParent():GetName()) end)
-end
+GMM_ButtonsInit()
+hooksecurefunc("GarrisonMissionPage_ShowMission", GMM_BestForCurrentSelectedMission)
+-- local count = 0
+-- hooksecurefunc("GarrisonFollowerList_UpdateFollowers", function(self) count = count + 1 print("GarrisonFollowerList_UpdateFollowers", count, self:GetName(), self:GetParent():GetName()) end)
