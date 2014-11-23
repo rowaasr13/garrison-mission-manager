@@ -15,6 +15,9 @@ Planned features:
 
 Change log:
 
+2014-11-23 v5
+ * Fix performance: stop Blizzard UI from following follower move in/out party and try to re-process/re-draw entire followers list on each. Keep in mind that 3 followers mission analyze could easy produce up to thousand moves.
+
 2014-11-23 v4
  * Fix problem with material multiplier priority/icon shown on money reward missions
 
