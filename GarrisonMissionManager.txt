@@ -9,6 +9,9 @@ Suggestions will try to maximize success rate first, material multiplier (garris
 Planned features:
  * option to risk lower chance missions with XP/material multiplier party for better average yield
  * add teams to every mission on mission list screen to let you see at a glance which missions are good for your currently available followers
+ * cache results for all missions as long as follower list is unchanged to allow quick clicks around (can also be used to display above mentioned mission list buttons)
+ * provide support for macroing clicks
+ * add "total level of followers involved" to sort order below XP gain, lower - better
 
 Change log:
 
