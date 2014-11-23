@@ -1,7 +1,7 @@
 ## Interface: 60000
 
 ## Title: Garrison Mission Manager
-## Version: v4
+## Version: v5
 ## Notes: Assists you with selecting best team for garrison missions
 ## Author: Oleg "Rowaa[SR13]" Volkov
 
