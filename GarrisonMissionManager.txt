@@ -15,6 +15,9 @@ Planned features:
 
 Change log:
 
+2014-11-23 v4
+ * Fix problem with material multiplier priority/icon shown on money reward missions
+
 2014-11-23 v3
  * Add XP/GR/time bonus icons to buttons
  * On-demand loading with Garrison UI
