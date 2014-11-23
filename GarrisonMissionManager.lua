@@ -3,6 +3,10 @@ local tinsert = table.insert
 local wipe = wipe
 local pairs = pairs
 local GARRISON_CURRENCY = GARRISON_CURRENCY
+local GarrisonMissionFrame = GarrisonMissionFrame
+local GarrisonLandingPage = GarrisonLandingPage
+local GarrisonRecruitSelectFrame = GarrisonRecruitSelectFrame
+local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
 
 local buttons = {}
 
@@ -31,6 +35,10 @@ local function FindBestFollowersForMission(mission, followers)
 
    local slots = mission.numFollowers
    if slots > followers_count then return end
+
+   GarrisonMissionFrame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
+   GarrisonLandingPage:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
+   GarrisonRecruitSelectFrame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
 
    local mission_id = mission.missionID
    if C_Garrison.GetNumFollowersOnMission(mission_id) > 0 then
@@ -112,6 +120,10 @@ local function FindBestFollowersForMission(mission, followers)
        end
    end
 
+   GarrisonMissionFrame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
+   GarrisonLandingPage:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
+   GarrisonRecruitSelectFrame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
+
    -- dump(top)
    -- local location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionID);
    -- /run GMM_dumpl("location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies", C_Garrison.GetMissionInfo(GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID))
@@ -123,7 +135,6 @@ local filtered_followers = {}
 local filtered_followers_count
 local available_missions = {}
 local function GMM_BestForCurrentSelectedMission()
-   local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
    local missionInfo = MissionPage.missionInfo
    local mission_id = missionInfo.missionID
 
@@ -224,4 +235,6 @@ end
 if GarrisonMissionFrame and GarrisonMissionFrame.MissionTab.MissionPage then
    GMM_ButtonsInit()
    hooksecurefunc("GarrisonMissionPage_ShowMission", GMM_BestForCurrentSelectedMission)
+   -- local count = 0
+   -- hooksecurefunc("GarrisonFollowerList_UpdateFollowers", function(self) count = count + 1 print("GarrisonFollowerList_UpdateFollowers", count, self:GetName(), self:GetParent():GetName()) end)
 end
