@@ -2,6 +2,7 @@ local dump = DevTools_Dump
 local tinsert = table.insert
 local wipe = wipe
 local pairs = pairs
+local GARRISON_CURRENCY = GARRISON_CURRENCY
 
 local buttons = {}
 
@@ -49,7 +50,7 @@ local function FindBestFollowersForMission(mission, followers)
 
    local currency_rewards
    for _, reward in pairs(mission.rewards) do
-      if reward.currencyID then currency_rewards = true break end
+      if reward.currencyID == GARRISON_CURRENCY then currency_rewards = true break end
    end
 
    for i1 = 1, max[1] do
