@@ -6,6 +6,11 @@ It takes care of each and every trait and ability your followers have, present a
 
 Suggestions will try to maximize success rate first, material multiplier (garrison resources) second, then XP bonus and then reduced time.
 
+People who love macros can access mission page buttons with:
+ /run GMM_Click("MissionPage1")
+ /run GMM_Click("MissionPage2")
+ /run GMM_Click("MissionPage3")
+
 Planned features:
  * option to risk lower chance missions with XP/material multiplier party for better average yield
  * add teams to every mission on mission list screen to let you see at a glance which missions are good for your currently available followers

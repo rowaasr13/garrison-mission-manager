@@ -274,8 +274,14 @@ local function GMM_ButtonsInit()
       end
    end
 end
-
 GMM_ButtonsInit()
 hooksecurefunc("GarrisonMissionPage_ShowMission", GMM_BestForCurrentSelectedMission)
 -- local count = 0
 -- hooksecurefunc("GarrisonFollowerList_UpdateFollowers", function(self) count = count + 1 print("GarrisonFollowerList_UpdateFollowers", count, self:GetName(), self:GetParent():GetName()) end)
+
+-- Globals deliberately exposed for people outside
+function GMM_Click(button_name)
+   local button = buttons[button_name]
+   if button then button:Click() end
+end
+
