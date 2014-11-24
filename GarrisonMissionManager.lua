@@ -7,6 +7,9 @@ local GarrisonMissionFrame = GarrisonMissionFrame
 local GarrisonLandingPage = GarrisonLandingPage
 local GarrisonRecruitSelectFrame = GarrisonRecruitSelectFrame
 local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
+local AddFollowerToMission = C_Garrison.AddFollowerToMission
+local GetPartyMissionInfo = C_Garrison.GetPartyMissionInfo
+local RemoveFollowerFromMission = C_Garrison.RemoveFollowerFromMission
 
 local buttons = {}
 
@@ -62,62 +65,66 @@ local function FindBestFollowersForMission(mission, followers)
    end
 
    for i1 = 1, max[1] do
+      local follower1 = followers[i1]
+      local follower1_id = follower1.followerID
       for i2 = min[2] or (i1 + 1), max[2] do
+         local follower2 = followers[i2]
+         local follower2_id = follower2 and follower2.followerID
          for i3 = min[3] or (i2 + 1), max[3] do
             -- Assign followers to mission
-            local follower1 = followers[i1]
-               if not C_Garrison.AddFollowerToMission(mission_id, follower1.followerID) then --[[ error handling! ]] end
-               local follower2 = followers[i2]
-               if follower2 and not C_Garrison.AddFollowerToMission(mission_id, follower2.followerID) then --[[ error handling! ]] end
-               local follower3 = followers[i3]
-               if follower3 and not C_Garrison.AddFollowerToMission(mission_id, follower3.followerID) then --[[ error handling! ]] end
+            local follower3 = followers[i3]
+            local follower3_id = follower3 and follower3.followerID
+            
+            if not AddFollowerToMission(mission_id, follower1.followerID) then --[[ error handling! ]] end
+            if follower2 and not AddFollowerToMission(mission_id, follower2_id) then --[[ error handling! ]] end
+            if follower3 and not AddFollowerToMission(mission_id, follower3_id) then --[[ error handling! ]] end
 
-               -- Calculate result
-               local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier = C_Garrison.GetPartyMissionInfo(mission_id)
-               for idx = 1, 3 do
-                  local current = top[idx]
-                  local found
-                  repeat -- Checking if new candidate for top is better than any top 3 already sored
-                     -- TODO: risk lower chance mission if material multiplier gives better average result
-                     if not current[1] then found = true break end
+            -- Calculate result
+            local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier = GetPartyMissionInfo(mission_id)
+            for idx = 1, 3 do
+               local current = top[idx]
+               local found
+               repeat -- Checking if new candidate for top is better than any top 3 already sored
+                  -- TODO: risk lower chance mission if material multiplier gives better average result
+                  if not current[1] then found = true break end
 
-                     if current.successChance < successChance then found = true break end
-                     if current.successChance > successChance then break end
+                  if current.successChance < successChance then found = true break end
+                  if current.successChance > successChance then break end
 
-                     if currency_rewards then
-                        if current.materialMultiplier < materialMultiplier then found = true break end
-                        if current.materialMultiplier > materialMultiplier then break end
-                     end
-
-                     if current.xpBonus < xpBonus then found = true break end
-                     if current.xpBonus > xpBonus then break end
-
-                     if current.totalTimeSeconds > totalTimeSeconds then found = true break end
-                     if current.totalTimeSeconds < totalTimeSeconds then break end
-                  until true
-                  if found then
-                     local new = top[4]
-                     new[1] = follower1
-                     new[2] = follower2
-                     new[3] = follower3
-                     new.successChance = successChance
-                     new.materialMultiplier = materialMultiplier
-                     new.currency_rewards = currency_rewards
-                     new.xpBonus = xpBonus
-                     new.totalTimeSeconds = totalTimeSeconds
-                     new.isMissionTimeImproved = isMissionTimeImproved
-                     tinsert(top, idx, new)
-                     top[5] = nil
-                     break
+                  if currency_rewards then
+                     if current.materialMultiplier < materialMultiplier then found = true break end
+                     if current.materialMultiplier > materialMultiplier then break end
                   end
-               end
 
-               -- Unasssign
-               C_Garrison.RemoveFollowerFromMission(mission_id, follower1.followerID)
-               if follower2 then C_Garrison.RemoveFollowerFromMission(mission_id, follower2.followerID) end
-               if follower3 then C_Garrison.RemoveFollowerFromMission(mission_id, follower3.followerID) end
-           end
-       end
+                  if current.xpBonus < xpBonus then found = true break end
+                  if current.xpBonus > xpBonus then break end
+
+                  if current.totalTimeSeconds > totalTimeSeconds then found = true break end
+                  if current.totalTimeSeconds < totalTimeSeconds then break end
+               until true
+               if found then
+                  local new = top[4]
+                  new[1] = follower1
+                  new[2] = follower2
+                  new[3] = follower3
+                  new.successChance = successChance
+                  new.materialMultiplier = materialMultiplier
+                  new.currency_rewards = currency_rewards
+                  new.xpBonus = xpBonus
+                  new.totalTimeSeconds = totalTimeSeconds
+                  new.isMissionTimeImproved = isMissionTimeImproved
+                  tinsert(top, idx, new)
+                  top[5] = nil
+                  break
+               end
+            end
+
+            -- Unasssign
+            RemoveFollowerFromMission(mission_id, follower1_id)
+            if follower2 then RemoveFollowerFromMission(mission_id, follower2_id) end
+            if follower3 then RemoveFollowerFromMission(mission_id, follower3_id) end
+         end
+      end
    end
 
    GarrisonMissionFrame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
@@ -252,7 +259,7 @@ local function GarrisonMissionList_Update_More()
       button:SetAlpha(alpha)
    end
 end
--- hooksecurefunc("GarrisonMissionList_Update", GarrisonMissionList_Update_More)
+--       hooksecurefunc("GarrisonMissionList_Update", GarrisonMissionList_Update_More)
 
 local function GMM_ButtonsInit()
    local prev
