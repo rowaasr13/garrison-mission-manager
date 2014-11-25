@@ -23,6 +23,7 @@ Change log:
 2014-11-25 v6
  * Deprioritize maxed out followers on follower XP reward missions, less - better; full maxed teams completely disallowed
  * Expose support for macroing button clicks
+ * Add support for unregistering events in FollowerLocationInfo addon - otherwise it'd cause GMM to lag just as Blizzard UI did
 
 2014-11-23 v5
  * Fix performance: stop Blizzard UI from following follower move in/out party and try to re-process/re-draw entire followers list on each. Keep in mind that 3 followers mission analyze could easy produce up to thousand moves.
