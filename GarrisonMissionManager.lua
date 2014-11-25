@@ -68,27 +68,27 @@ local function FindBestFollowersForMission(mission, followers)
    end
 
    for i1 = 1, max[1] do
-   	local follower1_maxed = 0
+      local follower1_maxed = 0
       local follower1 = followers[i1]
       local follower1_id = follower1.followerID
       if xp_only_rewards and follower1.levelXP == 0 then follower1_maxed = 1 end
       for i2 = min[2] or (i1 + 1), max[2] do
-      	local follower2_maxed = 0
+         local follower2_maxed = 0
          local follower2 = followers[i2]
          local follower2_id
          if follower2 then
-         	follower2_id = follower2.followerID
-         	if xp_only_rewards and follower2.levelXP == 0 then follower2_maxed = 1 end
-        	end
+            follower2_id = follower2.followerID
+            if xp_only_rewards and follower2.levelXP == 0 then follower2_maxed = 1 end
+         end
          for i3 = min[3] or (i2 + 1), max[3] do
-         	local followers_maxed
-         	if xp_only_rewards then
-         		followers_maxed = follower1_maxed + follower2_maxed + ((follower3 and follower2.levelXP == 0) and 1 or 0)
-         	else
-         		followers_maxed = 0
-         	end
-         	-- On follower XP-only missions throw away any team that is completely filled with maxed out followers
-         	if slots == followers_maxed then break end
+            local followers_maxed
+            if xp_only_rewards then
+               followers_maxed = follower1_maxed + follower2_maxed + ((follower3 and follower2.levelXP == 0) and 1 or 0)
+            else
+               followers_maxed = 0
+            end
+            -- On follower XP-only missions throw away any team that is completely filled with maxed out followers
+            if slots == followers_maxed then break end
 
             -- Assign followers to mission
             local follower3 = followers[i3]
