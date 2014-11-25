@@ -20,6 +20,7 @@ Planned features:
  * add teams to every mission on mission list screen to let you see at a glance which missions are good for your currently available followers
  * cache results for all missions as long as follower list is unchanged to allow quick clicks around (can also be used to display above mentioned mission list buttons)
  * add "total level of followers involved" to sort order below XP gain, lower - better
+ * tooltip or flash followers in the list on mousing over button
 
 
 Change log:
