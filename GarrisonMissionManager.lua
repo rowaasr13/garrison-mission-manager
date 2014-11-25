@@ -69,32 +69,25 @@ local function FindBestFollowersForMission(mission, followers)
    end
 
    for i1 = 1, max[1] do
-      local follower1_maxed = 0
       local follower1 = followers[i1]
       local follower1_id = follower1.followerID
-      if xp_only_rewards and follower1.levelXP == 0 then follower1_maxed = 1 end
+      local follower1_maxed = follower1.levelXP == 0 and 1 or 0
       for i2 = min[2] or (i1 + 1), max[2] do
          local follower2_maxed = 0
          local follower2 = followers[i2]
          local follower2_id
          if follower2 then
             follower2_id = follower2.followerID
-            if xp_only_rewards and follower2.levelXP == 0 then follower2_maxed = 1 end
+            if follower2.levelXP == 0 then follower2_maxed = 1 end
          end
          for i3 = min[3] or (i2 + 1), max[3] do
-            local followers_maxed
-            if xp_only_rewards then
-               followers_maxed = follower1_maxed + follower2_maxed + ((follower3 and follower2.levelXP == 0) and 1 or 0)
-            else
-               followers_maxed = 0
-            end
-            -- On follower XP-only missions throw away any team that is completely filled with maxed out followers
-            if slots == followers_maxed then break end
-
-            -- Assign followers to mission
             local follower3 = followers[i3]
+            local followers_maxed = follower1_maxed + follower2_maxed + ((follower3 and follower3.levelXP == 0) and 1 or 0)
+            -- On follower XP-only missions throw away any team that is completely filled with maxed out followers
+            if xp_only_rewards and slots == followers_maxed then break end
             local follower3_id = follower3 and follower3.followerID
 
+            -- Assign followers to mission
             if not AddFollowerToMission(mission_id, follower1.followerID) then --[[ error handling! ]] end
             if follower2 and not AddFollowerToMission(mission_id, follower2_id) then --[[ error handling! ]] end
             if follower3 and not AddFollowerToMission(mission_id, follower3_id) then --[[ error handling! ]] end
@@ -118,11 +111,15 @@ local function FindBestFollowersForMission(mission, followers)
                      if current.materialMultiplier > materialMultiplier then break end
                   end
 
-                  if current.followers_maxed > followers_maxed then found = true break end
-                  if current.followers_maxed < followers_maxed then break end
+                  if xp_only_rewards then
+                     if current.followers_maxed > followers_maxed then found = true break end
+                     if current.followers_maxed < followers_maxed then break end
+                  end
 
-                  if current.xpBonus < xpBonus then found = true break end
-                  if current.xpBonus > xpBonus then break end
+                  if slots ~= followers_maxed then -- only care about XP multiplier if team is not full of maxed followers
+                     if current.xpBonus < xpBonus then found = true break end
+                     if current.xpBonus > xpBonus then break end
+                  end
 
                   if current.totalTimeSeconds > totalTimeSeconds then found = true break end
                   if current.totalTimeSeconds < totalTimeSeconds then break end
@@ -327,4 +324,3 @@ function GMM_Click(button_name)
    local button = buttons[button_name]
    if button then button:Click() end
 end
-
