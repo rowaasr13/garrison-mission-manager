@@ -1,3 +1,7 @@
+-- Confused about mix of CamelCase and_underscores?
+-- Camel case comes from copypasta of how Blizzard calls returns/fields in their code and deriveates
+-- Underscore are my own variables
+
 local dump = DevTools_Dump
 local tinsert = table.insert
 local wipe = wipe
@@ -88,7 +92,7 @@ local function FindBestFollowersForMission(mission, followers)
             local follower3_id = follower3 and follower3.followerID
 
             -- Assign followers to mission
-            if not AddFollowerToMission(mission_id, follower1.followerID) then --[[ error handling! ]] end
+            if not AddFollowerToMission(mission_id, follower1_id) then --[[ error handling! ]] end
             if follower2 and not AddFollowerToMission(mission_id, follower2_id) then --[[ error handling! ]] end
             if follower3 and not AddFollowerToMission(mission_id, follower3_id) then --[[ error handling! ]] end
 
@@ -103,32 +107,39 @@ local function FindBestFollowersForMission(mission, followers)
                   -- TODO: risk lower chance mission if material multiplier gives better average result
                   if not current[1] then found = true break end
 
-                  if current.successChance < successChance then found = true break end
-                  if current.successChance > successChance then break end
+                  local cSuccessChance = current.successChance
+                  if cSuccessChance < successChance then found = true break end
+                  if cSuccessChance > successChance then break end
 
                   if currency_rewards then
-                     if current.materialMultiplier < materialMultiplier then found = true break end
-                     if current.materialMultiplier > materialMultiplier then break end
+                     local cMaterialMultiplier = current.materialMultiplier
+                     if cMaterialMultiplier < materialMultiplier then found = true break end
+                     if cMaterialMultiplier > materialMultiplier then break end
                   end
 
                   if xp_only_rewards then
-                     if current.followers_maxed > followers_maxed then found = true break end
-                     if current.followers_maxed < followers_maxed then break end
+                     local c_followers_maxed = current.followers_maxed
+                     if c_followers_maxed > followers_maxed then found = true break end
+                     if c_followers_maxed < followers_maxed then break end
                   end
 
                   if slots ~= followers_maxed then -- only care about XP multiplier if team is not full of maxed followers
-                     if current.xpBonus < xpBonus then found = true break end
-                     if current.xpBonus > xpBonus then break end
+                     local cXpBonus = current.xpBonus
+                     if cXpBonus < xpBonus then found = true break end
+                     if cXpBonus > xpBonus then break end
                   end
 
-                  if current.totalTimeSeconds > totalTimeSeconds then found = true break end
-                  if current.totalTimeSeconds < totalTimeSeconds then break end
+                  local cTotalTimeSeconds = current.totalTimeSeconds
+                  if cTotalTimeSeconds > totalTimeSeconds then found = true break end
+                  if cTotalTimeSeconds < totalTimeSeconds then break end
 
-                  if current.buffCount > buffCount then found = true break end
-                  if current.buffCount < buffCount then break end
+                  local cBuffCount = current.buffCount
+                  if cBuffCount > buffCount then found = true break end
+                  if cBuffCount < buffCount then break end
 
-                  if current.isEnvMechanicCountered > isEnvMechanicCountered then found = true break end
-                  if current.isEnvMechanicCountered < isEnvMechanicCountered then break end
+                  local cIsEnvMechanicCountered = current.isEnvMechanicCountered
+                  if cIsEnvMechanicCountered > isEnvMechanicCountered then found = true break end
+                  if cIsEnvMechanicCountered < isEnvMechanicCountered then break end
                until true
                if found then
                   local new = top[4]
