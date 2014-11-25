@@ -179,7 +179,6 @@ local function FindBestFollowersForMission(mission, followers)
    -- local location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionID);
    -- /run GMM_dumpl("location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies", C_Garrison.GetMissionInfo(GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID))
    -- /run GMM_dumpl("totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier", C_Garrison.GetPartyMissionInfo(GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID))
-   -- /run GMM_BestForCurrentSelectedMission()
 end
 
 -- TODO: don't update list if it is not dirty
@@ -206,7 +205,7 @@ local function GetFilteredFollowers()
 end
 
 local available_missions = {}
-local function GMM_BestForCurrentSelectedMission()
+local function BestForCurrentSelectedMission()
    local missionInfo = MissionPage.missionInfo
    local mission_id = missionInfo.missionID
 
@@ -227,7 +226,7 @@ local function GMM_BestForCurrentSelectedMission()
 
    FindBestFollowersForMission(mission, filtered_followers)
 
-   if not buttons['MissionPage1'] then GMM_ButtonsInit() end
+   if not buttons['MissionPage1'] then ButtonsInit() end
    for idx = 1, 3 do
       local button = buttons['MissionPage' .. idx]
       local top_entry = top[idx]
@@ -305,7 +304,7 @@ local function GarrisonMissionList_Update_More()
 end
 --       hooksecurefunc("GarrisonMissionList_Update", GarrisonMissionList_Update_More)
 
-local function GMM_ButtonsInit()
+local function ButtonsInit()
    local prev
    for idx = 1, 3 do
       if not buttons['MissionPage' .. idx] then
@@ -325,8 +324,8 @@ local function GMM_ButtonsInit()
       end
    end
 end
-GMM_ButtonsInit()
-hooksecurefunc("GarrisonMissionPage_ShowMission", GMM_BestForCurrentSelectedMission)
+ButtonsInit()
+hooksecurefunc("GarrisonMissionPage_ShowMission", BestForCurrentSelectedMission)
 -- local count = 0
 -- hooksecurefunc("GarrisonFollowerList_UpdateFollowers", function(self) count = count + 1 print("GarrisonFollowerList_UpdateFollowers", count, self:GetName(), self:GetParent():GetName()) end)
 
