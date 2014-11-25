@@ -6,6 +6,10 @@ It takes care of each and every trait and ability your followers have, present a
 
 Suggestions will try to maximize success rate first, material multiplier (garrison resources) second, then XP bonus and then reduced time.
 
+Note on possible lag: this addon does many moves of followers while analyzing missions. Any other addon that tries to catch this and do some heavy compuational/drawing stuff will cause severe lag on 3 follower missions which does over thousand moves with full 20 followers roster. Unfortunately there's no generic solution for this so I must add support for each addon individually. If you experience such lag, please report what other garrison/followers related addons you have. Supported addons for now are:
+ * Blizzard's built-in Garrison UI
+ * FollowerLocationInfo
+
 People who love macros can access mission page buttons with:
  /run GMM_Click("MissionPage1")
  /run GMM_Click("MissionPage2")
