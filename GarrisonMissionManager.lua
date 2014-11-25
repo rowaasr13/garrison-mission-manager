@@ -23,7 +23,7 @@ function GMM_dumpl(pattern, ...)
       local name = names[idx]
       if name then name = name:gsub("^%s+", ""):gsub("%s+$", "") end
       print(GREEN_FONT_COLOR_CODE, idx, name, FONT_COLOR_CODE_CLOSE)
-      dump(select(idx, ...))
+      dump((select(idx, ...)))
    end
 end
 
