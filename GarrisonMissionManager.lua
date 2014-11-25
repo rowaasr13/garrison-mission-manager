@@ -60,27 +60,48 @@ local function FindBestFollowersForMission(mission, followers)
    end
 
    local currency_rewards
+   local xp_only_rewards
    for _, reward in pairs(mission.rewards) do
-      if reward.currencyID == GARRISON_CURRENCY then currency_rewards = true break end
+      if reward.currencyID == GARRISON_CURRENCY then currency_rewards = true end
+      if reward.followerXP and xp_only_rewards == nil then xp_only_rewards = true end
+      if not reward.followerXP then xp_only_rewards = false end
    end
 
    for i1 = 1, max[1] do
+   	local follower1_maxed = 0
       local follower1 = followers[i1]
       local follower1_id = follower1.followerID
+      if xp_only_rewards and follower1.levelXP == 0 then follower1_maxed = 1 end
       for i2 = min[2] or (i1 + 1), max[2] do
+      	local follower2_maxed = 0
          local follower2 = followers[i2]
-         local follower2_id = follower2 and follower2.followerID
+         local follower2_id
+         if follower2 then
+         	follower2_id = follower2.followerID
+         	if xp_only_rewards and follower2.levelXP == 0 then follower2_maxed = 1 end
+        	end
          for i3 = min[3] or (i2 + 1), max[3] do
+         	local followers_maxed
+         	if xp_only_rewards then
+         		followers_maxed = follower1_maxed + follower2_maxed + ((follower3 and follower2.levelXP == 0) and 1 or 0)
+         	else
+         		followers_maxed = 0
+         	end
+         	-- On follower XP-only missions throw away any team that is completely filled with maxed out followers
+         	if slots == followers_maxed then break end
+
             -- Assign followers to mission
             local follower3 = followers[i3]
             local follower3_id = follower3 and follower3.followerID
-            
+
             if not AddFollowerToMission(mission_id, follower1.followerID) then --[[ error handling! ]] end
             if follower2 and not AddFollowerToMission(mission_id, follower2_id) then --[[ error handling! ]] end
             if follower3 and not AddFollowerToMission(mission_id, follower3_id) then --[[ error handling! ]] end
 
             -- Calculate result
             local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier = GetPartyMissionInfo(mission_id)
+            isEnvMechanicCountered = isEnvMechanicCountered and 1 or 0
+            local buffCount = #partyBuffs
             for idx = 1, 3 do
                local current = top[idx]
                local found
@@ -96,11 +117,20 @@ local function FindBestFollowersForMission(mission, followers)
                      if current.materialMultiplier > materialMultiplier then break end
                   end
 
+                  if current.followers_maxed > followers_maxed then found = true break end
+                  if current.followers_maxed < followers_maxed then break end
+
                   if current.xpBonus < xpBonus then found = true break end
                   if current.xpBonus > xpBonus then break end
 
                   if current.totalTimeSeconds > totalTimeSeconds then found = true break end
                   if current.totalTimeSeconds < totalTimeSeconds then break end
+
+                  if current.buffCount > buffCount then found = true break end
+                  if current.buffCount < buffCount then break end
+
+                  if current.isEnvMechanicCountered > isEnvMechanicCountered then found = true break end
+                  if current.isEnvMechanicCountered < isEnvMechanicCountered then break end
                until true
                if found then
                   local new = top[4]
@@ -113,6 +143,9 @@ local function FindBestFollowersForMission(mission, followers)
                   new.xpBonus = xpBonus
                   new.totalTimeSeconds = totalTimeSeconds
                   new.isMissionTimeImproved = isMissionTimeImproved
+                  new.followers_maxed = followers_maxed
+                  new.buffCount = buffCount
+                  new.isEnvMechanicCountered = isEnvMechanicCountered
                   tinsert(top, idx, new)
                   top[5] = nil
                   break
@@ -126,6 +159,7 @@ local function FindBestFollowersForMission(mission, followers)
          end
       end
    end
+   -- dump(top[1])
 
    GarrisonMissionFrame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    GarrisonLandingPage:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
@@ -211,7 +245,7 @@ local function PartyButtonOnClick(self)
       for idx = 1, #MissionPageFollowers do
          GarrisonMissionPage_ClearFollower(MissionPageFollowers[idx])
       end
-      
+
       for idx = 1, #MissionPageFollowers do
          local followerFrame = MissionPageFollowers[idx]
          local follower = self[idx]
@@ -230,7 +264,7 @@ end
 local function GarrisonMissionList_Update_More()
    local self = GarrisonMissionFrame.MissionTab.MissionList
    if (self.showInProgress) then return end
-   
+
    local missions = self.availableMissions
    local numMissions = #missions
    if (numMissions == 0) then return end
@@ -242,7 +276,7 @@ local function GarrisonMissionList_Update_More()
    local numButtons = #buttons
 
    local filtered_followers, filtered_followers_count = GetFilteredFollowers()
-   
+
    for i = 1, numButtons do
       local button = buttons[i]
       local alpha = 1
@@ -265,7 +299,7 @@ local function GMM_ButtonsInit()
    local prev
    for idx = 1, 3 do
       if not buttons['MissionPage' .. idx] then
-         local set_followers_button = CreateFrame("Button", nil,  GarrisonMissionFrame.MissionTab.MissionPage, "UIPanelButtonTemplate")
+         local set_followers_button = CreateFrame("Button", nil, GarrisonMissionFrame.MissionTab.MissionPage, "UIPanelButtonTemplate")
          set_followers_button:SetText(idx)
          set_followers_button:SetWidth(100)
          set_followers_button:SetHeight(50)
