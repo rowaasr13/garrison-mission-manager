@@ -16,9 +16,13 @@ Planned features:
  * add teams to every mission on mission list screen to let you see at a glance which missions are good for your currently available followers
  * cache results for all missions as long as follower list is unchanged to allow quick clicks around (can also be used to display above mentioned mission list buttons)
  * add "total level of followers involved" to sort order below XP gain, lower - better
- * deprioritize epic lv. 100 followers on follower XP reward missions, less - better; full teams should be completely disallowed
+
 
 Change log:
+
+2014-11-25 v6
+ * Deprioritize maxed out followers on follower XP reward missions, less - better; full maxed teams completely disallowed
+ * Expose support for macroing button clicks
 
 2014-11-23 v5
  * Fix performance: stop Blizzard UI from following follower move in/out party and try to re-process/re-draw entire followers list on each. Keep in mind that 3 followers mission analyze could easy produce up to thousand moves.
