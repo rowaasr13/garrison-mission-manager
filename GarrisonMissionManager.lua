@@ -42,6 +42,7 @@ local function FindBestFollowersForMission(mission, followers)
    GarrisonMissionFrame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    GarrisonLandingPage:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    GarrisonRecruitSelectFrame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
+   if FollowerLocationInfoFrame then FollowerLocationInfoFrame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE") end
 
    local mission_id = mission.missionID
    if C_Garrison.GetNumFollowersOnMission(mission_id) > 0 then
@@ -164,6 +165,7 @@ local function FindBestFollowersForMission(mission, followers)
    GarrisonMissionFrame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    GarrisonLandingPage:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    GarrisonRecruitSelectFrame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
+   if FollowerLocationInfoFrame then FollowerLocationInfoFrame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE") end
 
    -- dump(top)
    -- local location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionID);
