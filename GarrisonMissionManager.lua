@@ -31,10 +31,16 @@ local events_filtered_followers_dirty = {
 }
 local events_top_for_mission_dirty = {
    GARRISON_MISSION_NPC_OPENED = true,
+   GARRISON_MISSION_LIST_UPDATE = true,
 }
 event_frame:SetScript("OnEvent", function(self, event)
-   if events_top_for_mission_dirty[event] then top_for_mission_dirty = true end
-   if events_filtered_followers_dirty[event] then filtered_followers_dirty = true end
+   -- if events_top_for_mission_dirty[event] then top_for_mission_dirty = true end
+   -- if events_filtered_followers_dirty[event] then filtered_followers_dirty = true end
+   -- Let's clear both for now, or else we often miss one follower state update when we start mission
+   if events_top_for_mission_dirty[event] or events_filtered_followers_dirty[event] then
+      top_for_mission_dirty = true
+      filtered_followers_dirty = true
+   end
 end)
 for event in pairs(events_top_for_mission_dirty) do event_frame:RegisterEvent(event) end
 for event in pairs(events_filtered_followers_dirty) do event_frame:RegisterEvent(event) end
