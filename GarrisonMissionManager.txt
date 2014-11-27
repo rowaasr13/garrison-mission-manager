@@ -11,9 +11,9 @@ Note on possible lag: this addon does many moves of followers while analyzing mi
  * FollowerLocationInfo
 
 People who love macros can access mission page buttons with:
- /run GMM_Click("MissionPage1")
- /run GMM_Click("MissionPage2")
- /run GMM_Click("MissionPage3")
+ * /run GMM_Click("MissionPage1")
+ * /run GMM_Click("MissionPage2")
+ * /run GMM_Click("MissionPage3")
 
 Planned features:
  * option to risk lower chance missions with XP/material multiplier party for better average yield
