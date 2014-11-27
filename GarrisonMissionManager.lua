@@ -326,7 +326,16 @@ end
 -- GarrisonMissionList_Update
 local function GarrisonMissionList_Update_More()
    local self = GarrisonMissionFrame.MissionTab.MissionList
-   if self.showInProgress then return end
+   local scrollFrame = self.listScroll
+   local buttons = scrollFrame.buttons
+   local numButtons = #buttons
+
+   if self.showInProgress then
+      for i = 1, numButtons do
+         gmm_buttons['MissionList' .. i]:Hide()
+      end
+      return
+   end
 
    local missions = self.availableMissions
    local numMissions = #missions
@@ -338,10 +347,7 @@ local function GarrisonMissionList_Update_More()
    end
 
    local missions = self.availableMissions
-   local scrollFrame = self.listScroll
    local offset = HybridScrollFrame_GetOffset(scrollFrame)
-   local buttons = scrollFrame.buttons
-   local numButtons = #buttons
 
    local filtered_followers, filtered_followers_count = GetFilteredFollowers()
    local more_missions_to_cache
@@ -352,9 +358,10 @@ local function GarrisonMissionList_Update_More()
       local index = offset + i
       if index <= numMissions then
          local mission = missions[index]
+         local gmm_button = gmm_buttons['MissionList' .. i]
          if mission.numFollowers > filtered_followers_count then
             button:SetAlpha(0.3)
-            gmm_buttons['MissionList' .. i]:SetText("")
+            gmm_button:SetText("")
          else
             local top_for_this_mission = top_for_mission[mission.missionID]
             if not top_for_this_mission then
@@ -377,12 +384,13 @@ local function GarrisonMissionList_Update_More()
             end
 
             if top_for_this_mission then
-               SetTeamButtonText(gmm_buttons['MissionList' .. i], top_for_this_mission)
+               SetTeamButtonText(gmm_button, top_for_this_mission)
             else
-               gmm_buttons['MissionList' .. i]:SetText("...")
+               gmm_button:SetText("...")
             end
             button:SetAlpha(1)
          end
+         gmm_button:Show()
       end
    end
 
@@ -439,7 +447,6 @@ local function MissionList_ButtonsInit()
          set_followers_button:SetHeight(40)
          set_followers_button:SetPoint("LEFT", blizzard_button, "RIGHT", -65, 0)
          set_followers_button:SetScript("OnClick", MissionList_PartyButtonOnClick)
-         set_followers_button:Show()
          gmm_buttons['MissionList' .. idx] = set_followers_button
       end
    end
