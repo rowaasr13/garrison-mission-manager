@@ -14,6 +14,7 @@ local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
 local AddFollowerToMission = C_Garrison.AddFollowerToMission
 local GetPartyMissionInfo = C_Garrison.GetPartyMissionInfo
 local RemoveFollowerFromMission = C_Garrison.RemoveFollowerFromMission
+local GARRISON_FOLLOWER_IN_PARTY = GARRISON_FOLLOWER_IN_PARTY
 
 local buttons = {}
 
@@ -193,7 +194,7 @@ local function GetFilteredFollowers()
       repeat
          if not follower.isCollected then break end
          local status = follower.status
-         if status then break end
+         if status and status ~= GARRISON_FOLLOWER_IN_PARTY then break end
 
          filtered_followers_count = filtered_followers_count + 1
          filtered_followers[filtered_followers_count] = follower
@@ -272,11 +273,11 @@ end
 -- GarrisonMissionList_Update
 local function GarrisonMissionList_Update_More()
    local self = GarrisonMissionFrame.MissionTab.MissionList
-   if (self.showInProgress) then return end
+   if self.showInProgress then return end
 
    local missions = self.availableMissions
    local numMissions = #missions
-   if (numMissions == 0) then return end
+   if numMissions == 0 then return end
 
    local missions = self.availableMissions
    local scrollFrame = self.listScroll
@@ -292,17 +293,21 @@ local function GarrisonMissionList_Update_More()
       local index = offset + i
       if index <= numMissions then
          local mission = missions[index]
+         -- print("---", index, "---")
          -- dump(mission)
+         -- dump(button.info)
+
          if mission.numFollowers > filtered_followers_count then
-            alpha = 0.3
+            button:SetAlpha(0.3)
          else
-            -- buttons will be added here
+            button:SetAlpha(1)
+            -- add more info
          end
       end
-      button:SetAlpha(alpha)
    end
 end
---       hooksecurefunc("GarrisonMissionList_Update", GarrisonMissionList_Update_More)
+hooksecurefunc("GarrisonMissionList_Update", GarrisonMissionList_Update_More)
+hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList.listScroll, "update", GarrisonMissionList_Update_More)
 
 local function ButtonsInit()
    local prev
