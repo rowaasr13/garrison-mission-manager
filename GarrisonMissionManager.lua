@@ -4,6 +4,7 @@
 
 local dump = DevTools_Dump
 local tinsert = table.insert
+local tsort = table.sort
 local wipe = wipe
 local pairs = pairs
 local GARRISON_CURRENCY = GARRISON_CURRENCY
@@ -214,6 +215,13 @@ local function FindBestFollowersForMission(mission, followers)
    -- /run GMM_dumpl("totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier", C_Garrison.GetPartyMissionInfo(GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID))
 end
 
+local function SortFollowersByLevel(a, b)
+   local a_level = a.level
+   local b_level = b.level
+   if a_level ~= b_level then return a_level > b_level end
+   return a.iLevel > b.iLevel
+end
+
 local function GetFilteredFollowers()
    if not filtered_followers_dirty then
       return filtered_followers, filtered_followers_count
@@ -233,6 +241,8 @@ local function GetFilteredFollowers()
          filtered_followers[filtered_followers_count] = follower
       until true
    end
+
+   tsort(filtered_followers, SortFollowersByLevel)
 
    -- dump(filtered_followers)
    filtered_followers_dirty = false
