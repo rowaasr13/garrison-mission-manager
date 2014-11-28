@@ -2,6 +2,8 @@ Garrison Mission Manager
 
 This addon assists you with selecting best team for garrison missions. It adds 3 butons on mission page with top 3 suggestions. Clicking any of those button sets suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time.
 
+It also adds a top team button to each mission on mission list page so you can see at a glance which missions you could reliably do with your current followers. Missions that require more followers that you currently have will be dimmed out to let you concentrate on missions that you can do.
+
 It takes care of each and every trait and ability your followers have, present and future, including those easily forgotten "Increases success chance when on a mission with a <race>" traits, by not actually caring about them at all - it simply tries all combinations and selects those that give best total success chance.
 
 Suggestions will try to maximize success rate first, material multiplier (garrison resources) second, then XP bonus and then reduced time.
@@ -17,13 +19,16 @@ People who love macros can access mission page buttons with:
 
 Planned features:
  * option to risk lower chance missions with XP/material multiplier party for better average yield
- * add teams to every mission on mission list screen to let you see at a glance which missions are good for your currently available followers
- * cache results for all missions as long as follower list is unchanged to allow quick clicks around (can also be used to display above mentioned mission list buttons)
  * add "total level of followers involved" to sort order below XP gain, lower - better
  * tooltip or flash followers in the list on mousing over button
 
 
 Change log:
+
+2014-11-28 v7
+ * add top team to each mission on mission list screen
+ * dim missions that require more followers than you really have
+ *
 
 2014-11-25 v6
  * Deprioritize maxed out followers on follower XP reward missions, less - better; full maxed teams completely disallowed
