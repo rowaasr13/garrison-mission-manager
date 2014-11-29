@@ -349,6 +349,7 @@ local function GarrisonMissionList_Update_More()
    if self.showInProgress then
       for i = 1, numButtons do
          gmm_buttons['MissionList' .. i]:Hide()
+         buttons[i]:SetAlpha(1)
       end
       return
    end
