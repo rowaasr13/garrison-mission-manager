@@ -415,8 +415,8 @@ local function GarrisonMissionList_Update_More()
                      top_for_this_mission.currency_rewards = top1.currency_rewards
                      top_for_this_mission.xpBonus = top1.xpBonus
                      top_for_this_mission.isMissionTimeImproved = top1.isMissionTimeImproved
-                     top_for_mission[mission.missionID] = top_for_this_mission
                   end
+                  top_for_mission[mission.missionID] = top_for_this_mission
                end
             end
 
