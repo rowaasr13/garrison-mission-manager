@@ -1,4 +1,5 @@
-Garrison Mission Manager, v7
+Garrison Mission Manager, v8
+
 http://www.curse.com/addons/wow/garrison-mission-manager
 
 This addon assists you with selecting best team for garrison missions. It adds 3 butons on mission page with top 3 suggestions. Clicking any of those button sets suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time.
@@ -11,6 +12,7 @@ Suggestions will try to maximize success rate first, material multiplier (garris
 
 Note on possible lag: this addon does many moves of followers while analyzing missions. Any other addon that tries to catch this and do some heavy compuational/drawing stuff will cause severe lag on 3 follower missions which does over thousand moves with full 20 followers roster. Unfortunately there's no generic solution for this so I must add support for each addon individually. If you experience such lag, please report what other garrison/followers related addons you have. Supported addons for now are:
  * Blizzard's built-in Garrison UI
+ * All AceEvent-3.0 (Ace3) based addons
  * FollowerLocationInfo
 
 People who love macros can access mission page buttons with:
@@ -26,10 +28,13 @@ Planned features:
 
 Change log:
 
+2014-11-29 v8
+ * Fix dimming spilling over to active missions
+ * Add global unregistering support for AceEvent-3.0. Removes lag while working with Gear Grinder and any other Ace3 addon.
+
 2014-11-28 v7
- * add top team to each mission on mission list screen
- * dim missions that require more followers than you really have
- *
+ * Add top team to each mission on mission list screen
+ * Dim missions that require more followers than you really have
 
 2014-11-25 v6
  * Deprioritize maxed out followers on follower XP reward missions, less - better; full maxed teams completely disallowed
