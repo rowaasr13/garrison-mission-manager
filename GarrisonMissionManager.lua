@@ -17,6 +17,11 @@ local AddFollowerToMission = C_Garrison.AddFollowerToMission
 local GetPartyMissionInfo = C_Garrison.GetPartyMissionInfo
 local RemoveFollowerFromMission = C_Garrison.RemoveFollowerFromMission
 local GARRISON_FOLLOWER_IN_PARTY = GARRISON_FOLLOWER_IN_PARTY
+local GetFramesRegisteredForEvent = GetFramesRegisteredForEvent
+
+local _, _, garrison_currency_texture = GetCurrencyInfo(GARRISON_CURRENCY)
+garrison_currency_texture = "|T" .. garrison_currency_texture .. ":0|t"
+local time_texture = "|TInterface\\Icons\\spell_holy_borrowedtime:0|t"
 
 local top_for_mission = {}
 local top_for_mission_dirty = true
@@ -60,13 +65,6 @@ function GMM_dumpl(pattern, ...)
    end
 end
 
-local AceEvent3_events
-local AceEvent3_frame
-
-local _, _, garrison_currency_texture = GetCurrencyInfo(GARRISON_CURRENCY)
-garrison_currency_texture = "|T" .. garrison_currency_texture .. ":0|t"
-local time_texture = "|TInterface\\Icons\\spell_holy_borrowedtime:0|t"
-
 local min, max = {}, {}
 local top = {{}, {}, {}, {}}
 local function FindBestFollowersForMission(mission, followers)
@@ -79,26 +77,8 @@ local function FindBestFollowersForMission(mission, followers)
    local slots = mission.numFollowers
    if slots > followers_count then return end
 
-   event_frame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-   GarrisonMissionFrame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-   GarrisonLandingPage:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-   GarrisonRecruitSelectFrame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-   if FollowerLocationInfoFrame then FollowerLocationInfoFrame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE") end
-
-   -- Unregister event on AceEvent-3.0's event frame. Conviniently solves problem for ALL AceEvent addons.
-   if not AceEvent3_events then
-      if LibStub then
-         if LibStub.libs['AceEvent-3.0'] then
-            AceEvent3_events = LibStub.libs['AceEvent-3.0'].events.events
-            AceEvent3_frame = LibStub.libs['AceEvent-3.0'].frame
-         end
-      end
-   end
-   local AceEvent3_unregistered
-   if AceEvent3_events and AceEvent3_events.GARRISON_FOLLOWER_LIST_UPDATE and next(AceEvent3_events.GARRISON_FOLLOWER_LIST_UPDATE) then
-      AceEvent3_frame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-      AceEvent3_unregistered = true
-   end
+   local event_handlers = { GetFramesRegisteredForEvent("GARRISON_FOLLOWER_LIST_UPDATE") }
+   for idx = 1, #event_handlers do event_handlers[idx]:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE") end
 
    local mission_id = mission.missionID
    if C_Garrison.GetNumFollowersOnMission(mission_id) > 0 then
@@ -222,12 +202,7 @@ local function FindBestFollowersForMission(mission, followers)
    end
    -- dump(top[1])
 
-   event_frame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-   GarrisonMissionFrame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-   GarrisonLandingPage:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-   GarrisonRecruitSelectFrame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-   if FollowerLocationInfoFrame then FollowerLocationInfoFrame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE") end
-   if AceEvent3_unregistered then AceEvent3_frame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE") end
+   for idx = 1, #event_handlers do event_handlers[idx]:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE") end
 
    -- dump(top)
    -- local location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionID);
