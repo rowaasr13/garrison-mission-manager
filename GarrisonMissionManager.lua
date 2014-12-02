@@ -83,7 +83,7 @@ local function FindBestFollowersForMission(mission, followers)
    local mission_id = mission.missionID
    if C_Garrison.GetNumFollowersOnMission(mission_id) > 0 then
       for idx = 1, #followers do
-         C_Garrison.RemoveFollowerFromMission(mission_id, followers[idx].followerID)
+         RemoveFollowerFromMission(mission_id, followers[idx].followerID)
       end
    end
 
