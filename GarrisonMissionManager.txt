@@ -1,4 +1,4 @@
-Garrison Mission Manager, v9
+Garrison Mission Manager, v10
 
 http://www.curse.com/addons/wow/garrison-mission-manager
 
@@ -22,6 +22,9 @@ Planned features:
 
 
 Change log:
+
+2014-12-02 v10
+ * Fix all event handling related lags
 
 2014-11-30 v9
  * Fix stop in mission list when you only have free maxed out followers and all missions after first XP-only reward is not calculated.
