@@ -31,6 +31,9 @@ local filtered_followers_count
 local filtered_followers_dirty = true
 
 local event_frame = CreateFrame("Frame")
+local RegisterEvent = event_frame.RegisterEvent
+local UnregisterEvent = event_frame.UnregisterEvent
+
 local events_filtered_followers_dirty = {
    GARRISON_FOLLOWER_LIST_UPDATE = true,
    GARRISON_FOLLOWER_XP_CHANGED = true,
@@ -78,7 +81,7 @@ local function FindBestFollowersForMission(mission, followers)
    if slots > followers_count then return end
 
    local event_handlers = { GetFramesRegisteredForEvent("GARRISON_FOLLOWER_LIST_UPDATE") }
-   for idx = 1, #event_handlers do event_handlers[idx]:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE") end
+   for idx = 1, #event_handlers do UnregisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
 
    local mission_id = mission.missionID
    if C_Garrison.GetNumFollowersOnMission(mission_id) > 0 then
@@ -202,7 +205,7 @@ local function FindBestFollowersForMission(mission, followers)
    end
    -- dump(top[1])
 
-   for idx = 1, #event_handlers do event_handlers[idx]:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE") end
+   for idx = 1, #event_handlers do RegisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
 
    -- dump(top)
    -- local location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionID);
