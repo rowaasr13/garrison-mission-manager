@@ -290,17 +290,7 @@ local function BestForCurrentSelectedMission()
       button[1] = top_entry[1] and top_entry[1].followerID or nil
       button[2] = top_entry[2] and top_entry[2].followerID or nil
       button[3] = top_entry[3] and top_entry[3].followerID or nil
-      if top_entry.successChance then
-         button:SetFormattedText(
-            "%d%%\n%s%s%s",
-            top_entry.successChance,
-            top_entry.xpBonus > 0 and top_entry.xpBonus .. " |TInterface\\Icons\\XPBonus_Icon:0|t" or "",
-            (top_entry.currency_rewards and top_entry.materialMultiplier > 1) and garrison_currency_texture or "",
-            top_entry.isMissionTimeImproved and time_texture or ""
-         )
-      else
-         button:SetText("")
-      end
+      SetTeamButtonText(button, top_entry)
    end
 
    if mission_page_pending_click then
