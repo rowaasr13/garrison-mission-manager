@@ -497,7 +497,9 @@ local info_ignore_toggle = {
       filtered_followers_dirty = true
       if GarrisonMissionFrame:IsShown() then
          GarrisonFollowerList_UpdateFollowers(GarrisonMissionFrame.FollowerList)
-         BestForCurrentSelectedMission()
+         if MissionPage.missionInfo then
+            BestForCurrentSelectedMission()
+         end
       end
    end,
 }
