@@ -140,6 +140,10 @@ local function FindBestFollowersForMission(mission, followers)
                local found
                repeat -- Checking if new candidate for top is better than any top 3 already sored
                   -- TODO: risk lower chance mission if material multiplier gives better average result
+
+                  -- remove xpBonus info if all followers are maxed anyway
+                  if slots == followers_maxed then xpBonus = 0 end
+
                   if not current[1] then found = true break end
 
                   local cSuccessChance = current.successChance
@@ -152,17 +156,13 @@ local function FindBestFollowersForMission(mission, followers)
                      if cMaterialMultiplier > materialMultiplier then break end
                   end
 
-                  if xp_only_rewards then
-                     local c_followers_maxed = current.followers_maxed
-                     if c_followers_maxed > followers_maxed then found = true break end
-                     if c_followers_maxed < followers_maxed then break end
-                  end
+                  local c_followers_maxed = current.followers_maxed
+                  if c_followers_maxed > followers_maxed then found = true break end
+                  if c_followers_maxed < followers_maxed then break end
 
-                  if slots ~= followers_maxed then -- only care about XP multiplier if team is not full of maxed followers
-                     local cXpBonus = current.xpBonus
-                     if cXpBonus < xpBonus then found = true break end
-                     if cXpBonus > xpBonus then break end
-                  end
+                  local cXpBonus = current.xpBonus
+                  if cXpBonus < xpBonus then found = true break end
+                  if cXpBonus > xpBonus then break end
 
                   local cTotalTimeSeconds = current.totalTimeSeconds
                   if cTotalTimeSeconds > totalTimeSeconds then found = true break end
