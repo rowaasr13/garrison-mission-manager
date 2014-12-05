@@ -1,7 +1,10 @@
+local addon_name, addon_env = ...
+
 -- Confused about mix of CamelCase and_underscores?
 -- Camel case comes from copypasta of how Blizzard calls returns/fields in their code and deriveates
 -- Underscore are my own variables
 
+-- Globals
 local dump = DevTools_Dump
 local tinsert = table.insert
 local tsort = table.sort
@@ -18,6 +21,13 @@ local GetPartyMissionInfo = C_Garrison.GetPartyMissionInfo
 local RemoveFollowerFromMission = C_Garrison.RemoveFollowerFromMission
 local GARRISON_FOLLOWER_IN_PARTY = GARRISON_FOLLOWER_IN_PARTY
 local GetFramesRegisteredForEvent = GetFramesRegisteredForEvent
+local CANCEL = CANCEL
+local HybridScrollFrame_GetOffset = HybridScrollFrame_GetOffset
+
+-- Config
+local ingored_followers = {}
+SVPC_GarrisonMissionManager = {}
+SVPC_GarrisonMissionManager.ingored_followers = ingored_followers
 
 local _, _, garrison_currency_texture = GetCurrencyInfo(GARRISON_CURRENCY)
 garrison_currency_texture = "|T" .. garrison_currency_texture .. ":0|t"
@@ -43,7 +53,7 @@ local events_top_for_mission_dirty = {
    GARRISON_MISSION_NPC_OPENED = true,
    GARRISON_MISSION_LIST_UPDATE = true,
 }
-event_frame:SetScript("OnEvent", function(self, event)
+event_frame:SetScript("OnEvent", function(self, event, arg1)
    -- if events_top_for_mission_dirty[event] then top_for_mission_dirty = true end
    -- if events_filtered_followers_dirty[event] then filtered_followers_dirty = true end
    -- Let's clear both for now, or else we often miss one follower state update when we start mission
@@ -51,9 +61,17 @@ event_frame:SetScript("OnEvent", function(self, event)
       top_for_mission_dirty = true
       filtered_followers_dirty = true
    end
+
+   if event == "ADDON_LOADED" and arg1 == addon_name then
+      if SVPC_GarrisonMissionManager then
+         ingored_followers = SVPC_GarrisonMissionManager.ingored_followers
+      end
+      event_frame:UnregisterEvent("ADDON_LOADED")
+   end
 end)
 for event in pairs(events_top_for_mission_dirty) do event_frame:RegisterEvent(event) end
 for event in pairs(events_filtered_followers_dirty) do event_frame:RegisterEvent(event) end
+event_frame:RegisterEvent("ADDON_LOADED")
 
 local gmm_buttons = {}
 local mission_page_pending_click
@@ -232,8 +250,11 @@ local function GetFilteredFollowers()
       local follower = followers[idx]
       repeat
          if not follower.isCollected then break end
+
          local status = follower.status
          if status and status ~= GARRISON_FOLLOWER_IN_PARTY then break end
+
+         if ingored_followers[follower.followerID] then break end
 
          filtered_followers_count = filtered_followers_count + 1
          filtered_followers[filtered_followers_count] = follower
@@ -463,6 +484,73 @@ MissionList_ButtonsInit()
 hooksecurefunc("GarrisonMissionPage_ShowMission", BestForCurrentSelectedMission)
 -- local count = 0
 -- hooksecurefunc("GarrisonFollowerList_UpdateFollowers", function(self) count = count + 1 print("GarrisonFollowerList_UpdateFollowers", count, self:GetName(), self:GetParent():GetName()) end)
+
+local info_ignore_toggle = {
+   notCheckable = true,
+   func = function(self, followerID)
+      if ingored_followers[followerID] then
+         ingored_followers[followerID] = nil
+      else
+         ingored_followers[followerID] = true
+      end
+      top_for_mission_dirty = true
+      filtered_followers_dirty = true
+      if GarrisonMissionFrame:IsShown() then
+         GarrisonFollowerList_UpdateFollowers(GarrisonMissionFrame.FollowerList)
+         BestForCurrentSelectedMission()
+      end
+   end,
+}
+
+local info_cancel = {
+   text = CANCEL
+}
+
+hooksecurefunc(GarrisonFollowerOptionDropDown, "initialize", function(self)
+   local followerID = self.followerID
+   if not followerID then return end
+   local follower = C_Garrison.GetFollowerInfo(followerID)
+   if follower and follower.isCollected then
+      info_ignore_toggle.arg1 = followerID
+      info_ignore_toggle.text = ingored_followers[followerID] and "GMM: Unignore" or "GMM: Ignore"
+      local old_num_buttons = DropDownList1.numButtons
+      local old_last_button = _G["DropDownList1Button" .. old_num_buttons]
+      local old_is_cancel = old_last_button.value == CANCEL
+      if old_is_cancel then
+         DropDownList1.numButtons = old_num_buttons - 1
+      end
+      UIDropDownMenu_AddButton(info_ignore_toggle)
+      if old_is_cancel then
+         UIDropDownMenu_AddButton(info_cancel)
+      end
+   end
+end)
+
+local function GarrisonFollowerList_Update_More(self)
+   local followerFrame = self
+   local followers = followerFrame.FollowerList.followers
+   local followersList = followerFrame.FollowerList.followersList
+   local numFollowers = #followersList
+   local scrollFrame = followerFrame.FollowerList.listScroll
+   local offset = HybridScrollFrame_GetOffset(scrollFrame)
+   local buttons = scrollFrame.buttons
+   local numButtons = #buttons
+
+   for i = 1, numButtons do
+      local button = buttons[i]
+      local index = offset + i
+      if ( index <= numFollowers ) then
+         local follower = followers[followersList[index]]
+         if ( follower.isCollected ) then
+            if ingored_followers[follower.followerID] then
+               button.BusyFrame:Show()
+               button.BusyFrame.Texture:SetTexture(0.5, 0, 0, 0.3)
+            end
+         end
+      end
+   end
+end
+hooksecurefunc("GarrisonFollowerList_Update", GarrisonFollowerList_Update_More)
 
 -- Globals deliberately exposed for people outside
 function GMM_Click(button_name)
