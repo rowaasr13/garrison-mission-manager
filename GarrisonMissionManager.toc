@@ -8,6 +8,7 @@
 ## LoadOnDemand: 1
 ## LoadWith: Blizzard_GarrisonUI
 
-## SavedVariables: 
+## SavedVariables: SV_GarrisonMissionManager
+## SavedVariablesPerCharacter: SVPC_GarrisonMissionManager
 
 GarrisonMissionManager.lua
