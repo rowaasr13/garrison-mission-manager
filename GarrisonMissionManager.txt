@@ -1,4 +1,4 @@
-Garrison Mission Manager, v11
+Garrison Mission Manager, v12
 
 http://www.curse.com/addons/wow/garrison-mission-manager
 
@@ -24,6 +24,9 @@ Planned features:
 
 
 Change log:
+
+2014-12-05 v12
+ * Fix forgotten settings save - ignored followers are now remembered.
 
 2014-12-05 v11
  * Remove XP bonus icons from buttons with maxed out parties.
