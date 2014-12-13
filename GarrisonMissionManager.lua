@@ -11,6 +11,7 @@ local tsort = table.sort
 local wipe = wipe
 local next = next
 local pairs = pairs
+local format = string.format
 local GARRISON_CURRENCY = GARRISON_CURRENCY
 local GarrisonMissionFrame = GarrisonMissionFrame
 local GarrisonLandingPage = GarrisonLandingPage
@@ -320,6 +321,44 @@ local function BestForCurrentSelectedMission()
    end
 end
 
+local function CheckPartyForProfessionFollowers(party_followers_ids)
+   local buildings = C_Garrison.GetBuildings()
+   for idx = 1, #buildings do
+      local building = buildings[idx]
+      local buildingID = building.buildingID;
+      if buildingID then
+         local nameLanding, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(buildingID)
+         -- Level 2
+         -- No follower
+         -- Have follower in possible list
+         -- GMM_dumpl("name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID", C_Garrison.GetLandingPageShipmentInfo(buildingID))
+         -- GMM_dumpl("id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate", C_Garrison.GetOwnedBuildingInfo(buildingID))
+         if (shipmentsReady and shipmentsReady > 0) then
+            local plotID = building.plotID
+            local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate = C_Garrison.GetOwnedBuildingInfo(plotID)
+            -- print(nameLanding, hasFollowerSlot, rank, shipmentsReady)
+            if hasFollowerSlot and rank and rank > 1 then -- TODO: check if just hasFollowerSlot is enough
+               local followerName, level, quality, displayID, followerID, garrFollowerID, status, portraitIconID = C_Garrison.GetFollowerInfoForBuilding(plotID)
+               if not followerName then
+                  local possible_followers = C_Garrison.GetPossibleFollowersForBuilding(plotID)
+                  if #possible_followers > 0 then
+                     for idx = 1, #possible_followers do
+                        local possible_follower = possible_followers[idx]
+                        for party_idx = 1, #party_followers_ids do
+                           if possible_follower.followerID == party_followers_ids[party_idx] then
+                              print(format("%s - %s: " .. GARRISON_LANDING_COMPLETED, possible_follower.name, name, shipmentsReady, shipmentsTotal))
+                              -- C_Garrison.AssignFollowerToBuilding(plotID, possible_follower.followerID)
+                           end
+                        end
+                     end
+                  end
+               end
+            end
+         end
+      end
+   end
+end
+
 local function MissionPage_PartyButtonOnClick(self)
    if self[1] then
       event_frame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
@@ -336,6 +375,7 @@ local function MissionPage_PartyButtonOnClick(self)
             GarrisonMissionPage_SetFollower(followerFrame, followerInfo)
          end
       end
+      CheckPartyForProfessionFollowers(self)
       event_frame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    end
 
