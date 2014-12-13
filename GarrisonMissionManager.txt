@@ -25,6 +25,9 @@ Planned features:
 
 Change log:
 
+2014-12-13 v13
+ * Detect and alert in chat about followers in auto-party that could boost currently available for pickup orders. Planned: graphical alert and option to switch off/chat/graphics.
+
 2014-12-05 v12
  * Fix forgotten settings save - ignored followers are now remembered.
 
