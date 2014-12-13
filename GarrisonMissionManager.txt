@@ -1,6 +1,7 @@
 Garrison Mission Manager, v12
 
 http://www.curse.com/addons/wow/garrison-mission-manager
+http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 This addon assists you with selecting best team for garrison missions. It adds 3 butons on mission page with top 3 suggestions. Clicking any of those button sets suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time.
 
