@@ -417,6 +417,7 @@ local function GarrisonMissionList_Update_More()
 
    local filtered_followers, filtered_followers_count = GetFilteredFollowers()
    local more_missions_to_cache
+   local _, garrison_resources = GetCurrencyInfo(GARRISON_CURRENCY)
 
    for i = 1, numButtons do
       local button = buttons[i]
@@ -425,7 +426,8 @@ local function GarrisonMissionList_Update_More()
       if index <= numMissions then
          local mission = missions[index]
          local gmm_button = gmm_buttons['MissionList' .. i]
-         if mission.numFollowers > filtered_followers_count then
+
+         if (mission.numFollowers > filtered_followers_count) or (mission.cost > garrison_resources) then
             button:SetAlpha(0.3)
             gmm_button:SetText("")
          else
