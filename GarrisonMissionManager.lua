@@ -33,9 +33,12 @@ local ingored_followers = {}
 SVPC_GarrisonMissionManager = {}
 SVPC_GarrisonMissionManager.ingored_followers = ingored_followers
 
+
 local _, _, garrison_currency_texture = GetCurrencyInfo(GARRISON_CURRENCY)
 garrison_currency_texture = "|T" .. garrison_currency_texture .. ":0|t"
 local time_texture = "|TInterface\\Icons\\spell_holy_borrowedtime:0|t"
+
+local button_suffixes = { '', 'Yield' }
 
 local top_for_mission = {}
 local top_for_mission_dirty = true
@@ -96,11 +99,14 @@ end
 
 local min, max = {}, {}
 local top = {{}, {}, {}, {}}
-local function FindBestFollowersForMission(mission, followers)
+local top_yield = {{}, {}, {}, {}}
+local best_modes = { "success" }
+local function FindBestFollowersForMission(mission, followers, mode)
    local followers_count = #followers
 
    for idx = 1, 3 do
       wipe(top[idx])
+      wipe(top_yield[idx])
    end
 
    local slots = mission.numFollowers
@@ -125,12 +131,19 @@ local function FindBestFollowersForMission(mission, followers)
       min[idx] = followers_count + 1
    end
 
-   local currency_rewards
+   local best_modes_count = 1
+
+   local gr_rewards
    local xp_only_rewards
    for _, reward in pairs(mission.rewards) do
-      if reward.currencyID == GARRISON_CURRENCY then currency_rewards = true end
+      if reward.currencyID == GARRISON_CURRENCY then gr_rewards = true end
       if reward.followerXP and xp_only_rewards == nil then xp_only_rewards = true end
       if not reward.followerXP then xp_only_rewards = false end
+   end
+
+   if gr_rewards and mode ~= "mission_list" then
+      best_modes_count = best_modes_count + 1
+      best_modes[best_modes_count] = "gr_yield"
    end
 
    for i1 = 1, max[1] do
@@ -161,64 +174,93 @@ local function FindBestFollowersForMission(mission, followers)
             local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier = GetPartyMissionInfo(mission_id)
             isEnvMechanicCountered = isEnvMechanicCountered and 1 or 0
             local buffCount = #partyBuffs
-            for idx = 1, 3 do
-               local current = top[idx]
-               local found
-               repeat -- Checking if new candidate for top is better than any top 3 already sored
-                  -- TODO: risk lower chance mission if material multiplier gives better average result
 
-                  -- remove xpBonus info if all followers are maxed anyway
-                  if slots == followers_maxed then xpBonus = 0 end
+            for best_modes_idx = 1, best_modes_count do
+               local mode = best_modes[best_modes_idx]
+               local gr_yield
+               if mode == 'gr_yield' then
+                  gr_yield = materialMultiplier * successChance
+               end
 
-                  if not current[1] then found = true break end
-
-                  local cSuccessChance = current.successChance
-                  if cSuccessChance < successChance then found = true break end
-                  if cSuccessChance > successChance then break end
-
-                  if currency_rewards then
-                     local cMaterialMultiplier = current.materialMultiplier
-                     if cMaterialMultiplier < materialMultiplier then found = true break end
-                     if cMaterialMultiplier > materialMultiplier then break end
+               for idx = 1, 3 do
+                  local top_list
+                  if mode == 'gr_yield' then
+                     top_list = top_yield
+                  else
+                     top_list = top
                   end
+                  local current = top_list[idx]
 
-                  local c_followers_maxed = current.followers_maxed
-                  if c_followers_maxed > followers_maxed then found = true break end
-                  if c_followers_maxed < followers_maxed then break end
+                  local found
+                  repeat -- Checking if new candidate for top is better than any top 3 already sored
+                     -- TODO: risk lower chance mission if material multiplier gives better average result
 
-                  local cXpBonus = current.xpBonus
-                  if cXpBonus < xpBonus then found = true break end
-                  if cXpBonus > xpBonus then break end
+                     -- remove xpBonus info if all followers are maxed anyway
+                     if slots == followers_maxed then xpBonus = 0 end
 
-                  local cTotalTimeSeconds = current.totalTimeSeconds
-                  if cTotalTimeSeconds > totalTimeSeconds then found = true break end
-                  if cTotalTimeSeconds < totalTimeSeconds then break end
+                     if mode == "gr_yield" and materialMultiplier == 1 then
+                        -- No reason to place non-GR boosted team in special sorting list,
+                        -- success chance top will be better or same anyway.
+                        break
+                     end
 
-                  local cBuffCount = current.buffCount
-                  if cBuffCount > buffCount then found = true break end
-                  if cBuffCount < buffCount then break end
+                     if not current[1] then found = true break end
 
-                  local cIsEnvMechanicCountered = current.isEnvMechanicCountered
-                  if cIsEnvMechanicCountered > isEnvMechanicCountered then found = true break end
-                  if cIsEnvMechanicCountered < isEnvMechanicCountered then break end
-               until true
-               if found then
-                  local new = top[4]
-                  new[1] = follower1
-                  new[2] = follower2
-                  new[3] = follower3
-                  new.successChance = successChance
-                  new.materialMultiplier = materialMultiplier
-                  new.currency_rewards = currency_rewards
-                  new.xpBonus = xpBonus
-                  new.totalTimeSeconds = totalTimeSeconds
-                  new.isMissionTimeImproved = isMissionTimeImproved
-                  new.followers_maxed = followers_maxed
-                  new.buffCount = buffCount
-                  new.isEnvMechanicCountered = isEnvMechanicCountered
-                  tinsert(top, idx, new)
-                  top[5] = nil
-                  break
+                     if mode == 'gr_yield' then
+                        local c_gr_yield = current.gr_yield
+                        if c_gr_yield < gr_yield then found = true break end
+                        if c_gr_yield > gr_yield then break end
+                     end
+
+                     local cSuccessChance = current.successChance
+                     if cSuccessChance < successChance then found = true break end
+                     if cSuccessChance > successChance then break end
+
+                     if gr_rewards then
+                        local cMaterialMultiplier = current.materialMultiplier
+                        if cMaterialMultiplier < materialMultiplier then found = true break end
+                        if cMaterialMultiplier > materialMultiplier then break end
+                     end
+
+                     local c_followers_maxed = current.followers_maxed
+                     if c_followers_maxed > followers_maxed then found = true break end
+                     if c_followers_maxed < followers_maxed then break end
+
+                     local cXpBonus = current.xpBonus
+                     if cXpBonus < xpBonus then found = true break end
+                     if cXpBonus > xpBonus then break end
+
+                     local cTotalTimeSeconds = current.totalTimeSeconds
+                     if cTotalTimeSeconds > totalTimeSeconds then found = true break end
+                     if cTotalTimeSeconds < totalTimeSeconds then break end
+
+                     local cBuffCount = current.buffCount
+                     if cBuffCount > buffCount then found = true break end
+                     if cBuffCount < buffCount then break end
+
+                     local cIsEnvMechanicCountered = current.isEnvMechanicCountered
+                     if cIsEnvMechanicCountered > isEnvMechanicCountered then found = true break end
+                     if cIsEnvMechanicCountered < isEnvMechanicCountered then break end
+                  until true
+                  if found then
+                     local new = top_list[4]
+                     new[1] = follower1
+                     new[2] = follower2
+                     new[3] = follower3
+                     new.successChance = successChance
+                     new.materialMultiplier = materialMultiplier
+                     new.gr_rewards = gr_rewards
+                     new.xpBonus = xpBonus
+                     new.totalTimeSeconds = totalTimeSeconds
+                     new.isMissionTimeImproved = isMissionTimeImproved
+                     new.followers_maxed = followers_maxed
+                     new.buffCount = buffCount
+                     new.isEnvMechanicCountered = isEnvMechanicCountered
+                     new.gr_yield = gr_yield
+                     tinsert(top_list, idx, new)
+                     top_list[5] = nil
+                     break
+                  end
                end
             end
 
@@ -229,6 +271,9 @@ local function FindBestFollowersForMission(mission, followers)
          end
       end
    end
+   top.gr_rewards = gr_rewards
+   -- TODO:
+   -- If we have GR yield list, check it and remove all entries where gr_yield is worse than #1 from regular top list.
    -- dump(top[1])
 
    for idx = 1, #event_handlers do RegisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
@@ -279,11 +324,12 @@ end
 
 local function SetTeamButtonText(button, top_entry)
    if top_entry.successChance then
+      local material_multiplier = top_entry.gr_rewards and top_entry.materialMultiplier > 1 and top_entry.materialMultiplier or nil
       button:SetFormattedText(
          "%d%%\n%s%s%s",
          top_entry.successChance,
-         top_entry.xpBonus > 0 and top_entry.xpBonus .. " |TInterface\\Icons\\XPBonus_Icon:0|t" or "",
-         (top_entry.currency_rewards and top_entry.materialMultiplier > 1) and garrison_currency_texture or "",
+         top_entry.xpBonus > 0 and (top_entry.xpBonus .. " |TInterface\\Icons\\XPBonus_Icon:0|t") or "",
+         material_multiplier and (material_multiplier .. garrison_currency_texture) or "",
          top_entry.isMissionTimeImproved and time_texture or ""
       )
    else
@@ -313,13 +359,31 @@ local function BestForCurrentSelectedMission()
 
    FindBestFollowersForMission(mission, filtered_followers)
 
-   for idx = 1, 3 do
-      local button = gmm_buttons['MissionPage' .. idx]
-      local top_entry = top[idx]
-      button[1] = top_entry[1] and top_entry[1].followerID or nil
-      button[2] = top_entry[2] and top_entry[2].followerID or nil
-      button[3] = top_entry[3] and top_entry[3].followerID or nil
-      SetTeamButtonText(button, top_entry)
+   for suffix_idx = 1, #button_suffixes do
+      local suffix = button_suffixes[suffix_idx]
+      for idx = 1, 3 do
+         local button = gmm_buttons['MissionPage' .. suffix .. idx]
+         local top_entry
+         if suffix == 'Yield' then
+            if top.gr_rewards then
+               top_entry = top_yield[idx]
+            else
+               top_entry = false
+            end
+         else
+            top_entry = top[idx]
+         end
+
+         if top_entry ~= false then
+            button[1] = top_entry[1] and top_entry[1].followerID or nil
+            button[2] = top_entry[2] and top_entry[2].followerID or nil
+            button[3] = top_entry[3] and top_entry[3].followerID or nil
+            SetTeamButtonText(button, top_entry)
+            button:Show()
+         else
+            button:Hide()
+         end
+      end
    end
 
    if mission_page_pending_click then
@@ -391,7 +455,6 @@ hooksecurefunc("GarrisonMissionPage_UpdateMissionForParty", CheckPartyForProfess
 local function MissionPage_PartyButtonOnClick(self)
    if self[1] then
       event_frame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-      local MissionPageFollowers = GarrisonMissionFrame.MissionTab.MissionPage.Followers
       for idx = 1, #MissionPageFollowers do
          GarrisonMissionPage_ClearFollower(MissionPageFollowers[idx])
       end
@@ -404,7 +467,6 @@ local function MissionPage_PartyButtonOnClick(self)
             GarrisonMissionPage_SetFollower(followerFrame, followerInfo)
          end
       end
-      CheckPartyForProfessionFollowers()
       event_frame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    end
 
@@ -466,13 +528,13 @@ local function GarrisonMissionList_Update_More()
                   more_missions_to_cache = more_missions_to_cache + 1
                else
                   more_missions_to_cache = 0
-                  FindBestFollowersForMission(mission, filtered_followers)
+                  FindBestFollowersForMission(mission, filtered_followers, "mission_list")
                   local top1 = top[1]
                   top_for_this_mission = {}
                   top_for_this_mission.successChance = top1.successChance
                   if top_for_this_mission.successChance then
                      top_for_this_mission.materialMultiplier = top1.materialMultiplier
-                     top_for_this_mission.currency_rewards = top1.currency_rewards
+                     top_for_this_mission.gr_rewards = top1.gr_rewards
                      top_for_this_mission.xpBonus = top1.xpBonus
                      top_for_this_mission.isMissionTimeImproved = top1.isMissionTimeImproved
                   end
@@ -501,23 +563,27 @@ hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList.listScroll, "update",
 
 local function MissionPage_ButtonsInit()
    local prev
-   for idx = 1, 3 do
-      if not gmm_buttons['MissionPage' .. idx] then
-         local set_followers_button = CreateFrame("Button", nil, GarrisonMissionFrame.MissionTab.MissionPage, "UIPanelButtonTemplate")
-         set_followers_button:SetText(idx)
-         set_followers_button:SetWidth(100)
-         set_followers_button:SetHeight(50)
-         if not prev then
-            set_followers_button:SetPoint("TOPLEFT", GarrisonMissionFrame.MissionTab.MissionPage, "TOPRIGHT", 0, 0)
-         else
-            set_followers_button:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, 0)
+   for suffix_idx = 1, #button_suffixes do
+      local suffix = button_suffixes[suffix_idx]
+      for idx = 1, 3 do
+         local name = 'MissionPage' .. suffix .. idx
+         if not gmm_buttons[name] then
+            local set_followers_button = CreateFrame("Button", nil, GarrisonMissionFrame.MissionTab.MissionPage, "UIPanelButtonTemplate")
+            set_followers_button:SetText(idx)
+            set_followers_button:SetWidth(100)
+            set_followers_button:SetHeight(50)
+            if not prev then
+               set_followers_button:SetPoint("TOPLEFT", GarrisonMissionFrame.MissionTab.MissionPage, "TOPRIGHT", 0, 0)
+            else
+               set_followers_button:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, 0)
+            end
+            set_followers_button:SetScript("OnClick", MissionPage_PartyButtonOnClick)
+            prev = set_followers_button
+            gmm_buttons[name] = set_followers_button
          end
-         set_followers_button:SetScript("OnClick", MissionPage_PartyButtonOnClick)
-         set_followers_button:Show()
-         prev = set_followers_button
-         gmm_buttons['MissionPage' .. idx] = set_followers_button
       end
    end
+   gmm_buttons['MissionPageYield1']:SetPoint("TOPLEFT", gmm_buttons['MissionPage3'], "BOTTOMLEFT", 0, -50)
 end
 
 local function MissionList_ButtonsInit()
