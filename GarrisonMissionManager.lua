@@ -24,6 +24,9 @@ local GARRISON_FOLLOWER_IN_PARTY = GARRISON_FOLLOWER_IN_PARTY
 local GetFramesRegisteredForEvent = GetFramesRegisteredForEvent
 local CANCEL = CANCEL
 local HybridScrollFrame_GetOffset = HybridScrollFrame_GetOffset
+local GetCurrencyInfo = GetCurrencyInfo
+local MissionPageFollowers = GarrisonMissionFrame.MissionTab.MissionPage.Followers
+local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
 
 -- Config
 local ingored_followers = {}
@@ -44,6 +47,9 @@ local filtered_followers_dirty = true
 local event_frame = CreateFrame("Frame")
 local RegisterEvent = event_frame.RegisterEvent
 local UnregisterEvent = event_frame.UnregisterEvent
+
+-- Pre-declared functions defined below
+local CheckPartyForProfessionFollowers
 
 local events_filtered_followers_dirty = {
    GARRISON_FOLLOWER_LIST_UPDATE = true,
@@ -75,6 +81,7 @@ for event in pairs(events_filtered_followers_dirty) do event_frame:RegisterEvent
 event_frame:RegisterEvent("ADDON_LOADED")
 
 local gmm_buttons = {}
+local gmm_frames = {}
 local mission_page_pending_click
 
 function GMM_dumpl(pattern, ...)
@@ -321,7 +328,17 @@ local function BestForCurrentSelectedMission()
    end
 end
 
-local function CheckPartyForProfessionFollowers(party_followers_ids)
+local shipment_followers = {}
+CheckPartyForProfessionFollowers = function()
+   local party_followers_count = #MissionPageFollowers
+   local present
+   for idx = 1, party_followers_count do
+      if MissionPageFollowers[idx].info then present = true end
+      gmm_frames["MissionPageFollowerWarning" .. idx]:Hide()
+   end
+   if not present then return end
+
+   wipe(shipment_followers)
    local buildings = C_Garrison.GetBuildings()
    for idx = 1, #buildings do
       local building = buildings[idx]
@@ -344,10 +361,12 @@ local function CheckPartyForProfessionFollowers(party_followers_ids)
                   if #possible_followers > 0 then
                      for idx = 1, #possible_followers do
                         local possible_follower = possible_followers[idx]
-                        for party_idx = 1, #party_followers_ids do
-                           if possible_follower.followerID == party_followers_ids[party_idx] then
-                              print(format("%s - %s: " .. GARRISON_LANDING_COMPLETED, possible_follower.name, name, shipmentsReady, shipmentsTotal))
-                              -- C_Garrison.AssignFollowerToBuilding(plotID, possible_follower.followerID)
+                        for party_idx = 1, party_followers_count do
+                           local party_follower = MissionPageFollowers[party_idx].info
+                           if party_follower and possible_follower.followerID == party_follower.followerID then
+                              shipment_followers[party_idx .. 'b'] = name
+                              shipment_followers[party_idx .. 'r'] = shipmentsReady
+                              shipment_followers[party_idx .. 't'] = shipmentsTotal
                            end
                         end
                      end
@@ -357,7 +376,17 @@ local function CheckPartyForProfessionFollowers(party_followers_ids)
          end
       end
    end
+
+   for idx = 1, party_followers_count do
+      local warning = gmm_frames["MissionPageFollowerWarning" .. idx]
+      local building_name = shipment_followers[idx .. 'b']
+      if building_name then
+         warning:SetFormattedText("%s%s: %d/%d", RED_FONT_COLOR_CODE, building_name, shipment_followers[idx .. 'r'], shipment_followers[idx .. 't'])
+         warning:Show()
+      end
+   end
 end
+hooksecurefunc("GarrisonMissionPage_UpdateMissionForParty", CheckPartyForProfessionFollowers)
 
 local function MissionPage_PartyButtonOnClick(self)
    if self[1] then
@@ -375,7 +404,7 @@ local function MissionPage_PartyButtonOnClick(self)
             GarrisonMissionPage_SetFollower(followerFrame, followerInfo)
          end
       end
-      CheckPartyForProfessionFollowers(self)
+      CheckPartyForProfessionFollowers()
       event_frame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    end
 
