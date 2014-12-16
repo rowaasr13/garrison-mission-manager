@@ -550,8 +550,21 @@ local function MissionList_ButtonsInit()
    -- GarrisonMissionFrame.MissionTab.MissionList.listScroll.scrollBar:SetFrameLevel(gmm_buttons['MissionList1']:GetFrameLevel() - 3)
 end
 
+local function MissionPage_WarningInit()
+   for idx = 1, #MissionPageFollowers do
+      local follower_frame = MissionPageFollowers[idx]
+      -- TODO: inherit from name?
+      local warning = follower_frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+      warning:SetWidth(180)
+      warning:SetHeight(1)
+      warning:SetPoint("BOTTOM", follower_frame, "TOP", 0, -68)
+      gmm_frames["MissionPageFollowerWarning" .. idx] = warning
+   end
+end
+
 MissionPage_ButtonsInit()
 MissionList_ButtonsInit()
+MissionPage_WarningInit()
 hooksecurefunc("GarrisonMissionPage_ShowMission", BestForCurrentSelectedMission)
 -- local count = 0
 -- hooksecurefunc("GarrisonFollowerList_UpdateFollowers", function(self) count = count + 1 print("GarrisonFollowerList_UpdateFollowers", count, self:GetName(), self:GetParent():GetName()) end)
