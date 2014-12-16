@@ -1,11 +1,11 @@
-Garrison Mission Manager, v12
+Garrison Mission Manager, v13
 
 http://www.curse.com/addons/wow/garrison-mission-manager
 http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
-This addon assists you with selecting best team for garrison missions. It adds 3 butons on mission page with top 3 suggestions. Clicking any of those button sets suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time.
+This addon assists you with selecting best team for garrison missions. It adds 3 butons on mission page with top 3 suggestions. Clicking any of those button sets suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time. Second set of 3 more buttons will appear on garrison resources reward missions, showing best choices for GR gain - i.e. you could have lower success rate, but in long run your average GR yield will be better thanks to "Scavenger" traits.
 
-It also adds a top team button to each mission on mission list page so you can see at a glance which missions you could reliably do with your current followers. Missions that require more followers that you currently have will be dimmed out to let you concentrate on missions that you can do.
+It also adds a top team button to each mission on mission list page so you can see at a glance which missions you could reliably do with your current followers. Missions that require more followers or garrison resources than you currently have will be dimmed out to let you concentrate on missions that you can do.
 
 It takes care of each and every trait and ability your followers have, present and future, including those easily forgotten "Increases success chance when on a mission with a <race>" traits, by not actually caring about them at all - it simply tries all combinations and selects those that give best total success chance.
 
@@ -13,21 +13,20 @@ Suggestions will try to maximize success rate first, material multiplier (garris
 
 You can add followers to ignore list if you want. Select "GMM: Ignore" in right-click follower menu. Ignored follower will be dimmed with red overlay in followers list and won't be used in any calculated party.
 
+While on a mission screen, when you add a follower to party that could boost a ready shipment order in one of your buildings, it will be indicated by name of building and number of ready orders bellow follower's portrait.
+
 People who love macros can access mission page buttons with:
  * /run GMM_Click("MissionPage1")
  * /run GMM_Click("MissionPage2")
  * /run GMM_Click("MissionPage3")
 
-Planned features:
- * option to risk lower chance missions with XP/material multiplier party for better average yield
- * add "total level of followers involved" to sort order below XP gain, lower - better
- * tooltip or flash followers in the list on mousing over button
-
 
 Change log:
 
-2014-12-13 v13
- * Detect and alert in chat about followers in auto-party that could boost currently available for pickup orders. Planned: graphical alert and option to switch off/chat/graphics.
+2014-12-16 v13
+ * Detect and alert in below follower's party portrait if there's orders ready in building this follower could boost.
+ * GR yield mode - add a second set of buttons with best average GR yield on relevant missions.
+ * Dim missions if you don't have enough GR to start as well.
 
 2014-12-05 v12
  * Fix forgotten settings save - ignored followers are now remembered.
