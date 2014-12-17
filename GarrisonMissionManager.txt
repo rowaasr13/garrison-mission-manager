@@ -25,8 +25,8 @@ GMM aims to be fast and lightweight, keeping CPU and memory use to the minimum.
 
 Change log:
 
-2014-12-16 v14
- *
+2014-12-17 v14
+ * Refresh shipment data when calculating alert about followers for orders, or it'd be stuck on info you've last seen on garrison landing page.
 
 2014-12-16 v13
  * Detect and alert in below follower's party portrait if there's orders ready in building this follower could boost.
