@@ -72,6 +72,11 @@ event_frame:SetScript("OnEvent", function(self, event, arg1)
       filtered_followers_dirty = true
    end
 
+   if event == "GARRISON_LANDINGPAGE_SHIPMENTS" then
+      event_frame:UnregisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS")
+      CheckPartyForProfessionFollowers()
+   end
+
    if event == "ADDON_LOADED" and arg1 == addon_name then
       if SVPC_GarrisonMissionManager then
          ingored_followers = SVPC_GarrisonMissionManager.ingored_followers
@@ -392,6 +397,7 @@ local function BestForCurrentSelectedMission()
    end
 end
 
+local last_shipment_request = 0
 local shipment_followers = {}
 CheckPartyForProfessionFollowers = function()
    local party_followers_count = #MissionPageFollowers
@@ -401,6 +407,14 @@ CheckPartyForProfessionFollowers = function()
       gmm_frames["MissionPageFollowerWarning" .. idx]:Hide()
    end
    if not present then return end
+
+   local time = GetTime()
+   if last_shipment_request + 5 < time then
+      last_shipment_request = time
+      event_frame:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS")
+      C_Garrison.RequestLandingPageShipmentInfo()
+      return
+   end
 
    wipe(shipment_followers)
    local buildings = C_Garrison.GetBuildings()
