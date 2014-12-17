@@ -8,6 +8,7 @@
 ## LoadOnDemand: 1
 ## LoadWith: Blizzard_GarrisonUI
 ## Dependencies: Blizzard_GarrisonUI
+## OptionalDeps: SR13-TimeRecord
 
 ## SavedVariables: SV_GarrisonMissionManager
 ## SavedVariablesPerCharacter: SVPC_GarrisonMissionManager

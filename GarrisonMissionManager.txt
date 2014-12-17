@@ -1,4 +1,4 @@
-Garrison Mission Manager, v13
+Garrison Mission Manager, v14
 
 http://www.curse.com/addons/wow/garrison-mission-manager
 http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -20,8 +20,13 @@ People who love macros can access mission page buttons with:
  * /run GMM_Click("MissionPage2")
  * /run GMM_Click("MissionPage3")
 
+GMM aims to be fast and lightweight, keeping CPU and memory use to the minimum.
+
 
 Change log:
+
+2014-12-16 v14
+ *
 
 2014-12-16 v13
  * Detect and alert in below follower's party portrait if there's orders ready in building this follower could boost.
