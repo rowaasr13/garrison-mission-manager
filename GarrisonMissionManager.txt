@@ -1,4 +1,4 @@
-Garrison Mission Manager, v14
+Garrison Mission Manager, v15
 
 http://www.curse.com/addons/wow/garrison-mission-manager
 http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -24,6 +24,9 @@ GMM aims to be fast and lightweight, keeping CPU and memory use to the minimum.
 
 
 Change log:
+
+2014-12-23 v15
+ * Show iLevel instead of maxed level directly on follower portrait in all lists, just like it works in party on mission page.
 
 2014-12-17 v14
  * Refresh shipment data when calculating alert about followers for orders, or it'd be stuck on info you've last seen on garrison landing page.
