@@ -3,7 +3,7 @@ Garrison Mission Manager, v14
 http://www.curse.com/addons/wow/garrison-mission-manager
 http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
-This addon assists you with selecting best team for garrison missions. It adds 3 butons on mission page with top 3 suggestions. Clicking any of those button sets suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time. Second set of 3 more buttons will appear on garrison resources reward missions, showing best choices for GR gain - i.e. you could have lower success rate, but in long run your average GR yield will be better thanks to "Scavenger" traits.
+This addon assists you with selecting best team for garrison missions. It adds 3 buttons on mission page with top 3 suggestions. Clicking any of those button sets suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time. Second set of 3 more buttons will appear on garrison resources reward missions, showing best choices for GR gain - i.e. you could have lower success rate, but in long run your average GR yield will be better thanks to "Scavenger" traits.
 
 It also adds a top team button to each mission on mission list page so you can see at a glance which missions you could reliably do with your current followers. Missions that require more followers or garrison resources than you currently have will be dimmed out to let you concentrate on missions that you can do.
 
