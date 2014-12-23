@@ -1,4 +1,4 @@
-Garrison Mission Manager, v15
+Garrison Mission Manager, v16
 
 http://www.curse.com/addons/wow/garrison-mission-manager
 http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -24,6 +24,10 @@ GMM aims to be fast and lightweight, keeping CPU and memory use to the minimum.
 
 
 Change log:
+
+2014-12-23 v16
+ * Use special ilvl border for portrait and force abbreviated text - helps Chinese client against ilevel string overflowing out of frame.
+ * Save/restore followers set in party on mission page for better compatibility with addons that pre-seed party (like MP).
 
 2014-12-23 v15
  * Show iLevel instead of maxed level directly on follower portrait in all lists, just like it works in party on mission page.
