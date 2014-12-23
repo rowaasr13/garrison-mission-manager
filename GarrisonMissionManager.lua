@@ -718,6 +718,28 @@ local function GarrisonFollowerList_Update_More(self)
 end
 hooksecurefunc("GarrisonFollowerList_Update", GarrisonFollowerList_Update_More)
 
+function RemoveAllWorkers()
+   if not GarrisonBuildingFrame:IsVisible() then return end
+
+   local removed
+   local buildings = C_Garrison.GetBuildings()
+   for idx = 1, #buildings do
+      local building = buildings[idx]
+      local buildingID = building.buildingID;
+      if buildingID then
+         local plotID = building.plotID
+         local followerName, level, quality, displayID, followerID, garrFollowerID, status, portraitIconID = C_Garrison.GetFollowerInfoForBuilding(plotID)
+         if followerName then
+            print(followerName)
+            C_Garrison.RemoveFollowerFromBuilding(plotID)
+            removed = true
+         end
+      end
+   end
+   if removed then C_Timer.After(0.001, RemoveAllWorkers) end
+end
+
+
 -- Globals deliberately exposed for people outside
 function GMM_Click(button_name)
    local button = gmm_buttons[button_name]
