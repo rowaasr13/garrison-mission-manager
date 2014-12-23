@@ -723,7 +723,7 @@ local function GarrisonFollowerList_Update_More(self)
 end
 hooksecurefunc("GarrisonFollowerList_Update", GarrisonFollowerList_Update_More)
 
-function RemoveAllWorkers()
+function GMM_RemoveAllWorkers()
    if not GarrisonBuildingFrame:IsVisible() then return end
 
    local removed
