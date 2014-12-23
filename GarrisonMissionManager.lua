@@ -106,6 +106,7 @@ local min, max = {}, {}
 local top = {{}, {}, {}, {}}
 local top_yield = {{}, {}, {}, {}}
 local best_modes = { "success" }
+local preserve_mission_page_followers = {}
 local function FindBestFollowersForMission(mission, followers, mode)
    local followers_count = #followers
 
@@ -121,6 +122,13 @@ local function FindBestFollowersForMission(mission, followers, mode)
    for idx = 1, #event_handlers do UnregisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
 
    local mission_id = mission.missionID
+   local party_followers_count = #MissionPageFollowers
+   if party_followers_count > 0 then
+      for party_idx = 1, party_followers_count do
+         preserve_mission_page_followers[party_idx] = MissionPageFollowers[party_idx].info
+      end
+   end
+
    if C_Garrison.GetNumFollowersOnMission(mission_id) > 0 then
       for idx = 1, #followers do
          RemoveFollowerFromMission(mission_id, followers[idx].followerID)
@@ -280,6 +288,14 @@ local function FindBestFollowersForMission(mission, followers, mode)
    -- TODO:
    -- If we have GR yield list, check it and remove all entries where gr_yield is worse than #1 from regular top list.
    -- dump(top[1])
+
+   if party_followers_count > 0 then
+      for party_idx = 1, party_followers_count do
+         if preserve_mission_page_followers[party_idx] then
+            GarrisonMissionPage_SetFollower(MissionPageFollowers[party_idx], preserve_mission_page_followers[party_idx])
+         end
+      end
+   end
 
    for idx = 1, #event_handlers do RegisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
 
