@@ -712,6 +712,11 @@ local function GarrisonFollowerList_Update_More(self)
                button.BusyFrame:Show()
                button.BusyFrame.Texture:SetTexture(0.5, 0, 0, 0.3)
             end
+
+            if follower.level == GARRISON_FOLLOWER_MAX_LEVEL then
+               button.PortraitFrame.Level:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, follower.iLevel);
+               button.ILevel:SetText(nil)
+            end
          end
       end
    end
