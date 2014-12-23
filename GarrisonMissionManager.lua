@@ -709,6 +709,11 @@ local function GarrisonFollowerList_Update_More(self)
    for i = 1, numButtons do
       local button = buttons[i]
       local index = offset + i
+
+      local show_ilevel
+      local portrait_frame = button.PortraitFrame
+      local level_border = portrait_frame.LevelBorder
+
       if ( index <= numFollowers ) then
          local follower = followers[followersList[index]]
          if ( follower.isCollected ) then
@@ -718,10 +723,18 @@ local function GarrisonFollowerList_Update_More(self)
             end
 
             if follower.level == GARRISON_FOLLOWER_MAX_LEVEL then
-               button.PortraitFrame.Level:SetFormattedText(GARRISON_FOLLOWER_ITEM_LEVEL, follower.iLevel);
+               level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
+               level_border:SetWidth(70)
+               local level = portrait_frame.Level
+               level:SetFormattedText("%s %d", ITEM_LEVEL_ABBR, follower.iLevel)
                button.ILevel:SetText(nil)
+               show_ilevel = true
             end
          end
+      end
+      if not show_ilevel then
+         level_border:SetAtlas("GarrMission_PortraitRing_LevelBorder")
+         level_border:SetWidth(58)
       end
    end
 end
