@@ -163,20 +163,32 @@ local function FindBestFollowersForMission(mission, followers, mode)
       local follower1 = followers[i1]
       local follower1_id = follower1.followerID
       local follower1_maxed = follower1.levelXP == 0 and 1 or 0
+      local follower1_level = follower1.level if follower1_level == GARRISON_FOLLOWER_MAX_LEVEL then follower1_level = follower1.iLevel end
       for i2 = min[2] or (i1 + 1), max[2] do
          local follower2_maxed = 0
          local follower2 = followers[i2]
          local follower2_id
+         local follower2_level = 0
          if follower2 then
             follower2_id = follower2.followerID
             if follower2.levelXP == 0 then follower2_maxed = 1 end
+            follower2_level = follower2.level if follower2_level == GARRISON_FOLLOWER_MAX_LEVEL then follower2_level = follower2.iLevel end
          end
          for i3 = min[3] or (i2 + 1), max[3] do
+            local follower3_maxed = 0
             local follower3 = followers[i3]
-            local followers_maxed = follower1_maxed + follower2_maxed + ((follower3 and follower3.levelXP == 0) and 1 or 0)
+            local follower3_id
+            local follower3_level = 0
+            if follower3 then
+               follower3_id = follower3.followerID
+               if follower3.levelXP == 0 then follower3_maxed = 1 end
+               follower3_level = follower3.level if follower3_level == GARRISON_FOLLOWER_MAX_LEVEL then follower3_level = follower3.iLevel end
+            end
+
+            local followers_maxed = follower1_maxed + follower2_maxed + follower3_maxed
+            local follower_level_total = follower1_level + follower2_level + follower3_level
             -- On follower XP-only missions throw away any team that is completely filled with maxed out followers
             if xp_only_rewards and slots == followers_maxed then break end
-            local follower3_id = follower3 and follower3.followerID
 
             -- Assign followers to mission
             if not AddFollowerToMission(mission_id, follower1_id) then --[[ error handling! ]] end
@@ -247,6 +259,10 @@ local function FindBestFollowersForMission(mission, followers, mode)
                      if cTotalTimeSeconds > totalTimeSeconds then found = true break end
                      if cTotalTimeSeconds < totalTimeSeconds then break end
 
+                     local c_follower_level_total = current.follower_level_total
+                     if c_follower_level_total > follower_level_total then found = true break end
+                     if c_follower_level_total < follower_level_total then break end
+
                      local cBuffCount = current.buffCount
                      if cBuffCount > buffCount then found = true break end
                      if cBuffCount < buffCount then break end
@@ -270,6 +286,8 @@ local function FindBestFollowersForMission(mission, followers, mode)
                      new.buffCount = buffCount
                      new.isEnvMechanicCountered = isEnvMechanicCountered
                      new.gr_yield = gr_yield
+                     new.no_reward = xp_only_rewards and slots == followers_maxed
+                     new.follower_level_total = follower_level_total
                      tinsert(top_list, idx, new)
                      top_list[5] = nil
                      break
@@ -345,12 +363,21 @@ end
 
 local function SetTeamButtonText(button, top_entry)
    if top_entry.successChance then
-      local material_multiplier = top_entry.gr_rewards and top_entry.materialMultiplier > 1 and top_entry.materialMultiplier or nil
+      local xp_bonus
+      if top_entry.no_reward then
+         xp_bonus = 'NO'
+      else
+         xp_bonus = top_entry.xpBonus > 0 and top_entry.xpBonus or ''
+      end
+      local xp_bonus_icon = xp_bonus ~= '' and " |TInterface\\Icons\\XPBonus_Icon:0|t" or ''
+      local material_multiplier = top_entry.gr_rewards and top_entry.materialMultiplier > 1 and top_entry.materialMultiplier or ''
+      local material_multiplier_icon = material_multiplier ~= '' and garrison_currency_texture or ''
+
       button:SetFormattedText(
-         "%d%%\n%s%s%s",
+         "%d%%\n%s%s%s%s%s",
          top_entry.successChance,
-         top_entry.xpBonus > 0 and (top_entry.xpBonus .. " |TInterface\\Icons\\XPBonus_Icon:0|t") or "",
-         material_multiplier and (material_multiplier .. garrison_currency_texture) or "",
+         xp_bonus, xp_bonus_icon,
+         material_multiplier, material_multiplier_icon,
          top_entry.isMissionTimeImproved and time_texture or ""
       )
    else
@@ -567,6 +594,7 @@ local function GarrisonMissionList_Update_More()
                      top_for_this_mission.gr_rewards = top1.gr_rewards
                      top_for_this_mission.xpBonus = top1.xpBonus
                      top_for_this_mission.isMissionTimeImproved = top1.isMissionTimeImproved
+                     top_for_this_mission.no_reward = top1.no_reward
                   end
                   top_for_mission[mission.missionID] = top_for_this_mission
                end
