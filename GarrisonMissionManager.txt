@@ -1,4 +1,4 @@
-Garrison Mission Manager, v17
+Garrison Mission Manager, v18
 
 http://www.curse.com/addons/wow/garrison-mission-manager
 http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -26,6 +26,9 @@ GMM aims to be fast and lightweight, keeping CPU and memory use to the minimum.
 
 
 Change log:
+
+2015-01-12 v18
+ * Fix tooltip errors on mass assign/remove buttons.
 
 2015-01-12 v17
  * Mass assign/remove buttons on garrison architect table screen.
