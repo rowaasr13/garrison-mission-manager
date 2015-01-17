@@ -219,13 +219,14 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   gr_yield = materialMultiplier * successChance
                end
 
+               local top_list
+               if mode == 'gr_yield' then
+                  top_list = top_yield
+               else
+                  top_list = top
+               end
+
                for idx = 1, 3 do
-                  local top_list
-                  if mode == 'gr_yield' then
-                     top_list = top_yield
-                  else
-                     top_list = top
-                  end
                   local current = top_list[idx]
 
                   local found
