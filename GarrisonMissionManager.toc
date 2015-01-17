@@ -13,4 +13,5 @@
 ## SavedVariables: SV_GarrisonMissionManager
 ## SavedVariablesPerCharacter: SVPC_GarrisonMissionManager
 
+C_Garrison_cache.lua
 GarrisonMissionManager.lua
