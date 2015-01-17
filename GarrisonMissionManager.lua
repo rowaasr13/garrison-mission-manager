@@ -4,6 +4,8 @@ local addon_name, addon_env = ...
 -- Camel case comes from copypasta of how Blizzard calls returns/fields in their code and deriveates
 -- Underscore are my own variables
 
+local c_garrison_cache = addon_env.c_garrison_cache
+
 -- Globals
 local dump = DevTools_Dump
 local tinsert = table.insert
@@ -45,6 +47,33 @@ local _, _, garrison_currency_texture = GetCurrencyInfo(GARRISON_CURRENCY)
 garrison_currency_texture = "|T" .. garrison_currency_texture .. ":0|t"
 local time_texture = "|TInterface\\Icons\\spell_holy_borrowedtime:0|t"
 
+local hardcoded_salvage_textures = {
+   [114116] = "Interface\\ICONS\\INV_Misc_Bag_12.blp",
+   [114119] = "Interface\\ICONS\\INV_Crate_01.blp",
+   [114120] = "Interface\\ICONS\\INV_Eng_Crate2.blp",
+}
+local salvage_textures = setmetatable({}, { __index = function(t, key)
+   local item_id
+   if key == "bag" then
+      item_id = 114116
+   elseif key == "crate" then
+      item_id = 114119
+   elseif key == "big_crate" then
+      item_id = 114120
+   end
+
+   if item_id then
+      local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item_id)
+      if not itemTexture then
+         return "|T" .. hardcoded_salvage_textures[item_id] .. ":0|t"
+      end
+      itemTexture = "|T" .. itemTexture .. ":0|t"
+      t[key] = itemTexture
+      return itemTexture
+   end
+   return --[[ some default texture ]]
+end})
+
 local button_suffixes = { '', 'Yield' }
 
 local top_for_mission = {}
@@ -54,7 +83,8 @@ local filtered_followers = {}
 local filtered_followers_count
 local filtered_followers_dirty = true
 
-local event_frame = CreateFrame("Frame")
+addon_env.event_frame = addon_env.event_frame or CreateFrame("Frame")
+local event_frame = addon_env.event_frame
 local RegisterEvent = event_frame.RegisterEvent
 local UnregisterEvent = event_frame.UnregisterEvent
 
@@ -70,6 +100,14 @@ local events_top_for_mission_dirty = {
    GARRISON_MISSION_NPC_OPENED = true,
    GARRISON_MISSION_LIST_UPDATE = true,
 }
+
+local events_for_buildings = {
+   GARRISON_BUILDINGS_SWAPPED = true,
+   GARRISON_BUILDING_ACTIVATED = true,
+   GARRISON_BUILDING_PLACED = true,
+   GARRISON_BUILDING_REMOVED = true,
+   GARRISON_BUILDING_UPDATE = true,
+}
 event_frame:SetScript("OnEvent", function(self, event, arg1)
    -- if events_top_for_mission_dirty[event] then top_for_mission_dirty = true end
    -- if events_filtered_followers_dirty[event] then filtered_followers_dirty = true end
@@ -84,7 +122,9 @@ event_frame:SetScript("OnEvent", function(self, event, arg1)
       CheckPartyForProfessionFollowers()
    end
 
-   if event == "GARRISON_BUILDING_UPDATE" then
+   if events_for_buildings[event] then
+      c_garrison_cache.GetBuildings = nil
+      c_garrison_cache.salvage_yard_level = nil
       GarrisonBuilding_UpdateCurrentFollowers()
       GarrisonBuilding_UpdateButtons()
    end
@@ -171,6 +211,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
       best_modes[best_modes_count] = "gr_yield"
    end
 
+   local salvage_yard_level = c_garrison_cache.salvage_yard_level
+   local all_followers_maxed = followers.all_followers_maxed
+
    for i1 = 1, max[1] do
       local follower1 = followers[i1]
       local follower1_id = follower1.followerID
@@ -200,7 +243,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
             local followers_maxed = follower1_maxed + follower2_maxed + follower3_maxed
             local follower_level_total = follower1_level + follower2_level + follower3_level
             -- On follower XP-only missions throw away any team that is completely filled with maxed out followers
-            if xp_only_rewards and slots == followers_maxed then break end
+            if xp_only_rewards and slots == followers_maxed and not (salvage_yard_level and all_followers_maxed) then break end
 
             -- Assign followers to mission
             if not AddFollowerToMission(mission_id, follower1_id) then --[[ error handling! ]] end
@@ -299,8 +342,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
                      new.buffCount = buffCount
                      new.isEnvMechanicCountered = isEnvMechanicCountered
                      new.gr_yield = gr_yield
-                     new.no_reward = xp_only_rewards and slots == followers_maxed
+                     new.xp_reward_wasted = xp_only_rewards and slots == followers_maxed
                      new.follower_level_total = follower_level_total
+                     new.mission_level = mission.level
                      tinsert(top_list, idx, new)
                      top_list[5] = nil
                      break
@@ -351,6 +395,7 @@ local function GetFilteredFollowers()
    local followers = C_Garrison.GetFollowers()
    wipe(filtered_followers)
    filtered_followers_count = 0
+   local all_followers_maxed = true
    for idx = 1, #followers do
       local follower = followers[idx]
       repeat
@@ -363,10 +408,12 @@ local function GetFilteredFollowers()
 
          filtered_followers_count = filtered_followers_count + 1
          filtered_followers[filtered_followers_count] = follower
+         if follower.levelXP ~= 0 then all_followers_maxed = nil end
       until true
    end
 
    tsort(filtered_followers, SortFollowersByLevel)
+   filtered_followers.all_followers_maxed = all_followers_maxed
 
    -- dump(filtered_followers)
    filtered_followers_dirty = false
@@ -376,13 +423,26 @@ end
 
 local function SetTeamButtonText(button, top_entry)
    if top_entry.successChance then
-      local xp_bonus
-      if top_entry.no_reward then
-         xp_bonus = 'NO'
+      local xp_bonus, xp_bonus_icon
+      if top_entry.xp_reward_wasted then
+         local salvage_yard_level = c_garrison_cache.salvage_yard_level
+         xp_bonus = ''
+         if salvage_yard_level == 1 or top_entry.mission_level <= 94 then
+            xp_bonus_icon = salvage_textures.bag
+         elseif salvage_yard_level == 2 then
+            xp_bonus_icon =  salvage_textures.crate
+         elseif salvage_yard_level == 3 then
+            xp_bonus_icon = salvage_textures.big_crate
+         end
       else
-         xp_bonus = top_entry.xpBonus > 0 and top_entry.xpBonus or ''
+         xp_bonus = top_entry.xpBonus
+         if xp_bonus == 0 then
+            xp_bonus = ''
+            xp_bonus_icon = ''
+         else
+            xp_bonus_icon = " |TInterface\\Icons\\XPBonus_Icon:0|t"
+         end
       end
-      local xp_bonus_icon = xp_bonus ~= '' and " |TInterface\\Icons\\XPBonus_Icon:0|t" or ''
       local material_multiplier = top_entry.gr_rewards and top_entry.materialMultiplier > 1 and top_entry.materialMultiplier or ''
       local material_multiplier_icon = material_multiplier ~= '' and garrison_currency_texture or ''
 
@@ -473,7 +533,7 @@ CheckPartyForProfessionFollowers = function()
    end
 
    wipe(shipment_followers)
-   local buildings = C_Garrison.GetBuildings()
+   local buildings = c_garrison_cache.GetBuildings
    for idx = 1, #buildings do
       local building = buildings[idx]
       local buildingID = building.buildingID;
@@ -607,7 +667,8 @@ local function GarrisonMissionList_Update_More()
                      top_for_this_mission.gr_rewards = top1.gr_rewards
                      top_for_this_mission.xpBonus = top1.xpBonus
                      top_for_this_mission.isMissionTimeImproved = top1.isMissionTimeImproved
-                     top_for_this_mission.no_reward = top1.no_reward
+                     top_for_this_mission.xp_reward_wasted = top1.xp_reward_wasted
+                     top_for_this_mission.mission_level = top1.mission_level
                   end
                   top_for_mission[mission.missionID] = top_for_this_mission
                end
@@ -688,7 +749,7 @@ end
 local function GarrisonBuilding_UpdateAssignRemoveBuildings()
    wipe(assign_remove_buildings_list)
    local assign_remove_buildings_count = 0
-   local buildings = C_Garrison.GetBuildings()
+   local buildings = c_garrison_cache.GetBuildings
    for idx = 1, #buildings do
       local building = buildings[idx]
       local buildingID = building.buildingID
@@ -801,7 +862,7 @@ end
 
 local function AssignRemove_PerformInit()
    PlaySound("gsTitleOptionOK")
-   event_frame:UnregisterEvent("GARRISON_BUILDING_UPDATE")
+   for event in pairs(events_for_buildings) do UnregisterEvent(event_frame, event) end
    assign_remove_in_progress = true
    GarrisonBuilding_UpdateButtons()
 end
@@ -812,7 +873,7 @@ local function AssignRemove_PerformFinalize(sound)
    GarrisonBuilding_UpdateButtons()
    PlaySound(sound)
    GarrisonBuildingFrame_OnShow(GarrisonBuildingFrame)
-   event_frame:RegisterEvent("GARRISON_BUILDING_UPDATE")
+   for event in pairs(events_for_buildings) do RegisterEvent(event_frame, event) end
 end
 
 local function AssignAllWorkers_Perform()
@@ -879,11 +940,11 @@ GarrisonBuildingFrame:HookScript("OnShow", function()
    assign_remove_in_progress = nil
    GarrisonBuilding_UpdateAssignRemoveBuildings()
    GarrisonBuilding_UpdateButtons()
-   event_frame:RegisterEvent("GARRISON_BUILDING_UPDATE")
+      for event in pairs(events_for_buildings) do RegisterEvent(event_frame, event) end
 end)
 
 GarrisonBuildingFrame:HookScript("OnHide", function()
-   event_frame:UnregisterEvent("GARRISON_BUILDING_UPDATE")
+   for event in pairs(events_for_buildings) do UnregisterEvent(event_frame, event) end
 end)
 
 local function MissionPage_ButtonsInit()
