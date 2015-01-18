@@ -885,7 +885,7 @@ local function AssignAllWorkers_Perform()
    for plotID in pairs(assign_remove_buildings_list) do
       if not assign_remove_current_followers[plotID] then
          local best_follower = assign_followers_best[plotID]
-         if not best_follower.status then
+         if not assign_followers_status[plotID] then
             empty = true
             AssignFollowerToBuilding(plotID, best_follower.followerID)
          end
