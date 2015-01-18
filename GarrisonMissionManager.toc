@@ -2,16 +2,17 @@
 
 ## Title: Garrison Mission Manager
 ## Version: v18
-## Notes: Assists you with selecting best team for garrison missions
+## Notes: Assists you with selecting best team for garrison missions and other followers management tasks
 ## Author: Oleg "Rowaa[SR13]" Volkov
 
 ## LoadOnDemand: 1
 ## LoadWith: Blizzard_GarrisonUI
 ## Dependencies: Blizzard_GarrisonUI
-## OptionalDeps: SR13-TimeRecord
+## OptionalDeps: LibStub, LibDataBroker-1.1, SR13-TimeRecord
 
 ## SavedVariables: SV_GarrisonMissionManager
 ## SavedVariablesPerCharacter: SVPC_GarrisonMissionManager
 
 C_Garrison_cache.lua
 GarrisonMissionManager.lua
+Broker.lua
