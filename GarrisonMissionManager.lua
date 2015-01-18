@@ -714,6 +714,8 @@ local function GarrisonBuilding_UpdateAssignBestFollowers()
             best_follower = other_follower
          elseif other_follower.level > best_follower.level then
             best_follower = other_follower
+         elseif best_follower.status and best_follower.status ~= GARRISON_FOLLOWER_WORKING then
+            best_follower = other_follower
          elseif other_follower.level == best_follower.level and other_follower.iLevel < best_follower.iLevel then
             best_follower = other_follower
          end
