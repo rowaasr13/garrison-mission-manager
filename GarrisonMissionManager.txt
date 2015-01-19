@@ -46,6 +46,7 @@ GMM aims to be fast and lightweight, keeping CPU and memory use to the minimum.
 2015-01-18 v19
  * Fix auto-assign button didn't noticing changes in follower status in realtime like tooltip does - it would refuse to auto-assign back followers that were working when you opened architect table.
  * When several followers of same level available to be assigned to building, select lowest ilevel among free followers.
+ * Allow fully maxed teams on XP missions when player have Salvage Yard and all unmaxed followers are busy.
 
 2015-01-12 v18
  * Fix tooltip errors on mass assign/remove buttons.
