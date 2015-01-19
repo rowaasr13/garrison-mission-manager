@@ -15,4 +15,5 @@
 
 C_Garrison_cache.lua
 GarrisonMissionManager.lua
+GarrisonBuilding.lua
 Broker.lua
