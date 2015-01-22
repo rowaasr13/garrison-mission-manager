@@ -1,4 +1,4 @@
-Garrison Mission Manager, v19
+Garrison Mission Manager, v20
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -43,6 +43,9 @@ GMM adds buttons at garrison architect table that will allow you to automaticall
 GMM aims to be fast and lightweight, keeping CPU and memory use to the minimum.
 
 == Change log ==
+2015-01-22 v20
+ * Fix auto-assign incorrectly prefering busy follower if it had lower ilevel and was further down in list.
+
 2015-01-18 v19
  * Fix auto-assign button didn't noticing changes in follower status in realtime like tooltip does - it would refuse to auto-assign back followers that were working when you opened architect table.
  * When several followers of same level available to be assigned to building, select lowest ilevel among free followers.
