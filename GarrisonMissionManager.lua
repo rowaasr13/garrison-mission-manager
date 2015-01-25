@@ -10,6 +10,7 @@ local c_garrison_cache = addon_env.c_garrison_cache
 local dump = DevTools_Dump
 local tinsert = table.insert
 local tsort = table.sort
+local tconcat = table.concat
 local wipe = wipe
 local next = next
 local pairs = pairs
@@ -36,6 +37,7 @@ local MissionPageFollowers = GarrisonMissionFrame.MissionTab.MissionPage.Followe
 local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
 local FONT_COLOR_CODE_CLOSE = FONT_COLOR_CODE_CLOSE
 local GARRISON_FOLLOWER_MAX_LEVEL = GARRISON_FOLLOWER_MAX_LEVEL
+local GARRISON_FOLLOWER_WORKING = GARRISON_FOLLOWER_WORKING
 
 -- Config
 local ingored_followers = {}
@@ -125,8 +127,10 @@ event_frame:SetScript("OnEvent", function(self, event, arg1)
    if events_for_buildings[event] then
       c_garrison_cache.GetBuildings = nil
       c_garrison_cache.salvage_yard_level = nil
-      GarrisonBuilding_UpdateCurrentFollowers()
-      GarrisonBuilding_UpdateButtons()
+      if GarrisonBuildingFrame:IsVisible() then
+         GarrisonBuilding_UpdateCurrentFollowers()
+         GarrisonBuilding_UpdateButtons()
+      end
    end
 
    if event == "ADDON_LOADED" and arg1 == addon_name then
@@ -695,6 +699,7 @@ hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList.listScroll, "update",
 
 local assign_remove_buildings_list = {}
 local assign_remove_building_names = {}
+local assign_remove_building_icons = {}
 local assign_remove_current_followers = {}
 local assign_followers_best = {}
 local assign_followers_status = {}
@@ -729,9 +734,17 @@ local function GarrisonBuilding_UpdateAssignBestFollowers()
    end
 end
 
+local last_broker_text
+local concat_list = {}
 GarrisonBuilding_UpdateCurrentFollowers = function()
-   if not GarrisonBuildingFrame:IsVisible() or assign_remove_buildings_count == 0 then return end
+   if assign_remove_buildings_count == 0 then return end
    wipe(assign_remove_current_followers)
+   local broker = addon_env.broker
+   local idx = 0
+   if broker then
+      wipe(concat_list)
+      idx = 0
+   end
    can_remove = nil
    can_assign = nil
    can_assign_busy = nil
@@ -740,6 +753,10 @@ GarrisonBuilding_UpdateCurrentFollowers = function()
       if followerName then
          assign_remove_current_followers[plotID] = followerName
          can_remove = true
+         if broker then
+            idx = idx + 1
+            concat_list[idx] = assign_remove_building_icons[plotID]
+         end
       else
          local status = GetFollowerStatus(assign_followers_best[plotID].followerID)
          assign_followers_status[plotID] = status
@@ -747,6 +764,13 @@ GarrisonBuilding_UpdateCurrentFollowers = function()
          if not status then
             can_assign = true
          end
+      end
+   end
+   if broker then
+      local new_broker_text = tconcat(concat_list, '')
+      if last_broker_text ~= new_broker_text then
+         last_broker_text = new_broker_text
+         broker.text = new_broker_text
       end
    end
 end
@@ -761,9 +785,10 @@ local function GarrisonBuilding_UpdateAssignRemoveBuildings()
       if buildingID then
          local plotID = building.plotID
          local possible_followers = C_Garrison.GetPossibleFollowersForBuilding(plotID)
-         if possible_followers and next(possible_followers) ~= nil then
+         if possible_followers and #possible_followers > 0 then
             assign_remove_buildings_list[plotID] = possible_followers
             local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate = C_Garrison.GetOwnedBuildingInfo(plotID)
+            assign_remove_building_icons[plotID] = "|T" .. icon .. ":0|t"
             assign_remove_building_names[plotID] = name
             assign_remove_buildings_count = assign_remove_buildings_count + 1
          end
@@ -772,6 +797,7 @@ local function GarrisonBuilding_UpdateAssignRemoveBuildings()
    GarrisonBuilding_UpdateAssignBestFollowers()
    GarrisonBuilding_UpdateCurrentFollowers()
 end
+addon_env.GarrisonBuilding_UpdateAssignRemoveBuildings = GarrisonBuilding_UpdateAssignRemoveBuildings
 
 GarrisonBuilding_UpdateButtons = function ()
    if assign_remove_in_progress or assign_remove_buildings_count == 0 then
@@ -805,8 +831,8 @@ end
 local function GarrisonBuilding_HideTooltip()
    return GameTooltip:Hide()
 end
+addon_env.HideTooltip = GarrisonBuilding_HideTooltip
 
-local concat_list = {}
 local function RemoveAllWorkers_TooltipSetText()
    wipe(concat_list)
    local idx = 0
@@ -816,6 +842,8 @@ local function RemoveAllWorkers_TooltipSetText()
          concat_list[idx] = "\n"
       end
       idx = idx + 1
+      concat_list[idx] = assign_remove_building_icons[plotID]
+      idx = idx + 1
       concat_list[idx] = followerName
       idx = idx + 1
       concat_list[idx] = " ("
@@ -824,8 +852,9 @@ local function RemoveAllWorkers_TooltipSetText()
       idx = idx + 1
       concat_list[idx] = ")"
    end
-   GameTooltip:SetText(table.concat(concat_list, ''))
+   GameTooltip:SetText(tconcat(concat_list, ''))
 end
+addon_env.RemoveAllWorkers_TooltipSetText = RemoveAllWorkers_TooltipSetText
 
 local function AssignAllWorkers_TooltipSetText()
    wipe(concat_list)
@@ -837,6 +866,8 @@ local function AssignAllWorkers_TooltipSetText()
             idx = idx + 1
             concat_list[idx] = "\n"
          end
+         idx = idx + 1
+         concat_list[idx] = assign_remove_building_icons[plotID]
          local status = assign_followers_status[plotID]
          if status then
             idx = idx + 1
@@ -862,8 +893,21 @@ local function AssignAllWorkers_TooltipSetText()
          end
       end
    end
-   GameTooltip:SetText(table.concat(concat_list, ''))
+   GameTooltip:SetText(tconcat(concat_list, ''))
 end
+
+local function AssignAllWorkers_TooltipShow(self)
+   GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
+   AssignAllWorkers_TooltipSetText()
+   GameTooltip:Show()
+end
+
+local function RemoveAllWorkers_TooltipShow(self)
+   GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
+   RemoveAllWorkers_TooltipSetText()
+   GameTooltip:Show()
+end
+addon_env.RemoveAllWorkers_TooltipShow = RemoveAllWorkers_TooltipShow
 
 local function AssignRemove_PerformInit()
    PlaySound("gsTitleOptionOK")
@@ -945,7 +989,7 @@ GarrisonBuildingFrame:HookScript("OnShow", function()
    assign_remove_in_progress = nil
    GarrisonBuilding_UpdateAssignRemoveBuildings()
    GarrisonBuilding_UpdateButtons()
-      for event in pairs(events_for_buildings) do RegisterEvent(event_frame, event) end
+   for event in pairs(events_for_buildings) do RegisterEvent(event_frame, event) end
 end)
 
 GarrisonBuildingFrame:HookScript("OnHide", function()
@@ -1017,11 +1061,7 @@ local function GarrisonBuilding_ButtonsInit()
    button:SetHeight(50)
    button:SetPoint("LEFT", anchor, "RIGHT", 0, 0)
    button:SetPoint("TOP", anchor.InfoBox, "TOP", 0, 0)
-   button:SetScript('OnEnter', function(self)
-      GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
-      AssignAllWorkers_TooltipSetText()
-      GameTooltip:Show()
-   end)
+   button:SetScript('OnEnter', AssignAllWorkers_TooltipShow) 
    button:SetScript('OnLeave', GarrisonBuilding_HideTooltip)
    button:SetScript("OnMouseDown", nil)
    button:SetScript("OnMouseUp", nil)
@@ -1035,11 +1075,7 @@ local function GarrisonBuilding_ButtonsInit()
    button:SetPoint("LEFT", anchor, "RIGHT", 0, 0)
    button:SetPoint("TOP", anchor.InfoBox, "TOP", 0, 0)
    button:SetScript('OnClick', AssignAllWorkers)
-   button:SetScript('OnEnter', function(self)
-      GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
-      AssignAllWorkers_TooltipSetText()
-      GameTooltip:Show()
-   end)
+   button:SetScript('OnEnter', AssignAllWorkers_TooltipShow)
    button:SetScript('OnLeave', GarrisonBuilding_HideTooltip)
    gmm_buttons['assign_all_workers'] = button
    local prev = button
@@ -1050,11 +1086,7 @@ local function GarrisonBuilding_ButtonsInit()
    button:SetHeight(50)
    button:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, 0)
    button:SetScript('OnClick', RemoveAllWorkers)
-   button:SetScript('OnEnter', function(self)
-      GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
-      RemoveAllWorkers_TooltipSetText()
-      GameTooltip:Show()
-   end)
+   button:SetScript('OnEnter', RemoveAllWorkers_TooltipShow)
    button:SetScript('OnLeave', GarrisonBuilding_HideTooltip)
    gmm_buttons['remove_all_workers'] = button
 end
