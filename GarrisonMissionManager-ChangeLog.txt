@@ -1,9 +1,13 @@
-Garrison Mission Manager, v20
+Garrison Mission Manager, v21
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-02-02 v21
+ * LDB module to show currently working followers.
+ * Fix some more auto-assign errors with incorrect detection of free or busy best follower candidates.
+
 2015-01-22 v20
  * Fix auto-assign incorrectly prefering busy follower if it had lower ilevel and was further down in list.
 
