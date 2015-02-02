@@ -1202,10 +1202,12 @@ local function GarrisonFollowerList_Update_More(self)
 end
 hooksecurefunc("GarrisonFollowerList_Update", GarrisonFollowerList_Update_More)
 
+gmm_buttons.StartMission = MissionPage.StartMissionButton
+
 -- Globals deliberately exposed for people outside
 function GMM_Click(button_name)
    local button = gmm_buttons[button_name]
-   if button then button:Click() end
+   if button and button:IsVisible() then button:Click() end
 end
 
 -- /dump GarrisonMissionFrame.MissionTab.MissionList.listScroll.buttons
