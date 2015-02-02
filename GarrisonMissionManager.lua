@@ -711,7 +711,7 @@ local can_assign_busy
 local function GarrisonBuilding_UpdateAssignBestFollowers()
    if assign_remove_buildings_count == 0 then return end
    wipe(assign_followers_best)
-   for plotID, possible_followers in pairs(assign_remove_buildings_list) do  
+   for plotID, possible_followers in pairs(assign_remove_buildings_list) do
       local best_follower
       for follower_idx = 1, #possible_followers do
          local other_follower = possible_followers[follower_idx]
@@ -719,10 +719,10 @@ local function GarrisonBuilding_UpdateAssignBestFollowers()
             best_follower = other_follower
          elseif other_follower.level > best_follower.level then
             best_follower = other_follower
-         -- I assume follower can't have traits for 2 different buildings and will not work in another building
-         elseif best_follower.status and not other_follower.status then
+         -- I assume follower can't have traits for 2 different buildings and will not work in another building.
+         elseif (best_follower.status and best_follower.status ~= GARRISON_FOLLOWER_WORKING) and not (other_follower.status and other_follower.status ~= GARRISON_FOLLOWER_WORKING) then
             best_follower = other_follower
-         elseif not best_follower.status and other_follower.status then
+         elseif not (best_follower.status and best_follower.status ~= GARRISON_FOLLOWER_WORKING) and (other_follower.status and other_follower.status ~= GARRISON_FOLLOWER_WORKING) then
             -- skip
          elseif other_follower.level == best_follower.level and other_follower.iLevel < best_follower.iLevel then
             best_follower = other_follower
