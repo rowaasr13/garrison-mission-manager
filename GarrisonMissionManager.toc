@@ -1,7 +1,7 @@
 ## Interface: 60000
 
 ## Title: Garrison Mission Manager
-## Version: v21
+## Version: v22
 ## Notes: Assists you with selecting best team for garrison missions and other followers management tasks
 ## Author: Oleg "Rowaa[SR13]" Volkov
 

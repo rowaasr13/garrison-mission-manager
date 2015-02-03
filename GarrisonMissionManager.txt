@@ -1,4 +1,4 @@
-Garrison Mission Manager, v21
+Garrison Mission Manager, v22
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -22,6 +22,9 @@ People who love macros can access mission page buttons with:
  * /run GMM_Click("MissionPage1")
  * /run GMM_Click("MissionPage2")
  * /run GMM_Click("MissionPage3")
+
+And Blizzard's "Start Mission" button with:
+ * /run GMM_Click("StartMission")
 
 === GR yield mode ===
 On garrison resources reward missions a second set of 3 more buttons will appear, showing best choices for GR gain - i.e. you could have lower success rate, but in long run your average GR yield will be better thanks to "Scavenger" traits.
