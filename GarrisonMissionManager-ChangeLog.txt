@@ -34,7 +34,7 @@ Garrison Mission Manager, v21
  * Refresh shipment data when calculating alert about followers for orders, or it'd be stuck on info you've last seen on garrison landing page.
 
 2014-12-16 v13
- * Detect and alert in below follower's party portrait if there's orders ready in building this follower could boost.
+ * Detect and alert below follower's party portrait on mission page if there are orders ready in building that this follower could boost.
  * GR yield mode - add a second set of buttons with best average GR yield on relevant missions.
  * Dim missions if you don't have enough GR to start as well.
 
