@@ -106,6 +106,7 @@ local events_top_for_mission_dirty = {
 }
 
 local events_for_buildings = {
+   GARRISON_BUILDING_LIST_UPDATE = true,
    GARRISON_BUILDINGS_SWAPPED = true,
    GARRISON_BUILDING_ACTIVATED = true,
    GARRISON_BUILDING_PLACED = true,
@@ -146,6 +147,7 @@ end)
 for event in pairs(events_top_for_mission_dirty) do event_frame:RegisterEvent(event) end
 for event in pairs(events_filtered_followers_dirty) do event_frame:RegisterEvent(event) end
 event_frame:RegisterEvent("ADDON_LOADED")
+event_frame:RegisterEvent("GARRISON_BUILDING_LIST_UPDATE")
 
 local gmm_buttons = {}
 addon_env.gmm_buttons = gmm_buttons
