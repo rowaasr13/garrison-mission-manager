@@ -12,4 +12,4 @@ local broker = ldb:NewDataObject(addon_name, {
 })
 addon_env.broker = broker
 
-addon_env.GarrisonBuilding_UpdateAssignRemoveBuildings()
+addon_env.GarrisonBuilding_UpdateBuildings()
