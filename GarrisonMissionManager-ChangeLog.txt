@@ -1,9 +1,13 @@
-Garrison Mission Manager, v22
+Garrison Mission Manager, v23
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-02-18 v23
+ * Fix some more minor building detection problem caused by early load and expand detection to buildings that have slots but no followers.
+ * Show on assign button and LDB module tooltips buildings that have slots but no followers in red, change busy followers color to orange.
+
 2015-02-03 v22
  * Add support for detecting buildings if some other addon (e.g. Broker Garrison) forced Blizzard's Garrison UI to start on game load. Otherwise GMM would disable features that depend on knowing what buildings you have in your garrison - i.e salvage mode and auto-assign/remove.
  * /run GMM_Click("StartMission") shortcut for macros.
