@@ -179,7 +179,7 @@ addon_env.HideTooltip = GarrisonBuilding_HideTooltip
 -- hide_buildings - if true, only buildings with working followers will be shown
 --                  if false, buildings that have no followers to assign will be in list too
 local function RemoveAllWorkers_TooltipSetText(self, hide_buildings)
-   addon_env.manual_interraction = true
+   if addon_env.RegisterManualInterraction then addon_env.RegisterManualInterraction() end
    wipe(concat_list)
    local idx = 0
    for plotID in pairs(building_follower_slot) do
@@ -349,7 +349,7 @@ local function RemoveAllWorkers()
 end
 
 GarrisonBuildingFrame:HookScript("OnShow", function()
-   addon_env.manual_interraction = true
+   if addon_env.RegisterManualInterraction then addon_env.RegisterManualInterraction() end
    assign_remove_in_progress = nil
    GarrisonBuilding_UpdateBuildings()
    GarrisonBuilding_UpdateButtons()
@@ -359,6 +359,11 @@ end)
 GarrisonBuildingFrame:HookScript("OnHide", function()
    for event in pairs(events_for_buildings) do UnregisterEvent(event_frame, event) end
 end)
+
+function addon_env.RegisterManualInterraction()
+   for event in pairs(events_for_buildings) do UnregisterEvent(event_frame, event) end
+   addon_env.RegisterManualInterraction = nil
+end
 
 local function GarrisonBuilding_ButtonsInit()
    local anchor = GarrisonBuildingFrame

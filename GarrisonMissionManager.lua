@@ -140,7 +140,9 @@ event_frame:SetScript("OnEvent", function(self, event, arg1)
       end
    end
 
-   if not addon_env.manual_interraction then
+   if addon_env.RegisterManualInterraction then
+      -- function is not deleted - no manual interraction was registered yet
+      -- scan buildings/followers more agressively
       if events_filtered_followers_dirty[event] then
          addon_env.GarrisonBuilding_UpdateCurrentFollowers()
          addon_env.GarrisonBuilding_UpdateBestFollowers()
@@ -484,7 +486,7 @@ end
 
 local available_missions = {}
 local function BestForCurrentSelectedMission()
-   addon_env.manual_interraction = true
+   if addon_env.RegisterManualInterraction then addon_env.RegisterManualInterraction() end
    local missionInfo = MissionPage.missionInfo
    local mission_id = missionInfo.missionID
 
@@ -629,7 +631,7 @@ local function MissionPage_PartyButtonOnClick(self)
 end
 
 local function MissionList_PartyButtonOnClick(self)
-   addon_env.manual_interraction = true
+   if addon_env.RegisterManualInterraction then addon_env.RegisterManualInterraction() end
    -- mission_page_pending_click = 1
    return self:GetParent():Click()
 end
