@@ -1,9 +1,12 @@
-Garrison Mission Manager, v23
+Garrison Mission Manager, v24
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-02-26 v23
+ * TOC Interface version bump.
+
 2015-02-18 v23
  * Fix some more minor building detection problem caused by early load and expand detection to buildings that have slots but no followers.
  * Show on assign button and LDB module tooltips buildings that have slots but no followers in red, change busy followers color to orange.
