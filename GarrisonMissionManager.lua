@@ -741,6 +741,8 @@ end
 -- GarrisonMissionList_Update
 local function GarrisonMissionList_Update_More()
    local self = GarrisonMissionFrame.MissionTab.MissionList
+   -- Blizzard updates those when not visible too, but there's no reason to copy them.
+   if not self:IsVisible() then return end
    local scrollFrame = self.listScroll
    local buttons = scrollFrame.buttons
    local numButtons = #buttons
