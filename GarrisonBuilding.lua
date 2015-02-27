@@ -172,11 +172,6 @@ GarrisonBuilding_UpdateButtons = function()
 end
 addon_env.GarrisonBuilding_UpdateButtons = GarrisonBuilding_UpdateButtons
 
-local function GarrisonBuilding_HideTooltip()
-   return GameTooltip:Hide()
-end
-addon_env.HideTooltip = GarrisonBuilding_HideTooltip
-
 -- hide_buildings - if true, only buildings with working followers will be shown
 --                  if false, buildings that have no followers to assign will be in list too
 local function RemoveAllWorkers_TooltipSetText(self, hide_buildings)
@@ -377,10 +372,10 @@ local function GarrisonBuilding_ButtonsInit()
    button:SetPoint("LEFT", anchor, "RIGHT", 0, 0)
    button:SetPoint("TOP", anchor.InfoBox, "TOP", 0, 0)
    button:SetScript('OnEnter', AssignAllWorkers_TooltipShow) 
-   button:SetScript('OnLeave', GarrisonBuilding_HideTooltip)
+   button:SetScript('OnLeave', addon_env.HideGameTooltip)
    button:SetScript("OnMouseDown", nil)
    button:SetScript("OnMouseUp", nil)
-   button:HookScript("OnShow", function(self) self:GetScript("OnDisable")(self) end)
+   button:HookScript("OnShow", addon_env.OnShowEmulateDisabled)
    gmm_buttons['assign_all_workers_disabled'] = button
 
    local button = CreateFrame("Button", nil, anchor, "UIPanelButtonTemplate")
@@ -391,7 +386,7 @@ local function GarrisonBuilding_ButtonsInit()
    button:SetPoint("TOP", anchor.InfoBox, "TOP", 0, 0)
    button:SetScript('OnClick', AssignAllWorkers)
    button:SetScript('OnEnter', AssignAllWorkers_TooltipShow)
-   button:SetScript('OnLeave', GarrisonBuilding_HideTooltip)
+   button:SetScript('OnLeave', addon_env.HideGameTooltip)
    gmm_buttons['assign_all_workers'] = button
    local prev = button
 
@@ -402,7 +397,7 @@ local function GarrisonBuilding_ButtonsInit()
    button:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, 0)
    button:SetScript('OnClick', RemoveAllWorkers)
    button:SetScript('OnEnter', RemoveAllWorkers_TooltipShow)
-   button:SetScript('OnLeave', GarrisonBuilding_HideTooltip)
+   button:SetScript('OnLeave', addon_env.HideGameTooltip)
    gmm_buttons['remove_all_workers'] = button
 end
 

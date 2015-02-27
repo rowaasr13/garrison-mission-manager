@@ -721,6 +721,9 @@ end
 hooksecurefunc("GarrisonMissionList_Update", GarrisonMissionList_Update_More)
 hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList.listScroll, "update", GarrisonMissionList_Update_More)
 
+addon_env.HideGameTooltip = function() return GameTooltip:Hide() end
+addon_env.OnShowEmulateDisabled = function(self) self:GetScript("OnDisable")(self) end
+
 local function MissionPage_ButtonsInit()
    local prev
    for suffix_idx = 1, #button_suffixes do
