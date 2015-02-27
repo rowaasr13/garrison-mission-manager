@@ -73,7 +73,8 @@ end
 addon_env.GarrisonBuilding_UpdateBestFollowers = GarrisonBuilding_UpdateBestFollowers
 
 local last_broker_text
-local concat_list = {}
+addon_env.concat_list = addon_env.concat_list or {}
+local concat_list = addon_env.concat_list
 GarrisonBuilding_UpdateCurrentFollowers = function()
    if buildings_count == 0 then return end
    wipe(current_followers)
