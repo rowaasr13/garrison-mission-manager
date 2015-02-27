@@ -390,6 +390,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                      until true
 
                      if found then
+                        local all_followers_maxed_on_mission = slots == followers_maxed
                         local new = top_list[4]
                         new[1] = follower1
                         new[2] = follower2
@@ -404,7 +405,8 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         new.buffCount = buffCount
                         new.isEnvMechanicCountered = isEnvMechanicCountered
                         new.gr_yield = gr_yield
-                        new.xp_reward_wasted = xp_only_rewards and slots == followers_maxed
+                        new.xp_reward_wasted = xp_only_rewards and all_followers_maxed_on_mission
+                        new.all_followers_maxed = all_followers_maxed_on_mission
                         new.follower_level_total = follower_level_total
                         new.mission_level = mission.level
                         tinsert(top_list, idx, new)
@@ -509,7 +511,7 @@ local function SetTeamButtonText(button, top_entry)
          end
       else
          xp_bonus = top_entry.xpBonus
-         if xp_bonus == 0 then
+         if xp_bonus == 0 or top_entry.all_followers_maxed then
             xp_bonus = ''
             xp_bonus_icon = ''
          else
@@ -795,6 +797,7 @@ local function GarrisonMissionList_Update_More()
                      top_for_this_mission.xpBonus = top1.xpBonus
                      top_for_this_mission.isMissionTimeImproved = top1.isMissionTimeImproved
                      top_for_this_mission.xp_reward_wasted = top1.xp_reward_wasted
+                     top_for_this_mission.all_followers_maxed = top1.all_followers_maxed
                      top_for_this_mission.mission_level = top1.mission_level
                   end
                   top_for_mission[mission.missionID] = top_for_this_mission
