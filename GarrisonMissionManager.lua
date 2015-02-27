@@ -78,13 +78,14 @@ local salvage_textures = setmetatable({}, { __index = function(t, key)
    return --[[ some default texture ]]
 end})
 
-local button_suffixes = { '', 'Yield' }
+local button_suffixes = { '', 'Yield', 'Unavailable' }
 
 local top_for_mission = {}
 local top_for_mission_dirty = true
 
 local filtered_followers = {}
 local filtered_followers_count
+local filtered_free_followers_count
 local filtered_followers_dirty = true
 
 addon_env.event_frame = addon_env.event_frame or CreateFrame("Frame")
@@ -183,7 +184,9 @@ end
 local min, max = {}, {}
 local top = {{}, {}, {}, {}}
 local top_yield = {{}, {}, {}, {}}
+local top_unavailable = {{}, {}, {}, {}}
 local best_modes = { "success" }
+local best_mode_unavailable = {}
 local preserve_mission_page_followers = {}
 local function FindBestFollowersForMission(mission, followers, mode)
    local followers_count = #followers
@@ -191,6 +194,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
    for idx = 1, 3 do
       wipe(top[idx])
       wipe(top_yield[idx])
+      wipe(top_unavailable[idx])
    end
 
    local slots = mission.numFollowers
@@ -208,7 +212,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
    end
 
    if C_Garrison.GetNumFollowersOnMission(mission_id) > 0 then
-      for idx = 1, #followers do
+      for idx = 1, followers_count do
          RemoveFollowerFromMission(mission_id, followers[idx].followerID)
       end
    end
@@ -217,7 +221,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
       max[idx] = followers_count - slots + idx
       min[idx] = nil
    end
-   for idx = slots+1, 3 do
+   for idx = slots + 1, 3 do
       max[idx] = followers_count + 1
       min[idx] = followers_count + 1
    end
@@ -240,148 +244,210 @@ local function FindBestFollowersForMission(mission, followers, mode)
    local salvage_yard_level = c_garrison_cache.salvage_yard_level
    local all_followers_maxed = followers.all_followers_maxed
 
+   for idx = 1, followers_count do
+      print(idx, followers[idx].name)
+   end
+   print(1, max[1])
+   print(min[2], max[2])
+   print(min[3], max[3])
+
    for i1 = 1, max[1] do
       local follower1 = followers[i1]
       local follower1_id = follower1.followerID
       local follower1_maxed = follower1.levelXP == 0 and 1 or 0
       local follower1_level = follower1.level if follower1_level == GARRISON_FOLLOWER_MAX_LEVEL then follower1_level = follower1.iLevel end
+      local follower1_busy = follower1.is_busy_for_mission and 1 or 0 -- at least one follower in party is busy (i.e. staus non-empty/non-party) for mission
       for i2 = min[2] or (i1 + 1), max[2] do
          local follower2_maxed = 0
          local follower2 = followers[i2]
          local follower2_id
          local follower2_level = 0
+         local follower2_busy = 0
          if follower2 then
             follower2_id = follower2.followerID
             if follower2.levelXP == 0 then follower2_maxed = 1 end
             follower2_level = follower2.level if follower2_level == GARRISON_FOLLOWER_MAX_LEVEL then follower2_level = follower2.iLevel end
+            if follower2.is_busy_for_mission then follower2_busy = 1 end
          end
          for i3 = min[3] or (i2 + 1), max[3] do
             local follower3_maxed = 0
             local follower3 = followers[i3]
             local follower3_id
             local follower3_level = 0
+            local follower3_busy = 0
             if follower3 then
                follower3_id = follower3.followerID
                if follower3.levelXP == 0 then follower3_maxed = 1 end
                follower3_level = follower3.level if follower3_level == GARRISON_FOLLOWER_MAX_LEVEL then follower3_level = follower3.iLevel end
+               if follower3.is_busy_for_mission then follower3_busy = 1 end
             end
 
             local followers_maxed = follower1_maxed + follower2_maxed + follower3_maxed
-            local follower_level_total = follower1_level + follower2_level + follower3_level
             -- On follower XP-only missions throw away any team that is completely filled with maxed out followers
-            if xp_only_rewards and slots == followers_maxed and not (salvage_yard_level and all_followers_maxed) then break end
+            if xp_only_rewards and slots == followers_maxed and not (salvage_yard_level and all_followers_maxed) then
+               -- skip
+            else
+               local follower_level_total = follower1_level + follower2_level + follower3_level
+               local follower_is_busy_for_mission = (follower1_busy + follower2_busy + follower3_busy) > 0
 
-            -- Assign followers to mission
-            if not AddFollowerToMission(mission_id, follower1_id) then --[[ error handling! ]] end
-            if follower2 and not AddFollowerToMission(mission_id, follower2_id) then --[[ error handling! ]] end
-            if follower3 and not AddFollowerToMission(mission_id, follower3_id) then --[[ error handling! ]] end
+               -- Assign followers to mission
+               if not AddFollowerToMission(mission_id, follower1_id) then --[[ error handling! ]] end
+               if follower2 and not AddFollowerToMission(mission_id, follower2_id) then --[[ error handling! ]] end
+               if follower3 and not AddFollowerToMission(mission_id, follower3_id) then --[[ error handling! ]] end
 
-            -- Calculate result
-            local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier = GetPartyMissionInfo(mission_id)
-            isEnvMechanicCountered = isEnvMechanicCountered and 1 or 0
-            local buffCount = #partyBuffs
+               -- Calculate result
+               local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier, goldMultiplier = GetPartyMissionInfo(mission_id)
+               isEnvMechanicCountered = isEnvMechanicCountered and 1 or 0
+               local buffCount = #partyBuffs
 
-            for best_modes_idx = 1, best_modes_count do
-               local mode = best_modes[best_modes_idx]
-               local gr_yield
-               if mode == 'gr_yield' then
-                  gr_yield = materialMultiplier * successChance
+               local saved_best_modes
+               local saved_best_modes_count
+               if follower_is_busy_for_mission then
+                  saved_best_modes = best_modes
+                  saved_best_modes_count = best_modes_count
+                  best_modes = best_mode_unavailable
+                  best_mode_unavailable[1] = "success"
+                  best_modes_count = 1
                end
 
-               local top_list
-               if mode == 'gr_yield' then
-                  top_list = top_yield
-               else
-                  top_list = top
+               if follower1.name == "Shelly Hamby" or (follower2 and follower2.name == "Shelly Hamby") or (follower3 and follower3.name == "Shelly Hamby") then
+                  print(i1, i2, i3, follower1.name, (follower2 and follower2.name), (follower3 and follower3.name), successChance)
                end
 
-               for idx = 1, 3 do
-                  local current = top_list[idx]
+               for best_modes_idx = 1, best_modes_count do
+                  local mode = best_modes[best_modes_idx]
+                  local gr_yield
+                  if gr_rewards then
+                     gr_yield = materialMultiplier * successChance
+                  end
 
-                  local found
-                  repeat -- Checking if new candidate for top is better than any top 3 already sored
-                     -- TODO: risk lower chance mission if material multiplier gives better average result
+                  local top_list
+                  if follower_is_busy_for_mission then
+                     top_list = top_unavailable
+                  elseif mode == 'gr_yield' then
+                     top_list = top_yield
+                  else
+                     top_list = top
+                  end
 
-                     -- remove xpBonus info if all followers are maxed anyway
-                     if slots == followers_maxed then xpBonus = 0 end
+                  for idx = 1, 3 do
+                     local current = top_list[idx]
 
-                     if mode == "gr_yield" and materialMultiplier == 1 then
-                        -- No reason to place non-GR boosted team in special sorting list,
-                        -- success chance top will be better or same anyway.
+                     if i1 == 5 and i2 == 14 then
+                        if top_list == top then print("regular top") elseif top_list == top_yield then print("yield top") elseif top_list == top_unavailable then print("unavailable top", i1, i2, i3) end
+                     end
+
+                     local found
+                     repeat -- Checking if new candidate for top is better than any top 3 already sored
+                        if i1 == 5 and i2 == 14 then print("*1", i1, i2, i3, "???", found) end
+
+                        if mode == "gr_yield" and materialMultiplier == 1 then
+                           -- No reason to place non-GR boosted team in special sorting list,
+                           -- success chance top will be better or same anyway.
+                           break
+                        end
+
+                        if i1 == 5 and i2 == 14 then print("*2", i1, i2, i3, "???", found) end
+
+                        if not current[1] then found = true break end
+
+                        if i1 == 5 and i2 == 14 then print("*3", i1, i2, i3, "???", found) end
+
+                        local c_gr_yield = current.gr_yield
+                        if mode == 'gr_yield' then
+                           if c_gr_yield < gr_yield then found = true break end
+                           if c_gr_yield > gr_yield then break end
+                        end
+
+                        if i1 == 5 and i2 == 14 then print("*4", i1, i2, i3, "???", found) end
+
+                        local cSuccessChance = current.successChance
+                        if cSuccessChance < successChance then found = true break end
+                        if cSuccessChance > successChance then break end
+
+                        if i1 == 5 and i2 == 14 then print("*5", i1, i2, i3, "???", found) end
+
+                        if gr_rewards then
+                           local cMaterialMultiplier = current.materialMultiplier
+                           if cMaterialMultiplier < materialMultiplier then found = true break end
+                           if cMaterialMultiplier > materialMultiplier then break end
+                        end
+
+                        local c_followers_maxed = current.followers_maxed
+                        if c_followers_maxed > followers_maxed then found = true break end
+                        if c_followers_maxed < followers_maxed then break end
+
+                        local cXpBonus = current.xpBonus
+                        -- Maximize XP bonus only if party have unmaxed followers
+                        if slots ~= followers_maxed then
+                           if cXpBonus < xpBonus then found = true break end
+                           if cXpBonus > xpBonus then break end
+                        end
+
+                        local cTotalTimeSeconds = current.totalTimeSeconds
+                        if cTotalTimeSeconds > totalTimeSeconds then found = true break end
+                        if cTotalTimeSeconds < totalTimeSeconds then break end
+
+                        local c_follower_level_total = current.follower_level_total
+                        if c_follower_level_total > follower_level_total then found = true break end
+                        if c_follower_level_total < follower_level_total then break end
+
+                        -- Maximize GR yield in general mode when possible too
+                        if gr_rewards then
+                           if c_gr_yield < gr_yield then found = true break end
+                           if c_gr_yield > gr_yield then break end
+                        end
+
+                        -- Minimize XP bonus if all followers are maxed, because it indicates either overkill or XP-bonus traits better used elsewhere
+                        if slots == followers_maxed then
+                           if cXpBonus > xpBonus then found = true break end
+                           if cXpBonus < xpBonus then break end
+                        end
+
+                        local cBuffCount = current.buffCount
+                        if cBuffCount > buffCount then found = true break end
+                        if cBuffCount < buffCount then break end
+
+                        local cIsEnvMechanicCountered = current.isEnvMechanicCountered
+                        if cIsEnvMechanicCountered > isEnvMechanicCountered then found = true break end
+                        if cIsEnvMechanicCountered < isEnvMechanicCountered then break end
+                     until true
+                     if i1 == 5 and i2 == 14 then print("???", i1, i2, i3, "???", found) end
+                     if found then
+                        local new = top_list[4]
+                        new[1] = follower1
+                        new[2] = follower2
+                        new[3] = follower3
+                        new.successChance = successChance
+                        new.materialMultiplier = materialMultiplier
+                        new.gr_rewards = gr_rewards
+                        new.xpBonus = xpBonus
+                        new.totalTimeSeconds = totalTimeSeconds
+                        new.isMissionTimeImproved = isMissionTimeImproved
+                        new.followers_maxed = followers_maxed
+                        new.buffCount = buffCount
+                        new.isEnvMechanicCountered = isEnvMechanicCountered
+                        new.gr_yield = gr_yield
+                        new.xp_reward_wasted = xp_only_rewards and slots == followers_maxed
+                        new.follower_level_total = follower_level_total
+                        new.mission_level = mission.level
+                        tinsert(top_list, idx, new)
+                        top_list[5] = nil
                         break
                      end
-
-                     if not current[1] then found = true break end
-
-                     if mode == 'gr_yield' then
-                        local c_gr_yield = current.gr_yield
-                        if c_gr_yield < gr_yield then found = true break end
-                        if c_gr_yield > gr_yield then break end
-                     end
-
-                     local cSuccessChance = current.successChance
-                     if cSuccessChance < successChance then found = true break end
-                     if cSuccessChance > successChance then break end
-
-                     if gr_rewards then
-                        local cMaterialMultiplier = current.materialMultiplier
-                        if cMaterialMultiplier < materialMultiplier then found = true break end
-                        if cMaterialMultiplier > materialMultiplier then break end
-                     end
-
-                     local c_followers_maxed = current.followers_maxed
-                     if c_followers_maxed > followers_maxed then found = true break end
-                     if c_followers_maxed < followers_maxed then break end
-
-                     local cXpBonus = current.xpBonus
-                     if cXpBonus < xpBonus then found = true break end
-                     if cXpBonus > xpBonus then break end
-
-                     local cTotalTimeSeconds = current.totalTimeSeconds
-                     if cTotalTimeSeconds > totalTimeSeconds then found = true break end
-                     if cTotalTimeSeconds < totalTimeSeconds then break end
-
-                     local c_follower_level_total = current.follower_level_total
-                     if c_follower_level_total > follower_level_total then found = true break end
-                     if c_follower_level_total < follower_level_total then break end
-
-                     local cBuffCount = current.buffCount
-                     if cBuffCount > buffCount then found = true break end
-                     if cBuffCount < buffCount then break end
-
-                     local cIsEnvMechanicCountered = current.isEnvMechanicCountered
-                     if cIsEnvMechanicCountered > isEnvMechanicCountered then found = true break end
-                     if cIsEnvMechanicCountered < isEnvMechanicCountered then break end
-                  until true
-                  if found then
-                     local new = top_list[4]
-                     new[1] = follower1
-                     new[2] = follower2
-                     new[3] = follower3
-                     new.successChance = successChance
-                     new.materialMultiplier = materialMultiplier
-                     new.gr_rewards = gr_rewards
-                     new.xpBonus = xpBonus
-                     new.totalTimeSeconds = totalTimeSeconds
-                     new.isMissionTimeImproved = isMissionTimeImproved
-                     new.followers_maxed = followers_maxed
-                     new.buffCount = buffCount
-                     new.isEnvMechanicCountered = isEnvMechanicCountered
-                     new.gr_yield = gr_yield
-                     new.xp_reward_wasted = xp_only_rewards and slots == followers_maxed
-                     new.follower_level_total = follower_level_total
-                     new.mission_level = mission.level
-                     tinsert(top_list, idx, new)
-                     top_list[5] = nil
-                     break
                   end
                end
-            end
 
-            -- Unasssign
-            RemoveFollowerFromMission(mission_id, follower1_id)
-            if follower2 then RemoveFollowerFromMission(mission_id, follower2_id) end
-            if follower3 then RemoveFollowerFromMission(mission_id, follower3_id) end
+               if follower_is_busy_for_mission then
+                  best_modes = saved_best_modes
+                  best_modes_count = saved_best_modes_count
+               end
+
+               -- Unasssign
+               RemoveFollowerFromMission(mission_id, follower1_id)
+               if follower2 then RemoveFollowerFromMission(mission_id, follower2_id) end
+               if follower3 then RemoveFollowerFromMission(mission_id, follower3_id) end
+            end
          end
       end
    end
@@ -414,37 +480,42 @@ local function SortFollowersByLevel(a, b)
 end
 
 local function GetFilteredFollowers()
-   if not filtered_followers_dirty then
-      return filtered_followers, filtered_followers_count
+   if filtered_followers_dirty then
+      local followers = C_Garrison.GetFollowers()
+      wipe(filtered_followers)
+      filtered_followers_count = 0
+      filtered_free_followers_count = 0
+      local all_followers_maxed = true
+      for idx = 1, #followers do
+         local follower = followers[idx]
+         repeat
+            if not follower.isCollected then break end
+
+            if ingored_followers[follower.followerID] then break end
+
+            filtered_followers_count = filtered_followers_count + 1
+            filtered_followers[filtered_followers_count] = follower
+
+            local status = follower.status
+            if status and status ~= GARRISON_FOLLOWER_IN_PARTY then
+               follower.is_busy_for_mission = true
+            else
+               if follower.levelXP ~= 0 then all_followers_maxed = nil end
+               filtered_free_followers_count = filtered_free_followers_count + 1
+            end
+         until true
+      end
+      filtered_followers.all_followers_maxed = all_followers_maxed
+
+      tsort(filtered_followers, SortFollowersByLevel)
+
+      -- dump(filtered_followers)
+
+      filtered_followers_dirty = false
+      top_for_mission_dirty = true
    end
 
-   local followers = C_Garrison.GetFollowers()
-   wipe(filtered_followers)
-   filtered_followers_count = 0
-   local all_followers_maxed = true
-   for idx = 1, #followers do
-      local follower = followers[idx]
-      repeat
-         if not follower.isCollected then break end
-
-         local status = follower.status
-         if status and status ~= GARRISON_FOLLOWER_IN_PARTY then break end
-
-         if ingored_followers[follower.followerID] then break end
-
-         filtered_followers_count = filtered_followers_count + 1
-         filtered_followers[filtered_followers_count] = follower
-         if follower.levelXP ~= 0 then all_followers_maxed = nil end
-      until true
-   end
-
-   tsort(filtered_followers, SortFollowersByLevel)
-   filtered_followers.all_followers_maxed = all_followers_maxed
-
-   -- dump(filtered_followers)
-   filtered_followers_dirty = false
-   top_for_mission_dirty = true
-   return filtered_followers, filtered_followers_count
+   return filtered_followers, filtered_free_followers_count
 end
 
 local function SetTeamButtonText(button, top_entry)
@@ -484,6 +555,56 @@ local function SetTeamButtonText(button, top_entry)
    end
 end
 
+addon_env.concat_list = addon_env.concat_list or {}
+local concat_list = addon_env.concat_list
+local function SetTeamButtonTooltip(button)
+   local followers = #button
+
+   if followers > 0 then
+      wipe(concat_list)
+      local idx = 0
+
+      for follower_idx = 1, #button do
+         local follower = button[follower_idx]
+         local name = button["name" .. follower_idx]
+         local status = GetFollowerStatus(follower)
+         if status == GARRISON_FOLLOWER_ON_MISSION then
+            status = format(GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION, GetFollowerMissionTimeLeft(follower))
+         elseif status == GARRISON_FOLLOWER_IN_PARTY then
+            status = nil
+         end
+
+         if idx ~= 0 then 
+            idx = idx + 1
+            concat_list[idx] = "\n"
+         end
+
+         if status then
+            idx = idx + 1
+            concat_list[idx] = RED_FONT_COLOR_CODE
+         end
+
+         idx = idx + 1
+         concat_list[idx] = name
+
+         if status and status ~= GARRISON_FOLLOWER_IN_PARTY then
+            idx = idx + 1         
+            concat_list[idx] = " ("
+            idx = idx + 1
+            concat_list[idx] = status
+            idx = idx + 1         
+            concat_list[idx] = ")"
+            idx = idx + 1         
+            concat_list[idx] = FONT_COLOR_CODE_CLOSE
+         end
+      end
+
+      GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
+      GameTooltip:SetText(tconcat(concat_list, ''))      
+      GameTooltip:Show()
+   end
+end
+
 local available_missions = {}
 local function BestForCurrentSelectedMission()
    if addon_env.RegisterManualInterraction then addon_env.RegisterManualInterraction() end
@@ -492,7 +613,7 @@ local function BestForCurrentSelectedMission()
 
    -- print("Mission ID:", mission_id)
 
-   local filtered_followers, filtered_followers_count = GetFilteredFollowers()
+   local filtered_followers, filtered_free_followers_count = GetFilteredFollowers()
 
    C_Garrison.GetAvailableMissions(available_missions)
    local mission
@@ -518,14 +639,16 @@ local function BestForCurrentSelectedMission()
             else
                top_entry = false
             end
+         elseif suffix == 'Unavailable' then
+            top_entry = top_unavailable[idx]
          else
             top_entry = top[idx]
          end
 
          if top_entry ~= false then
-            button[1] = top_entry[1] and top_entry[1].followerID or nil
-            button[2] = top_entry[2] and top_entry[2].followerID or nil
-            button[3] = top_entry[3] and top_entry[3].followerID or nil
+            local follower = top_entry[1] if follower then button[1] = follower.followerID button.name1 = follower.name else button[1] = nil end
+            local follower = top_entry[2] if follower then button[2] = follower.followerID button.name2 = follower.name else button[2] = nil end
+            local follower = top_entry[3] if follower then button[3] = follower.followerID button.name3 = follower.name else button[3] = nil end
             SetTeamButtonText(button, top_entry)
             button:Show()
          else
@@ -664,7 +787,7 @@ local function GarrisonMissionList_Update_More()
    local missions = self.availableMissions
    local offset = HybridScrollFrame_GetOffset(scrollFrame)
 
-   local filtered_followers, filtered_followers_count = GetFilteredFollowers()
+   local filtered_followers, filtered_free_followers_count = GetFilteredFollowers()
    local more_missions_to_cache
    local _, garrison_resources = GetCurrencyInfo(GARRISON_CURRENCY)
 
@@ -676,7 +799,7 @@ local function GarrisonMissionList_Update_More()
          local mission = missions[index]
          local gmm_button = gmm_buttons['MissionList' .. i]
 
-         if (mission.numFollowers > filtered_followers_count) or (mission.cost > garrison_resources) then
+         if (mission.numFollowers > filtered_free_followers_count) or (mission.cost > garrison_resources) then
             button:SetAlpha(0.3)
             gmm_button:SetText("")
          else
@@ -740,13 +863,25 @@ local function MissionPage_ButtonsInit()
             else
                set_followers_button:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, 0)
             end
-            set_followers_button:SetScript("OnClick", MissionPage_PartyButtonOnClick)
+
+            if suffix ~= "Unavailable" then
+               set_followers_button:SetScript("OnClick", MissionPage_PartyButtonOnClick)
+            else
+               set_followers_button:SetScript("OnMouseDown", nil)
+               set_followers_button:SetScript("OnMouseUp", nil)
+               set_followers_button:HookScript("OnShow", addon_env.OnShowEmulateDisabled)
+            end
+
+            set_followers_button:SetScript('OnEnter', SetTeamButtonTooltip) 
+            set_followers_button:SetScript('OnLeave', addon_env.HideGameTooltip)
+
             prev = set_followers_button
             gmm_buttons[name] = set_followers_button
          end
       end
    end
    gmm_buttons['MissionPageYield1']:SetPoint("TOPLEFT", gmm_buttons['MissionPage3'], "BOTTOMLEFT", 0, -50)
+   gmm_buttons['MissionPageUnavailable1']:SetPoint("TOPLEFT", gmm_buttons['MissionPageYield3'], "BOTTOMLEFT", 0, -50)
 end
 
 local function MissionList_ButtonsInit()
