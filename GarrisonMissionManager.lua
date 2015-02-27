@@ -244,13 +244,6 @@ local function FindBestFollowersForMission(mission, followers, mode)
    local salvage_yard_level = c_garrison_cache.salvage_yard_level
    local all_followers_maxed = followers.all_followers_maxed
 
-   for idx = 1, followers_count do
-      print(idx, followers[idx].name)
-   end
-   print(1, max[1])
-   print(min[2], max[2])
-   print(min[3], max[3])
-
    for i1 = 1, max[1] do
       local follower1 = followers[i1]
       local follower1_id = follower1.followerID
@@ -310,10 +303,6 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   best_modes_count = 1
                end
 
-               if follower1.name == "Shelly Hamby" or (follower2 and follower2.name == "Shelly Hamby") or (follower3 and follower3.name == "Shelly Hamby") then
-                  print(i1, i2, i3, follower1.name, (follower2 and follower2.name), (follower3 and follower3.name), successChance)
-               end
-
                for best_modes_idx = 1, best_modes_count do
                   local mode = best_modes[best_modes_idx]
                   local gr_yield
@@ -333,13 +322,8 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   for idx = 1, 3 do
                      local current = top_list[idx]
 
-                     if i1 == 5 and i2 == 14 then
-                        if top_list == top then print("regular top") elseif top_list == top_yield then print("yield top") elseif top_list == top_unavailable then print("unavailable top", i1, i2, i3) end
-                     end
-
                      local found
                      repeat -- Checking if new candidate for top is better than any top 3 already sored
-                        if i1 == 5 and i2 == 14 then print("*1", i1, i2, i3, "???", found) end
 
                         if mode == "gr_yield" and materialMultiplier == 1 then
                            -- No reason to place non-GR boosted team in special sorting list,
@@ -347,11 +331,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                            break
                         end
 
-                        if i1 == 5 and i2 == 14 then print("*2", i1, i2, i3, "???", found) end
-
                         if not current[1] then found = true break end
-
-                        if i1 == 5 and i2 == 14 then print("*3", i1, i2, i3, "???", found) end
 
                         local c_gr_yield = current.gr_yield
                         if mode == 'gr_yield' then
@@ -359,13 +339,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
                            if c_gr_yield > gr_yield then break end
                         end
 
-                        if i1 == 5 and i2 == 14 then print("*4", i1, i2, i3, "???", found) end
-
                         local cSuccessChance = current.successChance
                         if cSuccessChance < successChance then found = true break end
                         if cSuccessChance > successChance then break end
-
-                        if i1 == 5 and i2 == 14 then print("*5", i1, i2, i3, "???", found) end
 
                         if gr_rewards then
                            local cMaterialMultiplier = current.materialMultiplier
@@ -412,7 +388,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         if cIsEnvMechanicCountered > isEnvMechanicCountered then found = true break end
                         if cIsEnvMechanicCountered < isEnvMechanicCountered then break end
                      until true
-                     if i1 == 5 and i2 == 14 then print("???", i1, i2, i3, "???", found) end
+
                      if found then
                         local new = top_list[4]
                         new[1] = follower1
