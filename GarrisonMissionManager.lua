@@ -97,7 +97,7 @@ local UnregisterEvent = event_frame.UnregisterEvent
 -- Pre-declared functions defined below
 local CheckPartyForProfessionFollowers
 
-local events_filtered_followers_dirty = {
+local events_for_followers = {
    GARRISON_FOLLOWER_LIST_UPDATE = true,
    GARRISON_FOLLOWER_XP_CHANGED = true,
    GARRISON_FOLLOWER_ADDED = true,
@@ -120,9 +120,11 @@ local events_for_buildings = {
 addon_env.events_for_buildings = events_for_buildings
 event_frame:SetScript("OnEvent", function(self, event, arg1)
    -- if events_top_for_mission_dirty[event] then top_for_mission_dirty = true end
-   -- if events_filtered_followers_dirty[event] then filtered_followers_dirty = true end
+   -- if events_for_followers[event] then filtered_followers_dirty = true end
    -- Let's clear both for now, or else we often miss one follower state update when we start mission
-   if events_top_for_mission_dirty[event] or events_filtered_followers_dirty[event] then
+
+   local event_for_followers = events_for_followers[event]
+   if event_for_followers or events_top_for_mission_dirty[event] then
       top_for_mission_dirty = true
       filtered_followers_dirty = true
    end
@@ -132,7 +134,8 @@ event_frame:SetScript("OnEvent", function(self, event, arg1)
       CheckPartyForProfessionFollowers()
    end
 
-   if events_for_buildings[event] then
+   local event_for_buildings = events_for_buildings[event]
+   if event_for_buildings then
       c_garrison_cache.GetBuildings = nil
       c_garrison_cache.salvage_yard_level = nil
 
@@ -142,10 +145,14 @@ event_frame:SetScript("OnEvent", function(self, event, arg1)
       end
    end
 
+   if event_for_followers or event_for_buildings then
+      c_garrison_cache.GetPossibleFollowersForBuilding = nil
+   end
+
    if addon_env.RegisterManualInterraction then
       -- function is not deleted - no manual interraction was registered yet
       -- scan buildings/followers more agressively
-      if events_filtered_followers_dirty[event] then
+      if events_for_followers[event] then
          addon_env.GarrisonBuilding_UpdateCurrentFollowers()
          addon_env.GarrisonBuilding_UpdateBestFollowers()
       end
@@ -163,7 +170,7 @@ event_frame:SetScript("OnEvent", function(self, event, arg1)
    end
 end)
 for event in pairs(events_top_for_mission_dirty) do event_frame:RegisterEvent(event) end
-for event in pairs(events_filtered_followers_dirty) do event_frame:RegisterEvent(event) end
+for event in pairs(events_for_followers) do event_frame:RegisterEvent(event) end
 for event in pairs(events_for_buildings) do RegisterEvent(event_frame, event) end
 event_frame:RegisterEvent("ADDON_LOADED")
 
