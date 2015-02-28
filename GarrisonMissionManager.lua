@@ -681,7 +681,7 @@ CheckPartyForProfessionFollowers = function()
          -- Have follower in possible list
          -- GMM_dumpl("name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID", C_Garrison.GetLandingPageShipmentInfo(buildingID))
          -- GMM_dumpl("id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate", C_Garrison.GetOwnedBuildingInfo(buildingID))
-         if (shipmentsReady and shipmentsReady > 0) then
+         if timeleftString then
             local plotID = building.plotID
             local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate = C_Garrison.GetOwnedBuildingInfo(plotID)
             -- print(nameLanding, hasFollowerSlot, rank, shipmentsReady)
@@ -696,8 +696,8 @@ CheckPartyForProfessionFollowers = function()
                            local party_follower = MissionPageFollowers[party_idx].info
                            if party_follower and possible_follower.followerID == party_follower.followerID then
                               shipment_followers[party_idx .. 'b'] = name
-                              shipment_followers[party_idx .. 'r'] = shipmentsReady
-                              shipment_followers[party_idx .. 't'] = shipmentsTotal
+                              shipment_followers[party_idx .. 'r'] = shipmentsTotal - shipmentsReady
+                              shipment_followers[party_idx .. 't'] = timeleftString
                            end
                         end
                      end
@@ -711,8 +711,10 @@ CheckPartyForProfessionFollowers = function()
    for idx = 1, party_followers_count do
       local warning = gmm_frames["MissionPageFollowerWarning" .. idx]
       local building_name = shipment_followers[idx .. 'b']
+      local time_left = shipment_followers[idx .. 't']
+      local incomplete_shipments = shipment_followers[idx .. 'r']
       if building_name then
-         warning:SetFormattedText("%s%s: %d/%d", RED_FONT_COLOR_CODE, building_name, shipment_followers[idx .. 'r'], shipment_followers[idx .. 't'])
+         warning:SetFormattedText("%s%s %s (%d)", RED_FONT_COLOR_CODE, time_left, building_name, incomplete_shipments)
          warning:Show()
       end
    end
@@ -909,7 +911,7 @@ local function MissionPage_WarningInit()
       local follower_frame = MissionPageFollowers[idx]
       -- TODO: inherit from name?
       local warning = follower_frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-      warning:SetWidth(180)
+      warning:SetWidth(185)
       warning:SetHeight(1)
       warning:SetPoint("BOTTOM", follower_frame, "TOP", 0, -68)
       gmm_frames["MissionPageFollowerWarning" .. idx] = warning
