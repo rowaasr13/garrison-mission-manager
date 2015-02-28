@@ -1,10 +1,9 @@
-Garrison Mission Manager, v24
+Garrison Mission Manager, v25
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == GMM features ==
-Here's the index of features of Garrison Mission Manager that are detailed below.
 
 # Best team selection
 # Mission list best teams at a glance
@@ -14,7 +13,7 @@ Here's the index of features of Garrison Mission Manager that are detailed below
 # LDB module
 
 == Best team selection ==
-GMM adds 3 buttons on mission page with top 3 suggestions. Clicking any of those button will set suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time. It takes care of each and every trait and ability your followers have, present and future, including those easily forgotten "Increases success chance when on a mission with a <race>" traits, by not actually caring about them at all - it simply tries all combinations and selects those that give best total success chance. Suggestions will try to maximize success rate first, material multiplier (garrison resources) second, then XP bonus and then reduced time.
+GMM adds 3 buttons on mission page with top 3 suggestions. Clicking any of those button will set suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time. It takes care of each and every trait and ability your followers have, present and future, including those easily forgotten "Increases success chance when on a mission with a <race>" traits, by not actually caring about them at all - it simply tries all combinations and selects those that give best total success chance. Suggestions will try to maximize success rate first, material multiplier (garrison resources) second, then XP bonus and then reduced time. Hovering over those buttons will show tooltip with suggested team.
 
 You can add followers to ignore list if you want. Select "GMM: Ignore" in right-click follower menu. Ignored follower will be dimmed with red overlay in followers list and won't be used in any calculated party.
 
@@ -31,6 +30,9 @@ On garrison resources reward missions a second set of 3 more buttons will appear
 
 === Fully maxed followers ===
 GMM will not suggest fully maxed teams on missions that only grant XP as long as you have unmaxed followers. If you don't have salvage yard and only have fully maxed followers GMM will not suggest teams for XP missions at all - this will be indicated by empty suggestion buttons on such missions. However when all your unmaxed are busy and if you do have salvage yard, GMM will send remaining maxed followers on those missions as well to allow you to hunt for salvage crates. This mode is indicated by salvage bag/crate icon appropriate for mission.
+
+=== Inactive/busy followers ===
+GMM will also check busy followers - those working, on mission, deactivated or otherwise unavailable right now. A set of 3 more "disabled" buttons in lower right corner will show best teams considering every available follower. Tooltip for those buttons will show currently unavailable followers in red and will show their status and remaining time if they're on mission.
 
 == Best teams at a glance in mission list  ==
 GMM adds a top team button to each mission on mission list page so you can see at a glance which missions you could reliably do with your current followers. Missions that require more followers or garrison resources than you currently have will be dimmed out to let you concentrate on missions that you can do.
