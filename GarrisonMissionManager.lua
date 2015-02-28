@@ -25,6 +25,7 @@ local GetFollowerMissionTimeLeft = C_Garrison.GetFollowerMissionTimeLeft
 local GetFollowerStatus = C_Garrison.GetFollowerStatus
 local GetFramesRegisteredForEvent = GetFramesRegisteredForEvent
 local GetItemInfo = GetItemInfo
+local GetLandingPageShipmentInfo = C_Garrison.GetLandingPageShipmentInfo
 local GetPartyMissionInfo = C_Garrison.GetPartyMissionInfo
 local HybridScrollFrame_GetOffset = HybridScrollFrame_GetOffset
 local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
@@ -668,7 +669,7 @@ CheckPartyForProfessionFollowers = function()
       local building = buildings[idx]
       local buildingID = building.buildingID;
       if buildingID then
-         local nameLanding, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(buildingID)
+         local nameLanding, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = GetLandingPageShipmentInfo(buildingID)
          -- Level 2
          -- No follower
          -- Have follower in possible list
