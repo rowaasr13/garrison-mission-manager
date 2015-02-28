@@ -20,3 +20,20 @@ getters.salvage_yard_level = function()
    end
    return false
 end
+
+local function make_cache_arg1(getter)
+   return setmetatable({}, { __index = function(t, key)
+      local result = getter(key)
+      t[key] = result
+      return result
+   end})
+end
+
+local cache_GetPossibleFollowersForBuilding = make_cache_arg1(C_Garrison.GetPossibleFollowersForBuilding)
+getters.GetPossibleFollowersForBuilding = function()
+   wipe(cache_GetPossibleFollowersForBuilding)
+   return cache_GetPossibleFollowersForBuilding
+end
+
+-- wipe removes all entries, but leaves MT alone, as this test shows
+-- WIPE_META_TEST = setmetatable({}, { __index = function(t, key) return "test" end})
