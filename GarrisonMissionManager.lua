@@ -609,15 +609,6 @@ local function BestForCurrentSelectedMission()
 
    local filtered_followers, filtered_free_followers_count = GetFilteredFollowers()
 
-   -- C_Garrison.GetAvailableMissions(available_missions)
-   -- local mission
-   -- for idx = 1, #available_missions do
-   --    if available_missions[idx].missionID == mission_id then
-   --       mission = available_missions[idx]
-   --       break
-   --    end
-   -- end
-
    local mission = missionInfo
 
    -- dump(mission)
