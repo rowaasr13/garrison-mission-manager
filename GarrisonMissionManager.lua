@@ -577,7 +577,7 @@ local function SetTeamButtonTooltip(button)
          end
       end
 
-      GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
+      GameTooltip:SetOwner(button, "ANCHOR_CURSOR_RIGHT")
       GameTooltip:SetText(tconcat(concat_list, ''))      
       GameTooltip:Show()
    end
