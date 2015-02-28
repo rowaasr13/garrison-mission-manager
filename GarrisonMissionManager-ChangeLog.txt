@@ -1,9 +1,12 @@
-Garrison Mission Manager, v25
+Garrison Mission Manager, v26
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-02-28 v26
+ * Fix team tooltips causing errors on some configurations.
+
 2015-02-28 v25
  * New set of suggestions considering all followers, including currently unavailable.
  * Team button tooltips showing team composition and follower status on currently unavailable followers.
