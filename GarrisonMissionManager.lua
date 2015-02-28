@@ -689,7 +689,7 @@ CheckPartyForProfessionFollowers = function()
             if hasFollowerSlot and rank and rank > 1 then -- TODO: check if just hasFollowerSlot is enough
                local followerName, level, quality, displayID, followerID, garrFollowerID, status, portraitIconID = GetFollowerInfoForBuilding(plotID)
                if not followerName then
-                  local possible_followers = C_Garrison.GetPossibleFollowersForBuilding(plotID)
+                  local possible_followers = c_garrison_cache.GetPossibleFollowersForBuilding[plotID]
                   if #possible_followers > 0 then
                      for idx = 1, #possible_followers do
                         local possible_follower = possible_followers[idx]

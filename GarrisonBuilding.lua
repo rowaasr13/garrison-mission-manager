@@ -46,7 +46,7 @@ local function GarrisonBuilding_UpdateBestFollowers()
    if buildings_count == 0 then return end
    wipe(best_followers)
    for plotID in pairs(building_follower_slot) do
-      local possible_followers = C_Garrison.GetPossibleFollowersForBuilding(plotID)
+      local possible_followers = c_garrison_cache.GetPossibleFollowersForBuilding[plotID]
       if possible_followers and #possible_followers > 0 then
          local best_follower
          for follower_idx = 1, #possible_followers do
