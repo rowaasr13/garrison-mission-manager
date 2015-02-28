@@ -553,7 +553,7 @@ local function SetTeamButtonTooltip(button)
             status = nil
          end
 
-         if idx ~= 0 then 
+         if idx ~= 0 then
             idx = idx + 1
             concat_list[idx] = "\n"
          end
@@ -567,19 +567,19 @@ local function SetTeamButtonTooltip(button)
          concat_list[idx] = name
 
          if status and status ~= GARRISON_FOLLOWER_IN_PARTY then
-            idx = idx + 1         
+            idx = idx + 1
             concat_list[idx] = " ("
             idx = idx + 1
             concat_list[idx] = status
-            idx = idx + 1         
+            idx = idx + 1
             concat_list[idx] = ")"
-            idx = idx + 1         
+            idx = idx + 1
             concat_list[idx] = FONT_COLOR_CODE_CLOSE
          end
       end
 
       GameTooltip:SetOwner(button, "ANCHOR_CURSOR_RIGHT")
-      GameTooltip:SetText(tconcat(concat_list, ''))      
+      GameTooltip:SetText(tconcat(concat_list, ''))
       GameTooltip:Show()
    end
 end
@@ -856,7 +856,7 @@ local function MissionPage_ButtonsInit()
                set_followers_button:HookScript("OnShow", addon_env.OnShowEmulateDisabled)
             end
 
-            set_followers_button:SetScript('OnEnter', SetTeamButtonTooltip) 
+            set_followers_button:SetScript('OnEnter', SetTeamButtonTooltip)
             set_followers_button:SetScript('OnLeave', addon_env.HideGameTooltip)
 
             prev = set_followers_button
