@@ -326,9 +326,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
                      local found
                      repeat -- Checking if new candidate for top is better than any top 3 already sored
 
-                        if mode == "gr_yield" and materialMultiplier == 1 then
+                        if mode == "gr_yield" and not follower_is_busy_for_mission and materialMultiplier == 1 then
                            -- No reason to place non-GR boosted team in special sorting list,
-                           -- success chance top will be better or same anyway.
+                           -- success chance top will be better or same anyway, unless it is "unavailable" list.
                            break
                         end
 
