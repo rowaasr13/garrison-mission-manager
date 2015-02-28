@@ -299,7 +299,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   saved_best_modes = best_modes
                   saved_best_modes_count = best_modes_count
                   best_modes = best_mode_unavailable
-                  best_mode_unavailable[1] = "success"
+                  best_mode_unavailable[1] = gr_rewards and "gr_yield" or "success"
                   best_modes_count = 1
                end
 
