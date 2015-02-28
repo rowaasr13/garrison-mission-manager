@@ -199,7 +199,9 @@ local preserve_mission_page_followers = {}
 local function FindBestFollowersForMission(mission, followers, mode)
    local followers_count = #followers
 
-   for idx = 1, 3 do
+   local top_entries = mode == "mission_list" and 1 or 3
+
+   for idx = 1, top_entries do
       wipe(top[idx])
       wipe(top_yield[idx])
       wipe(top_unavailable[idx])
@@ -284,12 +286,18 @@ local function FindBestFollowersForMission(mission, followers, mode)
             end
 
             local followers_maxed = follower1_maxed + follower2_maxed + follower3_maxed
-            -- On follower XP-only missions throw away any team that is completely filled with maxed out followers
-            if xp_only_rewards and slots == followers_maxed and not (salvage_yard_level and all_followers_maxed) then
+            local follower_is_busy_for_mission = (follower1_busy + follower2_busy + follower3_busy) > 0
+
+            if
+               -- On follower XP-only missions throw away any team that is completely filled with maxed out followers
+               (xp_only_rewards and slots == followers_maxed and not (salvage_yard_level and all_followers_maxed))
+               -- On mission list screen don't bother calculating unavailable followers for now
+               or (mode == "mission_list" and follower_is_busy_for_mission)
+            then
                -- skip
             else
                local follower_level_total = follower1_level + follower2_level + follower3_level
-               local follower_is_busy_for_mission = (follower1_busy + follower2_busy + follower3_busy) > 0
+
 
                -- Assign followers to mission
                if not AddFollowerToMission(mission_id, follower1_id) then --[[ error handling! ]] end
@@ -327,7 +335,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                      top_list = top
                   end
 
-                  for idx = 1, 3 do
+                  for idx = 1, top_entries do
                      local current = top_list[idx]
 
                      local found
