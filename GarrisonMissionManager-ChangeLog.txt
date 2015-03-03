@@ -4,6 +4,11 @@ Garrison Mission Manager, v26
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-02-28 v27
+ * "Unavailable" team buttons will show non-GR boosted teams on GR reward missions too.
+ * Updated follower work orders warning to 6.1 changes: it now shows when order is currently in progress and show time to next order and amount of remaining orders.
+ * Some runtime/memory optimizations.
+
 2015-02-28 v26
  * Fix team tooltips causing errors on some configurations.
 
