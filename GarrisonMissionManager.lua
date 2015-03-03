@@ -303,11 +303,48 @@ local function FindBestFollowersForMission(mission, followers, mode)
             else
                local follower_level_total = follower1_level + follower2_level + follower3_level
 
+               if follower3 then
+                  if follower3_added and follower3_added ~= follower3_id then
+                     RemoveFollowerFromMission(mission_id, follower3_added)
+                     follower3_added = nil
+                  end
+               end
 
-               -- Assign followers to mission
-               if not AddFollowerToMission(mission_id, follower1_id) then --[[ error handling! ]] end
-               if follower2 and not AddFollowerToMission(mission_id, follower2_id) then --[[ error handling! ]] end
-               if follower3 and not AddFollowerToMission(mission_id, follower3_id) then --[[ error handling! ]] end
+               if follower2 then
+                  if follower2_added and follower2_added ~= follower2_id then
+                     RemoveFollowerFromMission(mission_id, follower2_added)
+                     follower2_added = nil
+                  end
+               end
+
+               if follower1_added and follower1_added ~= follower1_id then
+                  RemoveFollowerFromMission(mission_id, follower1_added)
+                  follower1_added = nil
+               end
+
+               if not follower1_added then
+                  if AddFollowerToMission(mission_id, follower1_id) then
+                     follower1_added = follower1_id
+                  else
+                     --[[ error handling! ]]
+                  end
+               end
+
+               if follower2 and not follower2_added then
+                  if AddFollowerToMission(mission_id, follower2_id) then
+                     follower2_added = follower2_id
+                  else
+                     --[[ error handling! ]]
+                  end
+               end
+
+               if follower3 and not follower3_added then
+                  if AddFollowerToMission(mission_id, follower3_id) then
+                     follower3_added = follower3_id
+                  else
+                     --[[ error handling! ]]
+                  end
+               end
 
                -- Calculate result
                local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier, goldMultiplier = GetPartyMissionInfo(mission_id)
@@ -441,15 +478,14 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   best_modes = saved_best_modes
                   best_modes_count = saved_best_modes_count
                end
-
-               -- Unasssign
-               RemoveFollowerFromMission(mission_id, follower1_id)
-               if follower2 then RemoveFollowerFromMission(mission_id, follower2_id) end
-               if follower3 then RemoveFollowerFromMission(mission_id, follower3_id) end
             end
          end
       end
    end
+
+   if follower1_added then RemoveFollowerFromMission(mission_id, follower1_added) end
+   if follower2_added then RemoveFollowerFromMission(mission_id, follower2_added) end
+   if follower3_added then RemoveFollowerFromMission(mission_id, follower3_added) end
 
    -- local prof_end = timer() if mode ~= "mission_list" then prof:record("permutation loop - mission page", prof_end - prof_start) end end
 
