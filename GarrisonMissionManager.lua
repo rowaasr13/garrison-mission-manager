@@ -189,6 +189,9 @@ function GMM_dumpl(pattern, ...)
    end
 end
 
+-- local prof = time_record.new():ldb_register('GMM - FindBestFollowersForMission')
+-- local timer = prof.timer
+
 local min, max = {}, {}
 local top = {{}, {}, {}, {}}
 local top_yield = {{}, {}, {}, {}}
@@ -445,6 +448,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
          end
       end
    end
+
+   -- local prof_end = timer() if mode ~= "mission_list" then prof:record("permutation loop - mission page", prof_end - prof_start) end end
+
    top.gr_rewards = gr_rewards
    -- TODO:
    -- If we have GR yield list, check it and remove all entries where gr_yield is worse than #1 from regular top list.
