@@ -257,6 +257,8 @@ local function FindBestFollowersForMission(mission, followers, mode)
    local salvage_yard_level = c_garrison_cache.salvage_yard_level
    local all_followers_maxed = followers.all_followers_maxed
 
+   local follower1_added, follower2_added, follower3_added
+
    -- for prof_runs = 1, mode ~= "mission_list" and 100 or 1 do local prof_start = timer()
 
    for i1 = 1, max[1] do
