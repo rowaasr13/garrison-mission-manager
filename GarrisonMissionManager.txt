@@ -1,4 +1,4 @@
-Garrison Mission Manager, v26
+Garrison Mission Manager, v27
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -13,7 +13,9 @@ Garrison Mission Manager, v26
 # LDB module
 
 == Best team selection ==
-GMM adds 3 buttons on mission page with top 3 suggestions. Clicking any of those button will set suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time. It takes care of each and every trait and ability your followers have, present and future, including those easily forgotten "Increases success chance when on a mission with a <race>" traits, by not actually caring about them at all - it simply tries all combinations and selects those that give best total success chance. Suggestions will try to maximize success rate first, material multiplier (garrison resources) second, then XP bonus and then reduced time. Hovering over those buttons will show tooltip with suggested team.
+GMM adds 3 buttons on mission page with top 3 suggestions. Clicking any of those button will set suggested team. Each button will show you success rate along with icons for XP bonus, GR bonus, and reduced time. Suggestions will try to maximize success rate first, material multiplier (garrison resources) second, then XP bonus and then reduced time. Hovering over those buttons will show tooltip with suggested team.
+
+GMM doesn't try to "guess" what followers are the best - it simply checks all combinations of all followers and selects those that give best total success chance returned directly from game. This takes care of each and every trait and ability your followers have, present and future, without any need to update.
 
 You can add followers to ignore list if you want. Select "GMM: Ignore" in right-click follower menu. Ignored follower will be dimmed with red overlay in followers list and won't be used in any calculated party.
 
@@ -41,7 +43,7 @@ GMM adds a top team button to each mission on mission list page so you can see a
 Seeing that all your followers are level 100 is mostly useless - what you really care about is what is their ilevel. Even Blizzard's UI shows follower ilevels on mission party screen when you add them to mission. GMM adopts those special indicators and expands them to follower portraits in all followers lists.
 
 == Indicator for shipments ready to be boosted  ==
-While on a mission screen, when you add a follower to party that could boost a ready shipment order in one of your buildings, it will be indicated by name of building and number of ready orders bellow follower's portrait.
+Followers with appropriate profession traits can boost working orders in production buildings. Since patch 6.1, follower must be in the building at the moment when each individual order completes to boost output. When you add a follower to the party on a mission screen, if there's a order in progress that this follower can boost, it will be indicated by red warning with time until next completed order, name of building, and number of remaining orders bellow follower's portrait.
 
 == Mass set/remove followers to work in buildings ==
 GMM adds buttons at garrison architect table that will allow you to automatically mass-assign all available workers to buildings or mass-remove them. Note that Blizzard throttles follower assignment/removal, so it could take a second or two to finish. Be sure to wait for buttons to switch states and usual follower assign/remove click sound before leaving architect table. GMM will always prefer the best follower for building - that is, with highest level available, because that influences actual yield and will not select lower level followers when higher level follower is busy. If you have several same level followers,  GMM will select free follower with lowest ilevel. Tooltips on the buttons will show which follower will be added/removed from each building. If best intended follower is not available - e.g. on the mission, it will be show in orange on assign button tooltip. Buildings that have a slot but don't have suitable followers at all will be shown in red.
