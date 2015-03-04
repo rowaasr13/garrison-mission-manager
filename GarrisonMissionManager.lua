@@ -266,7 +266,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
       local follower1_id = follower1.followerID
       local follower1_maxed = follower1.levelXP == 0 and 1 or 0
       local follower1_level = follower1.level if follower1_level == GARRISON_FOLLOWER_MAX_LEVEL then follower1_level = follower1.iLevel end
-      local follower1_busy = follower1.is_busy_for_mission and 1 or 0 -- at least one follower in party is busy (i.e. staus non-empty/non-party) for mission
+      local follower1_busy = follower1.is_busy_for_mission and 1 or 0
       for i2 = min[2] or (i1 + 1), max[2] do
          local follower2_maxed = 0
          local follower2 = followers[i2]
@@ -293,6 +293,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
             end
 
             local followers_maxed = follower1_maxed + follower2_maxed + follower3_maxed
+            -- at least one follower in party is busy (i.e. staus non-empty/non-party) for mission
             local follower_is_busy_for_mission = (follower1_busy + follower2_busy + follower3_busy) > 0
 
             if
