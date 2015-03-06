@@ -1,9 +1,12 @@
-Garrison Mission Manager, v27
+Garrison Mission Manager, v28
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-03-06 v28
+ * Gold yield mode: same as already available GR yield mode - it will prefer bigger gold bonus to any other optimizations and will risk lower chance if "Treasure Hunter" trait compensates lower success chance in the long run. Gold yield teams are shown on same set of buttons where GR yield appears on GR missions.
+
 2015-02-28 v27
  * "Unavailable" team buttons will show non-GR boosted teams on GR reward missions too.
  * Updated follower work orders warning to 6.1 changes: it now shows when order is currently in progress and show time to next order and amount of remaining orders.
@@ -33,7 +36,7 @@ Garrison Mission Manager, v27
  * Fix some more auto-assign errors with incorrect detection of free or busy best follower candidates.
 
 2015-01-22 v20
- * Fix auto-assign incorrectly prefering busy follower if it had lower ilevel and was further down in list.
+ * Fix auto-assign incorrectly preferring busy follower if it had lower ilevel and was further down in list.
 
 2015-01-18 v19
  * Fix auto-assign button didn't noticing changes in follower status in realtime like tooltip does - it would refuse to auto-assign back followers that were working when you opened architect table.
