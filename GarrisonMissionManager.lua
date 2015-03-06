@@ -88,6 +88,7 @@ local filtered_followers = {}
 local filtered_followers_count
 local filtered_free_followers_count
 local filtered_followers_dirty = true
+local follower_xp_cap = {}
 
 addon_env.event_frame = addon_env.event_frame or CreateFrame("Frame")
 local event_frame = addon_env.event_frame
@@ -568,13 +569,36 @@ local function GetFilteredFollowers()
             filtered_followers_count = filtered_followers_count + 1
             filtered_followers[filtered_followers_count] = follower
 
+            local xp_to_level = follower.levelXP
+
             local status = follower.status
             if status and status ~= GARRISON_FOLLOWER_IN_PARTY then
                follower.is_busy_for_mission = true
             else
-               if follower.levelXP ~= 0 then all_followers_maxed = nil end
+               if xp_to_level ~= 0 then all_followers_maxed = nil end
                filtered_free_followers_count = filtered_free_followers_count + 1
             end
+
+            -- How much extra XP follower can gain before becoming maxed out?
+            local xp_cap
+            if xp_to_level == 0 then
+               -- already maxed
+               xp_cap = 0
+            else
+               local quality = follower.quality
+               local level = follower.level
+
+               if quality == 4 and level == GARRISON_FOLLOWER_MAX_LEVEL - 1 then
+                  xp_cap = xp_to_level
+               elseif quality == 3 and level == GARRISON_FOLLOWER_MAX_LEVEL then
+                  xp_cap = xp_to_level
+               else
+                  -- Treat as uncapped. Not exactly true for lv. 98 and lower epics, but will do.
+                  xp_cap = 999999
+               end
+            end
+            follower_xp_cap[follower.followerID] = xp_cap
+
          until true
       end
       filtered_followers.all_followers_maxed = all_followers_maxed
