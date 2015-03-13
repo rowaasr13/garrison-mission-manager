@@ -857,6 +857,8 @@ local function MissionList_PartyButtonOnClick(self)
    return self:GetParent():Click()
 end
 
+local mission_expiration_format_days  = "%s" .. COOLDOWN_DURATION_DAYS .. " %02d:%02d"
+local mission_expiration_format_hours = "%s" ..                              "%d:%02d"
 -- Add more data to mission list over Blizzard's own
 -- GarrisonMissionList_Update
 local function GarrisonMissionList_Update_More()
@@ -870,6 +872,7 @@ local function GarrisonMissionList_Update_More()
    if self.showInProgress then
       for i = 1, numButtons do
          gmm_buttons['MissionList' .. i]:Hide()
+         gmm_frames['MissioListExpirationText' .. i]:SetText()
          buttons[i]:SetAlpha(1)
       end
       return
@@ -890,6 +893,8 @@ local function GarrisonMissionList_Update_More()
    local filtered_followers, filtered_free_followers_count = GetFilteredFollowers()
    local more_missions_to_cache
    local _, garrison_resources = GetCurrencyInfo(GARRISON_CURRENCY)
+
+   local time = GetTime()
 
    for i = 1, numButtons do
       local button = buttons[i]
@@ -936,6 +941,26 @@ local function GarrisonMissionList_Update_More()
             button:SetAlpha(1)
          end
          gmm_button:Show()
+
+         local offerEndTime = mission.offerEndTime
+         -- offerEndTime seems to be present on all missions, though Blizzard UI shows tooltips only on rare
+         if offerEndTime then
+            local remaining = offerEndTime - time -- seconds at this line, but will be reduced to minutes/hours/days below
+            local color_code = (remaining < (60 * 60 * 8)) and RED_FONT_COLOR_CODE or ''
+            local seconds = remaining % 60
+            remaining = (remaining - seconds) / 60
+            local minutes = remaining % 60
+            remaining = (remaining - minutes) / 60
+            local hours = remaining % 24
+            local days = (remaining - hours) / 24
+            if days > 0 then
+               gmm_frames['MissioListExpirationText' .. i]:SetFormattedText(mission_expiration_format_days, color_code, days, hours, minutes)
+            else
+               gmm_frames['MissioListExpirationText' .. i]:SetFormattedText(mission_expiration_format_hours, color_code, hours, minutes)
+            end
+         else
+            gmm_frames['MissioListExpirationText' .. i]:SetText()
+         end
       end
    end
 
@@ -991,9 +1016,8 @@ local function MissionList_ButtonsInit()
    local level_anchor = GarrisonMissionFrame.MissionTab.MissionList.listScroll
    local blizzard_buttons = GarrisonMissionFrame.MissionTab.MissionList.listScroll.buttons
    for idx = 1, #blizzard_buttons do
+      local blizzard_button = blizzard_buttons[idx]
       if not gmm_buttons['MissionList' .. idx] then
-         local blizzard_button = blizzard_buttons[idx]
-
          -- move first reward to left a little, rest are anchored to first
          local reward = blizzard_button.Rewards[1]
          for point_idx = 1, reward:GetNumPoints() do
@@ -1012,6 +1036,17 @@ local function MissionList_ButtonsInit()
          set_followers_button:SetPoint("LEFT", blizzard_button, "RIGHT", -65, 0)
          set_followers_button:SetScript("OnClick", MissionList_PartyButtonOnClick)
          gmm_buttons['MissionList' .. idx] = set_followers_button
+      end
+
+      if not gmm_frames['MissioListExpirationText' .. idx] then
+         local expiration = blizzard_button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+         expiration:SetWidth(500)
+         expiration:SetHeight(1)
+         -- expiration:SetPoint("TOPLEFT", blizzard_button.Title, 0, -55)
+         -- expiration:SetJustifyH("LEFT")
+         expiration:SetPoint("BOTTOMRIGHT", blizzard_button, "BOTTOMRIGHT", -10, 8)
+         expiration:SetJustifyH("RIGHT")
+         gmm_frames['MissioListExpirationText' .. idx] = expiration
       end
    end
    -- GarrisonMissionFrame.MissionTab.MissionList.listScroll.scrollBar:SetFrameLevel(gmm_buttons['MissionList1']:GetFrameLevel() - 3)
