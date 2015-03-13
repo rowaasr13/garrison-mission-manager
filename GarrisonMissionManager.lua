@@ -972,7 +972,7 @@ end
 hooksecurefunc("GarrisonMissionList_Update", GarrisonMissionList_Update_More)
 hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList.listScroll, "update", GarrisonMissionList_Update_More)
 
-addon_env.HideGameTooltip = function() return GameTooltip:Hide() end
+addon_env.HideGameTooltip = GameTooltip_Hide or function() return GameTooltip:Hide() end
 addon_env.OnShowEmulateDisabled = function(self) self:GetScript("OnDisable")(self) end
 
 local function MissionPage_ButtonsInit()
