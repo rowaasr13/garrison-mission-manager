@@ -946,23 +946,35 @@ local function GarrisonMissionList_Update_More()
          end
          gmm_button:Show()
 
+         local expiration_text_set
          local offerEndTime = mission.offerEndTime
          -- offerEndTime seems to be present on all missions, though Blizzard UI shows tooltips only on rare
          if offerEndTime then
-            local remaining = offerEndTime - time -- seconds at this line, but will be reduced to minutes/hours/days below
-            local color_code = (remaining < (60 * 60 * 8)) and RED_FONT_COLOR_CODE or ''
-            local seconds = remaining % 60
-            remaining = (remaining - seconds) / 60
-            local minutes = remaining % 60
-            remaining = (remaining - minutes) / 60
-            local hours = remaining % 24
-            local days = (remaining - hours) / 24
-            if days > 0 then
-               gmm_frames['MissioListExpirationText' .. i]:SetFormattedText(mission_expiration_format_days, color_code, days, hours, minutes)
-            else
-               gmm_frames['MissioListExpirationText' .. i]:SetFormattedText(mission_expiration_format_hours, color_code, hours, minutes)
+            local xp_only_rewards
+            for _, reward in pairs(mission.rewards) do
+               if reward.followerXP and xp_only_rewards == nil then xp_only_rewards = true end
+               if not reward.followerXP then xp_only_rewards = false break end
             end
-         else
+
+            if not xp_only_rewards then
+               local remaining = offerEndTime - time -- seconds at this line, but will be reduced to minutes/hours/days below
+               local color_code = (remaining < (60 * 60 * 8)) and RED_FONT_COLOR_CODE or ''
+               local seconds = remaining % 60
+               remaining = (remaining - seconds) / 60
+               local minutes = remaining % 60
+               remaining = (remaining - minutes) / 60
+               local hours = remaining % 24
+               local days = (remaining - hours) / 24
+               if days > 0 then
+                  gmm_frames['MissioListExpirationText' .. i]:SetFormattedText(mission_expiration_format_days, color_code, days, hours, minutes)
+               else
+                  gmm_frames['MissioListExpirationText' .. i]:SetFormattedText(mission_expiration_format_hours, color_code, hours, minutes)
+               end
+               expiration_text_set = true
+            end
+         end
+
+         if not expiration_text_set then
             gmm_frames['MissioListExpirationText' .. i]:SetText()
          end
       end
@@ -1043,7 +1055,7 @@ local function MissionList_ButtonsInit()
       end
 
       if not gmm_frames['MissioListExpirationText' .. idx] then
-         local expiration = blizzard_button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+         local expiration = blizzard_button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
          expiration:SetWidth(500)
          expiration:SetHeight(1)
          -- expiration:SetPoint("TOPLEFT", blizzard_button.Title, 0, -55)
