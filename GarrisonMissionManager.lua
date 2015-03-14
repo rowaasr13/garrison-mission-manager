@@ -790,7 +790,7 @@ CheckPartyForProfessionFollowers = function()
          -- Have follower in possible list
          -- GMM_dumpl("name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID", C_Garrison.GetLandingPageShipmentInfo(buildingID))
          -- GMM_dumpl("id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate", C_Garrison.GetOwnedBuildingInfo(buildingID))
-         if timeleftString then
+         if shipmentCapacity and shipmentCapacity > 0 then
             local plotID = building.plotID
             local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate = C_Garrison.GetOwnedBuildingInfo(plotID)
             -- print(nameLanding, hasFollowerSlot, rank, shipmentsReady)
@@ -805,7 +805,7 @@ CheckPartyForProfessionFollowers = function()
                            local party_follower = MissionPageFollowers[party_idx].info
                            if party_follower and possible_follower.followerID == party_follower.followerID then
                               shipment_followers[party_idx .. 'b'] = name
-                              shipment_followers[party_idx .. 'r'] = shipmentsTotal - shipmentsReady
+                              shipment_followers[party_idx .. 'r'] = shipmentsTotal and (shipmentsTotal - shipmentsReady)
                               shipment_followers[party_idx .. 't'] = timeleftString
                            end
                         end
@@ -823,7 +823,11 @@ CheckPartyForProfessionFollowers = function()
       local time_left = shipment_followers[idx .. 't']
       local incomplete_shipments = shipment_followers[idx .. 'r']
       if building_name then
-         warning:SetFormattedText("%s%s %s (%d)", RED_FONT_COLOR_CODE, time_left, building_name, incomplete_shipments)
+         if time_left then
+            warning:SetFormattedText("%s%s %s (%d)", RED_FONT_COLOR_CODE, time_left, building_name, incomplete_shipments)
+         else
+            warning:SetFormattedText("%s%s", YELLOW_FONT_COLOR_CODE, building_name)
+         end
          warning:Show()
       end
    end
