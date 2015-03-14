@@ -14,6 +14,7 @@
 ## SavedVariablesPerCharacter: SVPC_GarrisonMissionManager
 
 C_Garrison_cache.lua
+FindBestFollowersForMission.lua
 GarrisonMissionManager.lua
 GarrisonBuilding.lua
 Broker.lua
