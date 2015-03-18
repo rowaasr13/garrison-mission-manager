@@ -459,20 +459,43 @@ local function FindBestFollowersForMission(mission, followers, mode)
                            if c_gr_yield > gr_yield then break end
                         end
 
-                        if mode == 'gold_yield' then
+                        if gold_rewards then
                            if c_gold_yield < gold_yield then found = true break end
                            if c_gold_yield > gold_yield then break end
                         end
 
                         -- Minimize XP bonus if all followers are maxed, because it indicates either overkill or XP-bonus traits better used elsewhere
-                        if slots == followers_maxed then
-                           if cXpBonus > xpBonus then found = true break end
-                           if cXpBonus < xpBonus then break end
+                        -- but only if there are unmaxed followers. Otherwise minimize it after other optimizations.
+                        if not all_followers_maxed then 
+                           if slots == followers_maxed then
+                              if cXpBonus > xpBonus then found = true break end
+                              if cXpBonus < xpBonus then break end
+                           end
+                        end
+
+                        -- Minimize GR/gold multiplier if possible if no corresponding reward is available.
+                        if not gr_rewards then
+                           local c_gr_multiplier = current.materialMultiplier
+                           if c_gr_multiplier > materialMultiplier then found = true break end
+                           if c_gr_multiplier < materialMultiplier then break end
+                        end
+
+                        if not gold_rewards then
+                           local c_gold_multiplier = current.goldMultiplier
+                           if c_gold_multiplier > goldMultiplier then found = true break end
+                           if c_gold_multiplier < goldMultiplier then break end
                         end
 
                         local cBuffCount = current.buffCount
                         if cBuffCount > buffCount then found = true break end
                         if cBuffCount < buffCount then break end
+
+                        if all_followers_maxed then
+                           if slots == followers_maxed then
+                              if cXpBonus > xpBonus then found = true break end
+                              if cXpBonus < xpBonus then break end
+                           end
+                        end
 
                         local cIsEnvMechanicCountered = current.isEnvMechanicCountered
                         if cIsEnvMechanicCountered > isEnvMechanicCountered then found = true break end
@@ -527,7 +550,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
    top.gr_rewards = gr_rewards
    top.gold_rewards = gold_rewards
    -- TODO:
-   -- If we have GR yield list, check it and remove all entries where gr_yield is worse than #1 from regular top list.
+   -- If we have GR/gold yield list, check it and remove all entries where gr_yield is worse than #1 from regular top list.
    -- dump(top[1])
 
    if party_followers_count > 0 then
