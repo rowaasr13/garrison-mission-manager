@@ -97,6 +97,7 @@ local UnregisterEvent = event_frame.UnregisterEvent
 
 -- Pre-declared functions defined below
 local CheckPartyForProfessionFollowers
+local MissionPage_PartyButtonOnClick
 
 local events_for_followers = {
    GARRISON_FOLLOWER_LIST_UPDATE = true,
@@ -754,7 +755,7 @@ local function BestForCurrentSelectedMission()
    end
 
    if mission_page_pending_click then
-      gmm_buttons['MissionPage' .. mission_page_pending_click]:Click()
+      MissionPage_PartyButtonOnClick(gmm_buttons['MissionPage' .. mission_page_pending_click])
       mission_page_pending_click = nil
    end
 end
@@ -834,7 +835,7 @@ CheckPartyForProfessionFollowers = function()
 end
 hooksecurefunc("GarrisonMissionPage_UpdateMissionForParty", CheckPartyForProfessionFollowers)
 
-local function MissionPage_PartyButtonOnClick(self)
+--[[ localized above ]] MissionPage_PartyButtonOnClick = function(self)
    if self[1] then
       event_frame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
       for idx = 1, #MissionPageFollowers do
@@ -857,7 +858,7 @@ end
 
 local function MissionList_PartyButtonOnClick(self)
    if addon_env.RegisterManualInterraction then addon_env.RegisterManualInterraction() end
-   -- mission_page_pending_click = 1
+   mission_page_pending_click = 1
    return self:GetParent():Click()
 end
 
