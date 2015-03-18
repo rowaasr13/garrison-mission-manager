@@ -861,8 +861,8 @@ local function MissionList_PartyButtonOnClick(self)
    return self:GetParent():Click()
 end
 
-local mission_expiration_format_days  = "%s" .. COOLDOWN_DURATION_DAYS .. " %02d:%02d"
-local mission_expiration_format_hours = "%s" ..                              "%d:%02d"
+local mission_expiration_format_days  = "%s" .. DAY_ONELETTER_ABBR:gsub(" ", "") .. " %02d:%02d"
+local mission_expiration_format_hours = "%s" ..                                        "%d:%02d"
 -- Add more data to mission list over Blizzard's own
 -- GarrisonMissionList_Update
 local function GarrisonMissionList_Update_More()
