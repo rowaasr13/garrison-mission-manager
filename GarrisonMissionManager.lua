@@ -1014,6 +1014,7 @@ hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList.listScroll, "update",
 
 addon_env.HideGameTooltip = GameTooltip_Hide or function() return GameTooltip:Hide() end
 addon_env.OnShowEmulateDisabled = function(self) self:GetScript("OnDisable")(self) end
+addon_env.OnEnterShowGameTooltip = function(self) GameTooltip:SetOwner(self, "ANCHOR_RIGHT") GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true) end
 
 local function MissionPage_ButtonsInit()
    local prev
@@ -1050,6 +1051,33 @@ local function MissionPage_ButtonsInit()
    end
    gmm_buttons['MissionPageYield1']:SetPoint("TOPLEFT", gmm_buttons['MissionPage3'], "BOTTOMLEFT", 0, -50)
    gmm_buttons['MissionPageUnavailable1']:SetPoint("TOPLEFT", gmm_buttons['MissionPageYield3'], "BOTTOMLEFT", 0, -50)
+
+   local button = CreateFrame("Button", nil, MissionPage)
+   button:SetNormalTexture("Interface\\Buttons\\UI-LinkProfession-Up")
+   button:SetPushedTexture("Interface\\Buttons\\UI-LinkProfession-Down")
+   button:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+   button:SetHeight(30)
+   button:SetWidth(30)
+   button.tooltip = BROWSER_COPY_LINK .. " (Wowhead)"
+   button:SetPoint("RIGHT", MissionPage.Stage.Title, "LEFT", 0, 0)
+   button:SetScript("OnEnter", addon_env.OnEnterShowGameTooltip)
+   button:SetScript("OnLeave", addon_env.HideGameTooltip)
+   button:SetScript("OnClick", function()
+      local chat_box = ACTIVE_CHAT_EDIT_BOX or LAST_ACTIVE_CHAT_EDIT_BOX
+      if chat_box then
+         local missionInfo = MissionPage.missionInfo
+         local mission_id = missionInfo.missionID
+         if mission_id then
+            local existing_text = chat_box:GetText()
+            local inserted_text = ("http://www.wowhead.com/mission=%s"):format(mission_id)
+            if existing_text:find(inserted_text, 1, true) then return end
+            -- TODO: what really should be cheked is that there's no space before cursor
+            if existing_text ~= "" and not existing_text:find(" $") then inserted_text = " " .. inserted_text end
+            ChatEdit_ActivateChat(chat_box)
+            chat_box:Insert(inserted_text)
+         end
+      end
+   end)
 end
 
 local function MissionList_ButtonsInit()
