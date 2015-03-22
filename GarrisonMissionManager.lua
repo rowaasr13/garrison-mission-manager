@@ -1082,8 +1082,6 @@ local function MissionList_ButtonsInit()
          local expiration = blizzard_button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
          expiration:SetWidth(500)
          expiration:SetHeight(1)
-         -- expiration:SetPoint("TOPLEFT", blizzard_button.Title, 0, -55)
-         -- expiration:SetJustifyH("LEFT")
          expiration:SetPoint("BOTTOMRIGHT", blizzard_button, "BOTTOMRIGHT", -10, 8)
          expiration:SetJustifyH("RIGHT")
          gmm_frames['MissioListExpirationText' .. idx] = expiration
