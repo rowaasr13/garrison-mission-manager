@@ -40,7 +40,7 @@ local wipe = wipe
 -- [AUTOLOCAL END]
 
 local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
-local MissionPageFollowers = GarrisonMissionFrame.MissionTab.MissionPage.Followers
+local MissionPageFollowers = MissionPage.Followers
 
 -- Config
 local ingored_followers = {}
@@ -1022,12 +1022,12 @@ local function MissionPage_ButtonsInit()
       for idx = 1, 3 do
          local name = 'MissionPage' .. suffix .. idx
          if not gmm_buttons[name] then
-            local set_followers_button = CreateFrame("Button", nil, GarrisonMissionFrame.MissionTab.MissionPage, "UIPanelButtonTemplate")
+            local set_followers_button = CreateFrame("Button", nil, MissionPage, "UIPanelButtonTemplate")
             set_followers_button:SetText(idx)
             set_followers_button:SetWidth(100)
             set_followers_button:SetHeight(50)
             if not prev then
-               set_followers_button:SetPoint("TOPLEFT", GarrisonMissionFrame.MissionTab.MissionPage, "TOPRIGHT", 0, 0)
+               set_followers_button:SetPoint("TOPLEFT", MissionPage, "TOPRIGHT", 0, 0)
             else
                set_followers_button:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, 0)
             end
