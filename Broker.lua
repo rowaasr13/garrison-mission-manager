@@ -1,7 +1,7 @@
 local addon_name, addon_env = ...
 
 if not LibStub then return end
-local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
+local ldb = LibStub:GetLibrary("LibDataBroker-1.1", true)
 if not ldb then return end
 
 local broker = ldb:NewDataObject(addon_name, {
