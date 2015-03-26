@@ -1001,6 +1001,17 @@ local function GarrisonMissionList_Update_More()
          if not expiration_text_set then
             gmm_frames['MissioListExpirationText' .. i]:SetText()
          end
+
+         -- Just overwrite level with ilevel if it is not 0. There's no use knowing what base level mission have.
+         -- Blizzard UI also checks that mission is max "normal" UI, but there's at least one mission mistakenly marked as level 90, despite requiring 675 ilevel.
+         if mission.iLevel > 0 then
+            button.ItemLevel:Hide()
+            -- Restore position that Blizzard's UI changes if mission have both ilevel and rare! text
+            if mission.isRare then
+               button.Level:SetPoint("CENTER", button, "TOPLEFT", 40, -36)
+            end
+            button.Level:SetFormattedText("|cffffffd9%d", mission.iLevel)
+         end
       end
    end
 
