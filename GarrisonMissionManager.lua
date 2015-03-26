@@ -678,7 +678,7 @@ local function SetTeamButtonText(button, top_entry)
          top_entry.isMissionTimeImproved and time_texture or ""
       )
    else
-      button:SetText("")
+      button:SetText()
    end
 end
 
@@ -934,7 +934,7 @@ local function GarrisonMissionList_Update_More()
 
          if (mission.numFollowers > filtered_free_followers_count) or (mission.cost > garrison_resources) then
             button:SetAlpha(0.3)
-            gmm_button:SetText("")
+            gmm_button:SetText()
          else
             local top_for_this_mission = top_for_mission[mission.missionID]
             if not top_for_this_mission then
