@@ -483,13 +483,29 @@ hooksecurefunc("GarrisonMissionPage_UpdateMissionForParty", CheckPartyForProfess
 local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, followerInfo, forMissionPage)
    if not forMissionPage then return end
 
-   if followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL then
+   local mentor_level = MissionPage.mentorLevel
+   local mentor_i_level = MissionPage.mentorItemLevel
+
+   local level = followerInfo.level
+   local i_level = followerInfo.iLevel
+
+   local boosted
+
+   if mentor_i_level and mentor_i_level > (i_level or 0) then
+      i_level = mentor_i_level
+      boosted = true
+   end
+   if mentor_level and mentor_level > level then
+      level = mentor_level
+      boosted = true
+   end
+
+   if i_level > 0 then
       local level_border = portraitFrame.LevelBorder
       level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
       level_border:SetWidth(70)
       local level = portraitFrame.Level
-      local i_level = followerInfo.iLevel
-      level:SetFormattedText("%s%s %d", i_level == 675 and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
+      level:SetFormattedText("%s%s %d", (i_level == 675 and not boosted) and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
    end
 end
 hooksecurefunc("GarrisonMissionFrame_SetFollowerPortrait", GarrisonMissionFrame_SetFollowerPortrait_More)
