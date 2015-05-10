@@ -5,12 +5,16 @@ local addon_name, addon_env = ...
 -- Underscore are my own variables
 
 local c_garrison_cache = addon_env.c_garrison_cache
+local FindBestFollowersForMission = addon_env.FindBestFollowersForMission
+local top = addon_env.top
+local top_yield = addon_env.top_yield
+local top_unavailable = addon_env.top_unavailable
 
--- [AUTOLOCAL START] Automatic local aliases for Blizzard's globals
-local AddFollowerToMission = C_Garrison.AddFollowerToMission
+-- [AUTOLOCAL START]
 local After = C_Timer.After
 local CANCEL = CANCEL
 local C_Garrison = C_Garrison
+local ChatEdit_ActivateChat = ChatEdit_ActivateChat
 local FONT_COLOR_CODE_CLOSE = FONT_COLOR_CODE_CLOSE
 local GARRISON_CURRENCY = GARRISON_CURRENCY
 local GARRISON_FOLLOWER_IN_PARTY = GARRISON_FOLLOWER_IN_PARTY
@@ -23,18 +27,14 @@ local GetCurrencyInfo = GetCurrencyInfo
 local GetFollowerInfoForBuilding = C_Garrison.GetFollowerInfoForBuilding
 local GetFollowerMissionTimeLeft = C_Garrison.GetFollowerMissionTimeLeft
 local GetFollowerStatus = C_Garrison.GetFollowerStatus
-local GetFramesRegisteredForEvent = GetFramesRegisteredForEvent
 local GetItemInfo = GetItemInfo
 local GetLandingPageShipmentInfo = C_Garrison.GetLandingPageShipmentInfo
-local GetPartyMissionInfo = C_Garrison.GetPartyMissionInfo
 local HybridScrollFrame_GetOffset = HybridScrollFrame_GetOffset
 local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
-local RemoveFollowerFromMission = C_Garrison.RemoveFollowerFromMission
 local dump = DevTools_Dump
 local format = string.format
 local pairs = pairs
 local tconcat = table.concat
-local tinsert = table.insert
 local tsort = table.sort
 local wipe = wipe
 -- [AUTOLOCAL END]
@@ -92,8 +92,6 @@ local follower_xp_cap = {}
 
 addon_env.event_frame = addon_env.event_frame or CreateFrame("Frame")
 local event_frame = addon_env.event_frame
-local RegisterEvent = event_frame.RegisterEvent
-local UnregisterEvent = event_frame.UnregisterEvent
 
 -- Pre-declared functions defined below
 local CheckPartyForProfessionFollowers
@@ -173,7 +171,7 @@ event_frame:SetScript("OnEvent", function(self, event, arg1)
 end)
 for event in pairs(events_top_for_mission_dirty) do event_frame:RegisterEvent(event) end
 for event in pairs(events_for_followers) do event_frame:RegisterEvent(event) end
-for event in pairs(events_for_buildings) do RegisterEvent(event_frame, event) end
+for event in pairs(events_for_buildings) do event_frame:RegisterEvent(event) end
 event_frame:RegisterEvent("ADDON_LOADED")
 
 local gmm_buttons = {}
@@ -189,384 +187,6 @@ function GMM_dumpl(pattern, ...)
       print(GREEN_FONT_COLOR_CODE, idx, name, FONT_COLOR_CODE_CLOSE)
       dump((select(idx, ...)))
    end
-end
-
--- local prof = time_record.new():ldb_register('GMM - FindBestFollowersForMission')
--- local timer = prof.timer
-
-local min, max = {}, {}
-local top = {{}, {}, {}, {}}
-local top_yield = {{}, {}, {}, {}}
-local top_unavailable = {{}, {}, {}, {}}
-local best_modes = { "success" }
-local best_mode_unavailable = {}
-local preserve_mission_page_followers = {}
-local function FindBestFollowersForMission(mission, followers, mode)
-   local followers_count = #followers
-
-   local top_entries = mode == "mission_list" and 1 or 3
-
-   for idx = 1, top_entries do
-      wipe(top[idx])
-      wipe(top_yield[idx])
-      wipe(top_unavailable[idx])
-   end
-
-   local slots = mission.numFollowers
-   if slots > followers_count then return end
-
-   local event_handlers = { GetFramesRegisteredForEvent("GARRISON_FOLLOWER_LIST_UPDATE") }
-   for idx = 1, #event_handlers do UnregisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
-
-   local mission_id = mission.missionID
-   local party_followers_count = #MissionPageFollowers
-   if party_followers_count > 0 then
-      for party_idx = 1, party_followers_count do
-         preserve_mission_page_followers[party_idx] = MissionPageFollowers[party_idx].info
-      end
-   end
-
-   if C_Garrison.GetNumFollowersOnMission(mission_id) > 0 then
-      for idx = 1, followers_count do
-         RemoveFollowerFromMission(mission_id, followers[idx].followerID)
-      end
-   end
-
-   for idx = 1, slots do
-      max[idx] = followers_count - slots + idx
-      min[idx] = nil
-   end
-   for idx = slots + 1, 3 do
-      max[idx] = followers_count + 1
-      min[idx] = followers_count + 1
-   end
-
-   local best_modes_count = 1
-
-   local gr_rewards
-   local xp_only_rewards
-   local gold_rewards
-   for _, reward in pairs(mission.rewards) do
-      local currencyID = reward.currencyID
-      if currencyID == GARRISON_CURRENCY then gr_rewards = true end
-      if currencyID == 0 then gold_rewards = true end
-      if reward.followerXP and xp_only_rewards == nil then xp_only_rewards = true end
-      if not reward.followerXP then xp_only_rewards = false end
-   end
-
-   if mode ~= "mission_list" then
-      if gold_rewards then
-         best_modes_count = best_modes_count + 1
-         best_modes[best_modes_count] = "gold_yield"
-      elseif gr_rewards then
-         best_modes_count = best_modes_count + 1
-         best_modes[best_modes_count] = "gr_yield"
-      end
-   end
-
-   local salvage_yard_level = c_garrison_cache.salvage_yard_level
-   local all_followers_maxed = followers.all_followers_maxed
-
-   local follower1_added, follower2_added, follower3_added
-
-   -- for prof_runs = 1, mode ~= "mission_list" and 100 or 1 do local prof_start = timer()
-
-   for i1 = 1, max[1] do
-      local follower1 = followers[i1]
-      local follower1_id = follower1.followerID
-      local follower1_maxed = follower1.levelXP == 0 and 1 or 0
-      local follower1_level = follower1.level if follower1_level == GARRISON_FOLLOWER_MAX_LEVEL then follower1_level = follower1.iLevel end
-      local follower1_busy = follower1.is_busy_for_mission and 1 or 0
-      for i2 = min[2] or (i1 + 1), max[2] do
-         local follower2_maxed = 0
-         local follower2 = followers[i2]
-         local follower2_id
-         local follower2_level = 0
-         local follower2_busy = 0
-         if follower2 then
-            follower2_id = follower2.followerID
-            if follower2.levelXP == 0 then follower2_maxed = 1 end
-            follower2_level = follower2.level if follower2_level == GARRISON_FOLLOWER_MAX_LEVEL then follower2_level = follower2.iLevel end
-            if follower2.is_busy_for_mission then follower2_busy = 1 end
-         end
-         for i3 = min[3] or (i2 + 1), max[3] do
-            local follower3_maxed = 0
-            local follower3 = followers[i3]
-            local follower3_id
-            local follower3_level = 0
-            local follower3_busy = 0
-            if follower3 then
-               follower3_id = follower3.followerID
-               if follower3.levelXP == 0 then follower3_maxed = 1 end
-               follower3_level = follower3.level if follower3_level == GARRISON_FOLLOWER_MAX_LEVEL then follower3_level = follower3.iLevel end
-               if follower3.is_busy_for_mission then follower3_busy = 1 end
-            end
-
-            local followers_maxed = follower1_maxed + follower2_maxed + follower3_maxed
-            -- at least one follower in party is busy (i.e. staus non-empty/non-party) for mission
-            local follower_is_busy_for_mission = (follower1_busy + follower2_busy + follower3_busy) > 0
-
-            if
-               -- On follower XP-only missions throw away any team that is completely filled with maxed out followers
-               (xp_only_rewards and slots == followers_maxed and not (salvage_yard_level and all_followers_maxed))
-               -- On mission list screen don't bother calculating unavailable followers for now
-               or (mode == "mission_list" and follower_is_busy_for_mission)
-            then
-               -- skip
-            else
-               local follower_level_total = follower1_level + follower2_level + follower3_level
-
-               if follower3 then
-                  if follower3_added and follower3_added ~= follower3_id then
-                     RemoveFollowerFromMission(mission_id, follower3_added)
-                     follower3_added = nil
-                  end
-               end
-
-               if follower2 then
-                  if follower2_added and follower2_added ~= follower2_id then
-                     RemoveFollowerFromMission(mission_id, follower2_added)
-                     follower2_added = nil
-                  end
-               end
-
-               if follower1_added and follower1_added ~= follower1_id then
-                  RemoveFollowerFromMission(mission_id, follower1_added)
-                  follower1_added = nil
-               end
-
-               if not follower1_added then
-                  if AddFollowerToMission(mission_id, follower1_id) then
-                     follower1_added = follower1_id
-                  else
-                     --[[ error handling! ]]
-                  end
-               end
-
-               if follower2 and not follower2_added then
-                  if AddFollowerToMission(mission_id, follower2_id) then
-                     follower2_added = follower2_id
-                  else
-                     --[[ error handling! ]]
-                  end
-               end
-
-               if follower3 and not follower3_added then
-                  if AddFollowerToMission(mission_id, follower3_id) then
-                     follower3_added = follower3_id
-                  else
-                     --[[ error handling! ]]
-                  end
-               end
-
-               -- Calculate result
-               local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier, goldMultiplier = GetPartyMissionInfo(mission_id)
-               isEnvMechanicCountered = isEnvMechanicCountered and 1 or 0
-               local buffCount = #partyBuffs
-
-               local saved_best_modes
-               local saved_best_modes_count
-               if follower_is_busy_for_mission then
-                  saved_best_modes = best_modes
-                  saved_best_modes_count = best_modes_count
-                  best_modes = best_mode_unavailable
-                  best_mode_unavailable[1] = gr_rewards and "gr_yield" or (gold_rewards and "gold_yield" or "success")
-                  best_modes_count = 1
-               end
-
-               for best_modes_idx = 1, best_modes_count do
-                  local mode = best_modes[best_modes_idx]
-                  local gr_yield
-                  if gr_rewards then
-                     gr_yield = materialMultiplier * successChance
-                  end
-
-                  local gold_yield
-                  if gold_rewards then
-                     gold_yield = goldMultiplier * successChance
-                  end
-
-                  local top_list
-                  if follower_is_busy_for_mission then
-                     top_list = top_unavailable
-                  elseif mode == 'gr_yield' or mode == 'gold_yield' then
-                     top_list = top_yield
-                  else
-                     top_list = top
-                  end
-
-                  for idx = 1, top_entries do
-                     local current = top_list[idx]
-
-                     local found
-                     repeat -- Checking if new candidate for top is better than any top 3 already sored
-
-                        if not follower_is_busy_for_mission and (
-                           (mode == "gr_yield" and materialMultiplier == 1) or
-                           (mode == "gold_yield" and goldMultiplier == 1)
-                        ) then
-                           -- No reason to place non-boosted team in special sorting list,
-                           -- success chance top will be better or same anyway, unless it is "unavailable" list.
-                           break
-                        end
-
-                        if not current[1] then found = true break end
-
-                        local c_gr_yield = current.gr_yield
-                        if mode == 'gr_yield' then
-                           if c_gr_yield < gr_yield then found = true break end
-                           if c_gr_yield > gr_yield then break end
-                        end
-
-                        local c_gold_yield = current.gold_yield
-                        if mode == 'gold_yield' then
-                           if c_gold_yield < gold_yield then found = true break end
-                           if c_gold_yield > gold_yield then break end
-                        end
-
-                        local cSuccessChance = current.successChance
-                        if cSuccessChance < successChance then found = true break end
-                        if cSuccessChance > successChance then break end
-
-                        if gr_rewards then
-                           local cMaterialMultiplier = current.materialMultiplier
-                           if cMaterialMultiplier < materialMultiplier then found = true break end
-                           if cMaterialMultiplier > materialMultiplier then break end
-                        end
-
-                        local c_followers_maxed = current.followers_maxed
-                        if c_followers_maxed > followers_maxed then found = true break end
-                        if c_followers_maxed < followers_maxed then break end
-
-                        local cXpBonus = current.xpBonus
-                        -- Maximize XP bonus only if party have unmaxed followers
-                        if slots ~= followers_maxed then
-                           if cXpBonus < xpBonus then found = true break end
-                           if cXpBonus > xpBonus then break end
-                        end
-
-                        local cTotalTimeSeconds = current.totalTimeSeconds
-                        if cTotalTimeSeconds > totalTimeSeconds then found = true break end
-                        if cTotalTimeSeconds < totalTimeSeconds then break end
-
-                        local c_follower_level_total = current.follower_level_total
-                        if c_follower_level_total > follower_level_total then found = true break end
-                        if c_follower_level_total < follower_level_total then break end
-
-                        -- Maximize GR/gold yield in general mode when possible too
-                        if gr_rewards then
-                           if c_gr_yield < gr_yield then found = true break end
-                           if c_gr_yield > gr_yield then break end
-                        end
-
-                        if gold_rewards then
-                           if c_gold_yield < gold_yield then found = true break end
-                           if c_gold_yield > gold_yield then break end
-                        end
-
-                        -- Minimize XP bonus if all followers are maxed, because it indicates either overkill or XP-bonus traits better used elsewhere
-                        -- but only if there are unmaxed followers. Otherwise minimize it after other optimizations.
-                        if not all_followers_maxed then 
-                           if slots == followers_maxed then
-                              if cXpBonus > xpBonus then found = true break end
-                              if cXpBonus < xpBonus then break end
-                           end
-                        end
-
-                        -- Minimize GR/gold multiplier if possible if no corresponding reward is available.
-                        if not gr_rewards then
-                           local c_gr_multiplier = current.materialMultiplier
-                           if c_gr_multiplier > materialMultiplier then found = true break end
-                           if c_gr_multiplier < materialMultiplier then break end
-                        end
-
-                        if not gold_rewards then
-                           local c_gold_multiplier = current.goldMultiplier
-                           if c_gold_multiplier > goldMultiplier then found = true break end
-                           if c_gold_multiplier < goldMultiplier then break end
-                        end
-
-                        local cBuffCount = current.buffCount
-                        if cBuffCount > buffCount then found = true break end
-                        if cBuffCount < buffCount then break end
-
-                        if all_followers_maxed then
-                           if slots == followers_maxed then
-                              if cXpBonus > xpBonus then found = true break end
-                              if cXpBonus < xpBonus then break end
-                           end
-                        end
-
-                        local cIsEnvMechanicCountered = current.isEnvMechanicCountered
-                        if cIsEnvMechanicCountered > isEnvMechanicCountered then found = true break end
-                        if cIsEnvMechanicCountered < isEnvMechanicCountered then break end
-                     until true
-
-                     if found then
-                        local all_followers_maxed_on_mission = slots == followers_maxed
-                        local new = top_list[4]
-                        new[1] = follower1
-                        new[2] = follower2
-                        new[3] = follower3
-                        new.successChance = successChance
-                        new.materialMultiplier = materialMultiplier
-                        new.goldMultiplier = goldMultiplier
-                        new.gr_rewards = gr_rewards
-                        new.gold_rewards = gold_rewards
-                        new.xpBonus = xpBonus
-                        new.totalTimeSeconds = totalTimeSeconds
-                        new.isMissionTimeImproved = isMissionTimeImproved
-                        new.followers_maxed = followers_maxed
-                        new.buffCount = buffCount
-                        new.isEnvMechanicCountered = isEnvMechanicCountered
-                        new.gr_yield = gr_yield
-                        new.gold_yield = gold_yield
-                        new.xp_reward_wasted = xp_only_rewards and all_followers_maxed_on_mission
-                        new.all_followers_maxed = all_followers_maxed_on_mission
-                        new.follower_level_total = follower_level_total
-                        new.mission_level = mission.level
-                        tinsert(top_list, idx, new)
-                        top_list[5] = nil
-                        break
-                     end
-                  end
-               end
-
-               if follower_is_busy_for_mission then
-                  best_modes = saved_best_modes
-                  best_modes_count = saved_best_modes_count
-               end
-            end
-         end
-      end
-   end
-
-   if follower1_added then RemoveFollowerFromMission(mission_id, follower1_added) end
-   if follower2_added then RemoveFollowerFromMission(mission_id, follower2_added) end
-   if follower3_added then RemoveFollowerFromMission(mission_id, follower3_added) end
-
-   -- local prof_end = timer() if mode ~= "mission_list" then prof:record("permutation loop - mission page", prof_end - prof_start) end end
-
-   top.gr_rewards = gr_rewards
-   top.gold_rewards = gold_rewards
-   -- TODO:
-   -- If we have GR/gold yield list, check it and remove all entries where gr_yield is worse than #1 from regular top list.
-   -- dump(top[1])
-
-   if party_followers_count > 0 then
-      for party_idx = 1, party_followers_count do
-         if preserve_mission_page_followers[party_idx] then
-            GarrisonMissionPage_SetFollower(MissionPageFollowers[party_idx], preserve_mission_page_followers[party_idx])
-         end
-      end
-   end
-
-   for idx = 1, #event_handlers do RegisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
-
-   -- dump(top)
-   -- local location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies = C_Garrison.GetMissionInfo(missionID);
-   -- /run GMM_dumpl("location, xp, environment, environmentDesc, environmentTexture, locPrefix, isExhausting, enemies", C_Garrison.GetMissionInfo(GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID))
-   -- /run GMM_dumpl("totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier", C_Garrison.GetPartyMissionInfo(GarrisonMissionFrame.MissionTab.MissionPage.missionInfo.missionID))
 end
 
 local function SortFollowersByLevel(a, b)
