@@ -42,6 +42,8 @@ local wipe = wipe
 local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
 local MissionPageFollowers = MissionPage.Followers
 
+local maxed_follower_color_code = "|cffaaffaa"
+
 -- Config
 local ingored_followers = {}
 SVPC_GarrisonMissionManager = {}
@@ -478,6 +480,35 @@ CheckPartyForProfessionFollowers = function()
 end
 hooksecurefunc("GarrisonMissionPage_UpdateMissionForParty", CheckPartyForProfessionFollowers)
 
+local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, followerInfo, forMissionPage)
+   if not forMissionPage then return end
+
+   if followerInfo.level == GARRISON_FOLLOWER_MAX_LEVEL then
+      local level_border = portraitFrame.LevelBorder
+      level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
+      level_border:SetWidth(70)
+      local level = portraitFrame.Level
+      local i_level = followerInfo.iLevel
+      level:SetFormattedText("%s%s %d", i_level == 675 and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
+   end
+end
+hooksecurefunc("GarrisonMissionFrame_SetFollowerPortrait", GarrisonMissionFrame_SetFollowerPortrait_More)
+
+local function GarrisonMissionPage_ShowMission_More(missionInfo)
+   local self = MissionPage
+   if missionInfo.iLevel > 0 then
+      self.showItemLevel = false
+      local stage = self.Stage
+      stage.Level:SetPoint("CENTER", self.Stage.Header, "TOPLEFT", 30, -36)
+      stage.ItemLevel:Hide()
+      stage.Level:SetText(missionInfo.iLevel)
+      self.ItemLevelHitboxFrame:Show()
+   else
+      self.ItemLevelHitboxFrame:Hide()
+   end
+end
+hooksecurefunc("GarrisonMissionPage_ShowMission", GarrisonMissionPage_ShowMission_More)
+
 --[[ localized above ]] MissionPage_PartyButtonOnClick = function(self)
    if self[1] then
       event_frame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
@@ -845,7 +876,8 @@ local function GarrisonFollowerList_Update_More(self)
                level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
                level_border:SetWidth(70)
                local level = portrait_frame.Level
-               level:SetFormattedText("%s %d", ITEM_LEVEL_ABBR, follower.iLevel)
+               local i_level = follower.iLevel
+               level:SetFormattedText("%s%s %d", i_level == 675 and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
                button.ILevel:SetText(nil)
                show_ilevel = true
             end
