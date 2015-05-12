@@ -504,8 +504,7 @@ local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, foll
       local level_border = portraitFrame.LevelBorder
       level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
       level_border:SetWidth(70)
-      local level = portraitFrame.Level
-      level:SetFormattedText("%s%s %d", (i_level == 675 and not boosted) and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
+      portraitFrame.Level:SetFormattedText("%s%s %d", (i_level == 675 and not boosted) and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
    end
 end
 hooksecurefunc("GarrisonMissionFrame_SetFollowerPortrait", GarrisonMissionFrame_SetFollowerPortrait_More)
@@ -891,9 +890,8 @@ local function GarrisonFollowerList_Update_More(self)
             if follower.level == GARRISON_FOLLOWER_MAX_LEVEL then
                level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
                level_border:SetWidth(70)
-               local level = portrait_frame.Level
                local i_level = follower.iLevel
-               level:SetFormattedText("%s%s %d", i_level == 675 and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
+               portrait_frame.Level:SetFormattedText("%s%s %d", i_level == 675 and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
                button.ILevel:SetText(nil)
                show_ilevel = true
             end
