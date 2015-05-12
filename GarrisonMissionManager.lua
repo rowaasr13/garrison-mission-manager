@@ -500,7 +500,7 @@ local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, foll
       boosted = true
    end
 
-   if i_level > 0 then
+   if level == GARRISON_FOLLOWER_MAX_LEVEL then
       local level_border = portraitFrame.LevelBorder
       level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
       level_border:SetWidth(70)
