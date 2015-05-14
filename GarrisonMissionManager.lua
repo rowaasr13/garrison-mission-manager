@@ -42,7 +42,7 @@ local wipe = wipe
 local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
 local MissionPageFollowers = MissionPage.Followers
 
-local maxed_follower_color_code = "|cffaaffaa"
+local maxed_follower_color_code = "|cff22aa22"
 
 -- Config
 local ingored_followers = {}
