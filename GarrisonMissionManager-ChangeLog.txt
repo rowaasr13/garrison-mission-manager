@@ -1,9 +1,14 @@
-Garrison Mission Manager, v29
+Garrison Mission Manager, v30
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-05-15 v30
+ * Don't show "level 100" indicator in mission list on missions that require ilevel. Instead just show mission ilevel in same big font and with slightly brighter color to make the easier to see at a glance.
+ * Always show ilevel under follower portrait regardless if mission requires it or not to make it easier to see training of followers you're about to send on mission.
+ * Color maxed follower ilevel (675) in green to make it easier to see who you still need to upgrade.
+
 2015-03-26 v29
  * Mission list now shows expiration time on all non-XP missions in lower left corner of each button.
  * Warning for follower that have matching building slot under party portrait on mission page now warns in yellow for buildings without active work orders too.
