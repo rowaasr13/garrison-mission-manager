@@ -28,6 +28,9 @@ local UnregisterEvent = event_frame.UnregisterEvent
 -- local prof = time_record.new():ldb_register('GMM - FindBestFollowersForMission')
 -- local timer = prof.timer
 
+-- will be "table" in 6.2, number before it
+local currencyMultipliers_type
+
 local top = {{}, {}, {}, {}}
 local top_yield = {{}, {}, {}, {}}
 local top_unavailable = {{}, {}, {}, {}}
@@ -196,6 +199,13 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
                -- Calculate result
                local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier, goldMultiplier = GetPartyMissionInfo(mission_id)
+               -- Uh, thanks 6.2, for lots of new calls and tables going directly to garbage right in the middle of most computational heavy loop.
+               -- At least I can eliminate "type" after first check.
+               if not currencyMultipliers_type and materialMultiplier then
+                  local detected_type = type(materialMultiplier)
+                  if detected_type == "table" or detected_type == "number" then currencyMultipliers_type = detected_type end
+               end
+               if currencyMultipliers_type == "table" then materialMultiplier = materialMultiplier[GARRISON_CURRENCY] or 1 end
                isEnvMechanicCountered = isEnvMechanicCountered and 1 or 0
                local buffCount = #partyBuffs
 
