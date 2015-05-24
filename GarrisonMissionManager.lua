@@ -478,7 +478,14 @@ CheckPartyForProfessionFollowers = function()
       end
    end
 end
-hooksecurefunc("GarrisonMissionPage_UpdateMissionForParty", CheckPartyForProfessionFollowers)
+
+local GarrisonFollowerMission_class_UpdateMissionParty
+if GarrisonFollowerMission and GarrisonFollowerMission.UpdateMissionParty then
+   hooksecurefunc(GarrisonFollowerMission, "UpdateMissionParty", CheckPartyForProfessionFollowers)
+   GarrisonFollowerMission_class_UpdateMissionParty = true
+else
+   hooksecurefunc("GarrisonMissionPage_UpdateMissionForParty", CheckPartyForProfessionFollowers)
+end
 
 local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, followerInfo, forMissionPage)
    if not forMissionPage then return end
@@ -521,8 +528,9 @@ local function GarrisonMissionPage_ShowMission_More(missionInfo)
    else
       self.ItemLevelHitboxFrame:Hide()
    end
+
+   BestForCurrentSelectedMission()
 end
-hooksecurefunc("GarrisonMissionPage_ShowMission", GarrisonMissionPage_ShowMission_More)
 
 --[[ localized above ]] MissionPage_PartyButtonOnClick = function(self)
    if self[1] then
@@ -542,7 +550,11 @@ hooksecurefunc("GarrisonMissionPage_ShowMission", GarrisonMissionPage_ShowMissio
       event_frame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    end
 
-   GarrisonMissionPage_UpdateMissionForParty()
+   if GarrisonFollowerMission_class_UpdateMissionParty then
+      GarrisonFollowerMission:UpdateMissionParty(MissionPageFollowers)
+   else
+      GarrisonMissionPage_UpdateMissionForParty()
+   end
 end
 
 local function MissionList_PartyButtonOnClick(self)
