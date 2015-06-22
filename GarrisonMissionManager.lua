@@ -22,6 +22,7 @@ local GARRISON_FOLLOWER_MAX_LEVEL = GARRISON_FOLLOWER_MAX_LEVEL
 local GARRISON_FOLLOWER_ON_MISSION = GARRISON_FOLLOWER_ON_MISSION
 local GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION = GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION
 local GREEN_FONT_COLOR_CODE = GREEN_FONT_COLOR_CODE
+local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
 local GarrisonMissionFrame = GarrisonMissionFrame
 local GetCurrencyInfo = GetCurrencyInfo
 local GetFollowerInfoForBuilding = C_Garrison.GetFollowerInfoForBuilding
@@ -191,6 +192,22 @@ function GMM_dumpl(pattern, ...)
    end
 end
 
+-- easy hooking for similar old style (functional) and new style (class-like) functions
+-- returns true on hooking class
+local function PostHookFunctionOrClass(old_function, new_class, new_method, post_hook)
+   if new_class then
+      local new_class_table = type(new_class) == "string" and _G[new_class] or new_class
+      if new_class_table and new_class_table[new_method] then
+         -- print("GMM: hooking", new_class, new_method)
+         hooksecurefunc(new_class_table, new_method, post_hook)
+         return true
+      end
+   end
+
+   -- print("GMM: hooking", old_function)
+   hooksecurefunc(old_function, post_hook)
+end
+
 local function SortFollowersByLevel(a, b)
    local a_level = a.level
    local b_level = b.level
@@ -211,6 +228,9 @@ local function GetFilteredFollowers()
             if not follower.isCollected then break end
 
             if ingored_followers[follower.followerID] then break end
+
+            local type_id = follower.followerTypeID
+            if type_id and type_id ~= LE_FOLLOWER_TYPE_GARRISON_6_0 then break end
 
             filtered_followers_count = filtered_followers_count + 1
             filtered_followers[filtered_followers_count] = follower
@@ -479,13 +499,7 @@ CheckPartyForProfessionFollowers = function()
    end
 end
 
-local GarrisonFollowerMission_class_UpdateMissionParty
-if GarrisonFollowerMission and GarrisonFollowerMission.UpdateMissionParty then
-   hooksecurefunc(GarrisonFollowerMission, "UpdateMissionParty", CheckPartyForProfessionFollowers)
-   GarrisonFollowerMission_class_UpdateMissionParty = true
-else
-   hooksecurefunc("GarrisonMissionPage_UpdateMissionForParty", CheckPartyForProfessionFollowers)
-end
+local GarrisonFollowerMission_class_UpdateMissionParty = PostHookFunctionOrClass("GarrisonMissionPage_UpdateMissionForParty", "GarrisonMissionFrame", "UpdateMissionParty", CheckPartyForProfessionFollowers)
 
 local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, followerInfo, forMissionPage)
    if not forMissionPage then return end
@@ -516,27 +530,35 @@ local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, foll
 end
 hooksecurefunc("GarrisonMissionFrame_SetFollowerPortrait", GarrisonMissionFrame_SetFollowerPortrait_More)
 
-local function GarrisonMissionPage_ShowMission_More(missionInfo)
-   local self = MissionPage
+local function GarrisonMissionPage_ShowMission_More(self, missionInfo)
+   local mission_page
+   if self.ShowMission then
+      mission_page = self.MissionTab.MissionPage
+   else
+      missionInfo = self
+      mission_page = MissionPage
+   end
+
    if missionInfo.iLevel > 0 then
-      self.showItemLevel = false
-      local stage = self.Stage
-      stage.Level:SetPoint("CENTER", self.Stage.Header, "TOPLEFT", 30, -36)
+      mission_page.showItemLevel = false
+      local stage = mission_page.Stage
+      stage.Level:SetPoint("CENTER", stage.Header, "TOPLEFT", 30, -36)
       stage.ItemLevel:Hide()
       stage.Level:SetText(missionInfo.iLevel)
-      self.ItemLevelHitboxFrame:Show()
+      mission_page.ItemLevelHitboxFrame:Show()
    else
-      self.ItemLevelHitboxFrame:Hide()
+      mission_page.ItemLevelHitboxFrame:Hide()
    end
 
    BestForCurrentSelectedMission()
 end
 
+local class_based_SetClearFollower = GarrisonMissionFrame and GarrisonMissionFrame.AssignFollowerToMission and GarrisonMissionFrame.RemoveFollowerFromMission and true
 --[[ localized above ]] MissionPage_PartyButtonOnClick = function(self)
    if self[1] then
       event_frame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
       for idx = 1, #MissionPageFollowers do
-         GarrisonMissionPage_ClearFollower(MissionPageFollowers[idx])
+         if class_based_SetClearFollower then GarrisonMissionFrame:RemoveFollowerFromMission(MissionPageFollowers[idx]) else GarrisonMissionPage_ClearFollower(MissionPageFollowers[idx]) end
       end
 
       for idx = 1, #MissionPageFollowers do
@@ -544,7 +566,7 @@ end
          local follower = self[idx]
          if follower then
             local followerInfo = C_Garrison.GetFollowerInfo(follower)
-            GarrisonMissionPage_SetFollower(followerFrame, followerInfo)
+            if class_based_SetClearFollower then GarrisonMissionFrame:AssignFollowerToMission(followerFrame, followerInfo) else GarrisonMissionPage_SetFollower(followerFrame, followerInfo) end
          end
       end
       event_frame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
@@ -822,7 +844,7 @@ end
 MissionPage_ButtonsInit()
 MissionList_ButtonsInit()
 MissionPage_WarningInit()
-hooksecurefunc("GarrisonMissionPage_ShowMission", BestForCurrentSelectedMission)
+PostHookFunctionOrClass("GarrisonMissionPage_ShowMission", "GarrisonMissionFrame", "ShowMission", GarrisonMissionPage_ShowMission_More)
 -- local count = 0
 -- hooksecurefunc("GarrisonFollowerList_UpdateFollowers", function(self) count = count + 1 print("GarrisonFollowerList_UpdateFollowers", count, self:GetName(), self:GetParent():GetName()) end)
 
@@ -869,12 +891,13 @@ hooksecurefunc(GarrisonFollowerOptionDropDown, "initialize", function(self)
    end
 end)
 
+local GarrisonFollowerList_Update_More_need_parent
 local function GarrisonFollowerList_Update_More(self)
    -- Somehow Blizzard UI insists on updating hidden frames AND explicitly updates them OnShow.
    --  Following suit is just a waste of CPU, so we'll update only when frame is actually visible.
    if not self:IsVisible() then return end
 
-   local followerFrame = self
+   local followerFrame = GarrisonFollowerList_Update_More_need_parent and self:GetParent() or self
    local followers = followerFrame.FollowerList.followers
    local followersList = followerFrame.FollowerList.followersList
    local numFollowers = #followersList
@@ -915,7 +938,8 @@ local function GarrisonFollowerList_Update_More(self)
       end
    end
 end
-hooksecurefunc("GarrisonFollowerList_Update", GarrisonFollowerList_Update_More)
+GarrisonFollowerList_Update_More_need_parent = PostHookFunctionOrClass("GarrisonFollowerList_Update", GarrisonMissionFrame.FollowerList, "UpdateData", GarrisonFollowerList_Update_More)
+-- hooksecurefunc(GarrisonMissionFrame.FollowerList, "OnShow", function(...) print("GarrisonBuildingFollowerList_OnShow") print(...) end)
 
 gmm_buttons.StartMission = MissionPage.StartMissionButton
 
