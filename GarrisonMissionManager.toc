@@ -8,7 +8,7 @@
 ## LoadOnDemand: 1
 ## LoadWith: Blizzard_GarrisonUI
 ## Dependencies: Blizzard_GarrisonUI
-## OptionalDeps: LibStub, LibDataBroker-1.1, SR13-TimeRecord
+## OptionalDeps: LibStub, LibDataBroker-1.1, Bagnon, Titan, SR13-TimeRecord
 
 ## SavedVariables: SV_GarrisonMissionManager
 ## SavedVariablesPerCharacter: SVPC_GarrisonMissionManager
