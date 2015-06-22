@@ -1,9 +1,12 @@
-Garrison Mission Manager, v30
+Garrison Mission Manager, v31
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-06-23 v31
+ * v6.2 compatibility. Runs on both 6.2 and pre-6.2, so you can safely upgrade before maintenance.
+
 2015-05-15 v30
  * Don't show "level 100" indicator in mission list on missions that require ilevel. Instead just show mission ilevel in same big font and with slightly brighter color to make the easier to see at a glance.
  * Always show ilevel under follower portrait regardless if mission requires it or not to make it easier to see training of followers you're about to send on mission.
