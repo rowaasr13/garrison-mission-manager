@@ -1,4 +1,4 @@
-Garrison Mission Manager, v30
+Garrison Mission Manager, v31
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
