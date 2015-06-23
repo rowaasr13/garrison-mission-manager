@@ -30,6 +30,7 @@ local UnregisterEvent = event_frame.UnregisterEvent
 
 -- will be "table" in 6.2, number before it
 local currencyMultipliers_type
+local class_based_SetClearFollower = GarrisonMissionFrame and GarrisonMissionFrame.AssignFollowerToMission and GarrisonMissionFrame.RemoveFollowerFromMission and true
 
 local top = {{}, {}, {}, {}}
 local top_yield = {{}, {}, {}, {}}
@@ -401,7 +402,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
    if party_followers_count > 0 then
       for party_idx = 1, party_followers_count do
          if preserve_mission_page_followers[party_idx] then
-            GarrisonMissionPage_SetFollower(MissionPageFollowers[party_idx], preserve_mission_page_followers[party_idx])
+            if class_based_SetClearFollower then GarrisonMissionFrame:AssignFollowerToMission(MissionPageFollowers[party_idx], preserve_mission_page_followers[party_idx]) else GarrisonMissionPage_SetFollower(MissionPageFollowers[party_idx], preserve_mission_page_followers[party_idx]) end
          end
       end
    end
