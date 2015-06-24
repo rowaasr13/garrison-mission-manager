@@ -727,19 +727,21 @@ addon_env.HideGameTooltip = GameTooltip_Hide or function() return GameTooltip:Hi
 addon_env.OnShowEmulateDisabled = function(self) self:GetScript("OnDisable")(self) end
 addon_env.OnEnterShowGameTooltip = function(self) GameTooltip:SetOwner(self, "ANCHOR_RIGHT") GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true) end
 
-local function MissionPage_ButtonsInit()
+addon_env.MissionPage_ButtonsInit = function(button_prefix, parent_frame)
    local prev
    for suffix_idx = 1, #button_suffixes do
       local suffix = button_suffixes[suffix_idx]
       for idx = 1, 3 do
-         local name = 'MissionPage' .. suffix .. idx
+         local name = button_prefix .. suffix .. idx
          if not gmm_buttons[name] then
-            local set_followers_button = CreateFrame("Button", nil, MissionPage, "UIPanelButtonTemplate")
+            local set_followers_button = CreateFrame("Button", nil, parent_frame, "UIPanelButtonTemplate")
+            -- Ugly, but I can't just parent to BorderFrame - buttons would be visible even on map screen
+            if button_prefix == "ShipyardMissionPage" then set_followers_button:SetFrameLevel(set_followers_button:GetFrameLevel() + 4) end
             set_followers_button:SetText(idx)
             set_followers_button:SetWidth(100)
             set_followers_button:SetHeight(50)
             if not prev then
-               set_followers_button:SetPoint("TOPLEFT", MissionPage, "TOPRIGHT", 0, 0)
+               set_followers_button:SetPoint("TOPLEFT", parent_frame, "TOPRIGHT", 0, 0)
             else
                set_followers_button:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, 0)
             end
@@ -760,23 +762,23 @@ local function MissionPage_ButtonsInit()
          end
       end
    end
-   gmm_buttons['MissionPageYield1']:SetPoint("TOPLEFT", gmm_buttons['MissionPage3'], "BOTTOMLEFT", 0, -50)
-   gmm_buttons['MissionPageUnavailable1']:SetPoint("TOPLEFT", gmm_buttons['MissionPageYield3'], "BOTTOMLEFT", 0, -50)
+   gmm_buttons[button_prefix .. 'Yield1']:SetPoint("TOPLEFT", gmm_buttons[button_prefix .. '3'], "BOTTOMLEFT", 0, -50)
+   gmm_buttons[button_prefix .. 'Unavailable1']:SetPoint("TOPLEFT", gmm_buttons[button_prefix .. 'Yield3'], "BOTTOMLEFT", 0, -50)
 
-   local button = CreateFrame("Button", nil, MissionPage)
+   local button = CreateFrame("Button", nil, parent_frame)
    button:SetNormalTexture("Interface\\Buttons\\UI-LinkProfession-Up")
    button:SetPushedTexture("Interface\\Buttons\\UI-LinkProfession-Down")
    button:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
    button:SetHeight(30)
    button:SetWidth(30)
    button.tooltip = BROWSER_COPY_LINK .. " (Wowhead)"
-   button:SetPoint("RIGHT", MissionPage.Stage.Title, "LEFT", 0, 0)
+   button:SetPoint("RIGHT", parent_frame.Stage.Title, "LEFT", 0, 0)
    button:SetScript("OnEnter", addon_env.OnEnterShowGameTooltip)
    button:SetScript("OnLeave", addon_env.HideGameTooltip)
    button:SetScript("OnClick", function()
       local chat_box = ACTIVE_CHAT_EDIT_BOX or LAST_ACTIVE_CHAT_EDIT_BOX
       if chat_box then
-         local missionInfo = MissionPage.missionInfo
+         local missionInfo = parent_frame.missionInfo
          local mission_id = missionInfo.missionID
          if mission_id then
             local existing_text = chat_box:GetText()
@@ -841,7 +843,7 @@ local function MissionPage_WarningInit()
    end
 end
 
-MissionPage_ButtonsInit()
+addon_env.MissionPage_ButtonsInit("MissionPage", MissionPage)
 MissionList_ButtonsInit()
 MissionPage_WarningInit()
 PostHookFunctionOrClass("GarrisonMissionPage_ShowMission", "GarrisonMissionFrame", "ShowMission", GarrisonMissionPage_ShowMission_More)
