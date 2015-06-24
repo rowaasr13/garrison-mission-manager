@@ -4,6 +4,9 @@ Garrison Mission Manager, v31
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-06-24 v32
+ * Fix v6.2 compatibility problem that could affect users with some other addon pre-filling party before GMM's analysis.
+
 2015-06-23 v31
  * v6.2 compatibility. Runs on both 6.2 and pre-6.2, so you can safely upgrade before maintenance.
 
