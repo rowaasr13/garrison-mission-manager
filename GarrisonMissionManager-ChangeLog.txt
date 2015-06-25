@@ -5,6 +5,7 @@ Garrison Mission Manager, v31
 
 == Change log ==
 2015-06-24 v32
+ * TOC update for 6.2.
  * Fix v6.2 compatibility problem that could affect users with some other addon pre-filling party before GMM's analysis.
 
 2015-06-23 v31
