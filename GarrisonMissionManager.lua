@@ -278,7 +278,6 @@ local function GetFilteredFollowers(type_id)
 
          until true
       end
-      filtered_followers.all_followers_maxed = all_followers_maxed
       tsort(filtered_followers[LE_FOLLOWER_TYPE_GARRISON_6_0], SortFollowersByLevel)
       tsort(filtered_followers[LE_FOLLOWER_TYPE_SHIPYARD_6_2], SortFollowersByLevel)
 
