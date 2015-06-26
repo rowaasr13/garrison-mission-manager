@@ -567,25 +567,28 @@ end
 
 local class_based_SetClearFollower = GarrisonMissionFrame and GarrisonMissionFrame.AssignFollowerToMission and GarrisonMissionFrame.RemoveFollowerFromMission and true
 --[[ localized above ]] MissionPage_PartyButtonOnClick = function(self)
+   local method_base = self.method_base
+   local follower_frames = self.follower_frames
+
    if self[1] then
       event_frame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
-      for idx = 1, #MissionPageFollowers do
-         if class_based_SetClearFollower then GarrisonMissionFrame:RemoveFollowerFromMission(MissionPageFollowers[idx]) else GarrisonMissionPage_ClearFollower(MissionPageFollowers[idx]) end
+      for idx = 1, #follower_frames do
+         if class_based_SetClearFollower then method_base:RemoveFollowerFromMission(follower_frames[idx]) else GarrisonMissionPage_ClearFollower(follower_frames[idx]) end
       end
 
-      for idx = 1, #MissionPageFollowers do
-         local followerFrame = MissionPageFollowers[idx]
+      for idx = 1, #follower_frames do
+         local followerFrame = follower_frames[idx]
          local follower = self[idx]
          if follower then
             local followerInfo = C_Garrison.GetFollowerInfo(follower)
-            if class_based_SetClearFollower then GarrisonMissionFrame:AssignFollowerToMission(followerFrame, followerInfo) else GarrisonMissionPage_SetFollower(followerFrame, followerInfo) end
+            if class_based_SetClearFollower then method_base:AssignFollowerToMission(followerFrame, followerInfo) else GarrisonMissionPage_SetFollower(followerFrame, followerInfo) end
          end
       end
       event_frame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    end
 
    if GarrisonFollowerMission_class_UpdateMissionParty then
-      GarrisonFollowerMission:UpdateMissionParty(MissionPageFollowers)
+      method_base:UpdateMissionParty(follower_frames)
    else
       GarrisonMissionPage_UpdateMissionForParty()
    end
@@ -748,7 +751,14 @@ addon_env.MissionPage_ButtonsInit = function(button_prefix, parent_frame)
          if not gmm_buttons[name] then
             local set_followers_button = CreateFrame("Button", nil, parent_frame, "UIPanelButtonTemplate")
             -- Ugly, but I can't just parent to BorderFrame - buttons would be visible even on map screen
-            if button_prefix == "ShipyardMissionPage" then set_followers_button:SetFrameLevel(set_followers_button:GetFrameLevel() + 4) end
+            if button_prefix == "ShipyardMissionPage" then
+               set_followers_button:SetFrameLevel(set_followers_button:GetFrameLevel() + 4)
+               set_followers_button.method_base = GarrisonShipyardFrame
+               set_followers_button.follower_frames = GarrisonShipyardFrame.MissionTab.MissionPage.Followers
+            else
+               set_followers_button.method_base = GarrisonMissionFrame
+               set_followers_button.follower_frames = MissionPage.Followers
+            end
             set_followers_button:SetText(idx)
             set_followers_button:SetWidth(100)
             set_followers_button:SetHeight(50)
