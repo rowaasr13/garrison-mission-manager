@@ -8,3 +8,8 @@ local addon_name, addon_env = ...
 -- [AUTOLOCAL END]
 
 addon_env.MissionPage_ButtonsInit("ShipyardMissionPage", GarrisonShipyardFrame.MissionTab.MissionPage)
+
+local BestForCurrentSelectedMission = addon_env.BestForCurrentSelectedMission
+hooksecurefunc(GarrisonShipyardFrame, "ShowMission", function()
+   BestForCurrentSelectedMission(LE_FOLLOWER_TYPE_SHIPYARD_6_2, GarrisonShipyardFrame.MissionTab.MissionPage, "ShipyardMissionPage")
+end)
