@@ -4,9 +4,9 @@ Garrison Mission Manager, v32
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Best team selection ==
-GMM adds 3 buttons on mission page with top 3 suggestions. Clicking any of those button will set suggested team. Each button will show you success rate along with icons for XP bonus, GR/gold bonus, and reduced time. Suggestions will try to maximize success rate first, reward multiplier (garrison resources / gold) second, then XP bonus and then reduced time. Hovering over those buttons will show tooltip with suggested team.
+GMM adds 3 buttons on mission page to both follower and ship missions with top 3 suggestions. Clicking any of those button will set suggested team. Each button will show you success rate along with icons for XP bonus, GR/gold bonus, and reduced time. Suggestions will try to maximize success rate first, reward multiplier (garrison resources / gold) second, then XP bonus and then reduced time. Hovering over those buttons will show tooltip with suggested team.
 
-GMM doesn't try to "guess" what followers are the best or keep some internal list of calculations that would need updating - it simply checks all combinations of all followers and selects those that give best total success chance reported directly from WoW. This takes care of each and every trait and ability your followers have, present and future, without any need to update.
+GMM doesn't try to "guess" what followers/ships are the best or keep some internal list of calculations that would need updating - it simply checks all combinations of all followers and selects those that give best total success chance reported directly from WoW. This takes care of each and every trait and ability your followers have, present and future, without any need to update.
 
 You can add followers to ignore list if you want. Select "GMM: Ignore" in right-click follower menu. Ignored follower will be dimmed with red overlay in followers list and won't be used in any calculated party.
 
