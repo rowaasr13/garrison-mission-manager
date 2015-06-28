@@ -987,7 +987,6 @@ local function GarrisonFollowerList_Update_More(self)
    end
 end
 GarrisonFollowerList_Update_More_need_parent = PostHookFunctionOrClass("GarrisonFollowerList_Update", GarrisonMissionFrame.FollowerList, "UpdateData", GarrisonFollowerList_Update_More)
--- hooksecurefunc(GarrisonMissionFrame.FollowerList, "OnShow", function(...) print("GarrisonBuildingFollowerList_OnShow") print(...) end)
 
 gmm_buttons.StartMission = MissionPage.StartMissionButton
 
