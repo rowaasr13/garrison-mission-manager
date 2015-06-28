@@ -5,6 +5,9 @@ local addon_name, addon_env = ...
 -- Underscore are my own variables
 
 -- [AUTOLOCAL START]
+local After = C_Timer.After
+local GetCurrencyInfo = GetCurrencyInfo
+local wipe = wipe
 -- [AUTOLOCAL END]
 
 local Widget = addon_env.Widget
