@@ -70,7 +70,7 @@ local function GarrisonShipyardMap_UpdateMissions_More()
    end
 
    if more_missions_to_cache and more_missions_to_cache > 0 then
-      After(0.001, GarrisonMissionList_Update_More)
+      After(0.001, GarrisonShipyardMap_UpdateMissions_More)
    end
 end
 hooksecurefunc("GarrisonShipyardMap_UpdateMissions", GarrisonShipyardMap_UpdateMissions_More)
