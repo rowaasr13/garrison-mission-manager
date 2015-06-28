@@ -445,6 +445,17 @@ CheckPartyForProfessionFollowers = function()
    for idx = 1, party_followers_count do
       if MissionPageFollowers[idx].info then present = true end
       gmm_frames["MissionPageFollowerWarning" .. idx]:Hide()
+
+      local follower = MissionPageFollowers[idx].info
+      local xp_bar = gmm_frames["MissionPageFollowerXP" .. idx]
+      if (not follower or follower.xp == 0 or follower.levelXP == 0) then 
+         xp_bar:Hide()
+         gmm_frames["MissionPageFollowerXPGainBase" .. idx]:Hide()
+         gmm_frames["MissionPageFollowerXPGainBonus" .. idx]:Hide()
+      else
+         xp_bar:Show();
+         xp_bar:SetWidth((follower.xp/follower.levelXP) * 104)
+      end
    end
    if not present then return end
 
@@ -862,6 +873,10 @@ local function MissionPage_WarningInit()
       warning:SetHeight(1)
       warning:SetPoint("BOTTOM", follower_frame, "TOP", 0, -68)
       gmm_frames["MissionPageFollowerWarning" .. idx] = warning
+
+      gmm_frames["MissionPageFollowerXP" .. idx]          = Widget{type = "Texture", parent = follower_frame, SubLayer = 3, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0.212, 0, 0.337 }, Hide = true }
+      gmm_frames["MissionPageFollowerXPGainBase" .. idx]  = Widget{type = "Texture", parent = follower_frame, SubLayer = 2, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0.6, 1, 0 }, Hide = true }
+      gmm_frames["MissionPageFollowerXPGainBonus" .. idx] = Widget{type = "Texture", parent = follower_frame, SubLayer = 1, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0, 0.75, 1 }, Hide = true }
    end
 end
 
