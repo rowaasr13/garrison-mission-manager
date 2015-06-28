@@ -16,6 +16,7 @@
 C_Garrison_cache.lua
 FindBestFollowersForMission.lua
 GarrisonMissionManager.lua
+SharedMissionUI.lua
 MissionUI.lua
 ShipyardUI.lua
 GarrisonBuilding.lua
