@@ -9,6 +9,7 @@ local FindBestFollowersForMission = addon_env.FindBestFollowersForMission
 local top = addon_env.top
 local top_yield = addon_env.top_yield
 local top_unavailable = addon_env.top_unavailable
+local Widget = addon_env.Widget
 
 -- [AUTOLOCAL START]
 local After = C_Timer.After
@@ -453,7 +454,7 @@ CheckPartyForProfessionFollowers = function()
          gmm_frames["MissionPageFollowerXPGainBase" .. idx]:Hide()
          gmm_frames["MissionPageFollowerXPGainBonus" .. idx]:Hide()
       else
-         xp_bar:Show();
+         xp_bar:Hide()
          xp_bar:SetWidth((follower.xp/follower.levelXP) * 104)
       end
    end
