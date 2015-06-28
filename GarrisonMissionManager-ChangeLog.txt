@@ -1,9 +1,12 @@
-Garrison Mission Manager, v33
+Garrison Mission Manager, v34
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-06-28 v34
+ * Best team buttons on naval map for each mission.
+
 2015-06-26 v33
  * Add team buttons to ship mission pages.
 
