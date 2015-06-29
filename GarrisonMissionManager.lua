@@ -705,14 +705,19 @@ local function GarrisonMissionList_Update_More()
 
          more_missions_to_cache = UpdateMissionListButton(mission, filtered_followers, button, gmm_button, more_missions_to_cache, garrison_resources)
 
+         local is_rare = mission.isRare
+
          local expiration_text_set
          local offerEndTime = mission.offerEndTime
+
          -- offerEndTime seems to be present on all missions, though Blizzard UI shows tooltips only on rare
          if offerEndTime then
             local xp_only_rewards
-            for _, reward in pairs(mission.rewards) do
-               if reward.followerXP and xp_only_rewards == nil then xp_only_rewards = true end
-               if not reward.followerXP then xp_only_rewards = false break end
+            if not is_rare then
+               for _, reward in pairs(mission.rewards) do
+                  if reward.followerXP and xp_only_rewards == nil then xp_only_rewards = true end
+                  if not reward.followerXP then xp_only_rewards = false break end
+               end
             end
 
             if not xp_only_rewards then
