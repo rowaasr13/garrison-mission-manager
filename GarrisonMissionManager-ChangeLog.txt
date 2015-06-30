@@ -1,9 +1,13 @@
-Garrison Mission Manager, v34
+Garrison Mission Manager, v35
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-06-30 v35
+ * Show item level and quality on mission rewards.
+ * Show expiration timer on all rare missions, including XP ones (previously was: on all non-XP missions) - their huge boost for leveling is worth watching.
+
 2015-06-28 v34
  * Best team buttons on naval map for each mission.
 
