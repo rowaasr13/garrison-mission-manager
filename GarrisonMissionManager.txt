@@ -1,4 +1,4 @@
-Garrison Mission Manager, v34
+Garrison Mission Manager, v35
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -35,7 +35,7 @@ GMM will also check busy followers - those working, on mission, deactivated or o
 GMM adds a top team button to each mission on mission list page in both main garrison building and naval mission table in your shipyard so you can see at a glance which missions you could reliably do with your current followers. Clicking this button will take you to mission page and automatically sets suggested team.
 
 === Expiration time ===
-Mission expiration time will be shown in lower left corner of each mission's button. Since XP-only missions don't present any unique rewards, they won't be tracked to reduce clutter in UI. Time on missions with less than 8 hours remaining will be shown in red.
+Mission expiration time will be shown in lower left corner of each mission's button. Since XP-only missions don't present any unique rewards, they won't be tracked to reduce clutter in UI, except for rare missions that offer huge rewards with low level requirements. Time on missions with less than 8 hours remaining will be shown in red.
 
 === More prominent item level ===
 You don't really want to know that all your item level missions are level 100. Item level on such missions will no longer be tucked in parenthesis below big 100, but will instead just replace level 100 indicator completely. Item levels will also have a slightly brighter color to make those missions stand out, as they usually offer better rewards.
