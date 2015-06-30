@@ -10,10 +10,12 @@ GMM doesn't try to "guess" what followers/ships are the best or keep some intern
 
 You can add followers to ignore list if you want. Select "GMM: Ignore" in right-click follower menu. Ignored follower will be dimmed with red overlay in followers list and won't be used in any calculated party.
 
-People who love macros can access mission page buttons with:
+People who love macros can access mission page buttons with commands below. GMM_Click only clicks visible buttons, so you can pack regular and shipyard mission buttons into same macro.
  * /run GMM_Click("MissionPage1")
  * /run GMM_Click("MissionPage2")
  * /run GMM_Click("MissionPage3")
+
+Other modes in same way with "MissionPageYield1" (2, 3), "ShipyardMissionPage1" (2, 3) and "ShipyardMissionPageYield1" (2, 3).
 
 And Blizzard's "Start Mission" button with:
  * /run GMM_Click("StartMission")
