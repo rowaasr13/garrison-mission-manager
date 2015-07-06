@@ -82,12 +82,14 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
    local best_modes_count = 1
 
-   local gr_rewards
+   local material_rewards
    local xp_only_rewards
    local gold_rewards
    for _, reward in pairs(mission.rewards) do
       local currencyID = reward.currencyID
-      if currencyID == GARRISON_CURRENCY then gr_rewards = true end
+      if currencyID == 823 --[[Apexis]] then material_rewards = currencyID end
+      if currencyID == GARRISON_SHIP_OIL_CURRENCY and (not material_rewards or material_rewards == GARRISON_CURRENCY) then material_rewards = currencyID end
+      if currencyID == GARRISON_CURRENCY and not material_rewards then material_rewards = currencyID end
       if currencyID == 0 then gold_rewards = true end
       if reward.followerXP and xp_only_rewards == nil then xp_only_rewards = true end
       if not reward.followerXP then xp_only_rewards = false end
@@ -97,9 +99,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
       if gold_rewards then
          best_modes_count = best_modes_count + 1
          best_modes[best_modes_count] = "gold_yield"
-      elseif gr_rewards then
+      elseif material_rewards then
          best_modes_count = best_modes_count + 1
-         best_modes[best_modes_count] = "gr_yield"
+         best_modes[best_modes_count] = "material_yield"
       end
    end
 
@@ -206,7 +208,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   local detected_type = type(materialMultiplier)
                   if detected_type == "table" or detected_type == "number" then currencyMultipliers_type = detected_type end
                end
-               if currencyMultipliers_type == "table" then materialMultiplier = materialMultiplier[GARRISON_CURRENCY] or 1 end
+               if currencyMultipliers_type == "table" then materialMultiplier = materialMultiplier[material_rewards] or 1 end
                isEnvMechanicCountered = isEnvMechanicCountered and 1 or 0
                local buffCount = #partyBuffs
 
@@ -216,15 +218,15 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   saved_best_modes = best_modes
                   saved_best_modes_count = best_modes_count
                   best_modes = best_mode_unavailable
-                  best_mode_unavailable[1] = gr_rewards and "gr_yield" or (gold_rewards and "gold_yield" or "success")
+                  best_mode_unavailable[1] = material_rewards and "material_yield" or (gold_rewards and "gold_yield" or "success")
                   best_modes_count = 1
                end
 
                for best_modes_idx = 1, best_modes_count do
                   local mode = best_modes[best_modes_idx]
-                  local gr_yield
-                  if gr_rewards then
-                     gr_yield = materialMultiplier * successChance
+                  local material_yield
+                  if material_rewards then
+                     material_yield = materialMultiplier * successChance
                   end
 
                   local gold_yield
@@ -235,7 +237,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   local top_list
                   if follower_is_busy_for_mission then
                      top_list = top_unavailable
-                  elseif mode == 'gr_yield' or mode == 'gold_yield' then
+                  elseif mode == 'material_yield' or mode == 'gold_yield' then
                      top_list = top_yield
                   else
                      top_list = top
@@ -248,7 +250,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                      repeat -- Checking if new candidate for top is better than any top 3 already sored
 
                         if not follower_is_busy_for_mission and (
-                           (mode == "gr_yield" and materialMultiplier == 1) or
+                           (mode == "material_yield" and materialMultiplier == 1) or
                            (mode == "gold_yield" and goldMultiplier == 1)
                         ) then
                            -- No reason to place non-boosted team in special sorting list,
@@ -258,10 +260,10 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
                         if not current[1] then found = true break end
 
-                        local c_gr_yield = current.gr_yield
-                        if mode == 'gr_yield' then
-                           if c_gr_yield < gr_yield then found = true break end
-                           if c_gr_yield > gr_yield then break end
+                        local c_material_yield = current.material_yield
+                        if mode == 'material_yield' then
+                           if c_material_yield < material_yield then found = true break end
+                           if c_material_yield > material_yield then break end
                         end
 
                         local c_gold_yield = current.gold_yield
@@ -274,7 +276,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         if cSuccessChance < successChance then found = true break end
                         if cSuccessChance > successChance then break end
 
-                        if gr_rewards then
+                        if material_rewards then
                            local cMaterialMultiplier = current.materialMultiplier
                            if cMaterialMultiplier < materialMultiplier then found = true break end
                            if cMaterialMultiplier > materialMultiplier then break end
@@ -299,10 +301,10 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         if c_follower_level_total > follower_level_total then found = true break end
                         if c_follower_level_total < follower_level_total then break end
 
-                        -- Maximize GR/gold yield in general mode when possible too
-                        if gr_rewards then
-                           if c_gr_yield < gr_yield then found = true break end
-                           if c_gr_yield > gr_yield then break end
+                        -- Maximize material/gold yield in general mode when possible too
+                        if material_rewards then
+                           if c_material_yield < material_yield then found = true break end
+                           if c_material_yield > material_yield then break end
                         end
 
                         if gold_rewards then
@@ -312,18 +314,18 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
                         -- Minimize XP bonus if all followers are maxed, because it indicates either overkill or XP-bonus traits better used elsewhere
                         -- but only if there are unmaxed followers. Otherwise minimize it after other optimizations.
-                        if not all_followers_maxed then 
+                        if not all_followers_maxed then
                            if slots == followers_maxed then
                               if cXpBonus > xpBonus then found = true break end
                               if cXpBonus < xpBonus then break end
                            end
                         end
 
-                        -- Minimize GR/gold multiplier if possible if no corresponding reward is available.
-                        if not gr_rewards then
-                           local c_gr_multiplier = current.materialMultiplier
-                           if c_gr_multiplier > materialMultiplier then found = true break end
-                           if c_gr_multiplier < materialMultiplier then break end
+                        -- Minimize material/gold multiplier if possible if no corresponding reward is available.
+                        if not material_rewards then
+                           local c_material_multiplier = current.materialMultiplier
+                           if c_material_multiplier > materialMultiplier then found = true break end
+                           if c_material_multiplier < materialMultiplier then break end
                         end
 
                         if not gold_rewards then
@@ -357,7 +359,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         new.successChance = successChance
                         new.materialMultiplier = materialMultiplier
                         new.goldMultiplier = goldMultiplier
-                        new.gr_rewards = gr_rewards
+                        new.material_rewards = material_rewards
                         new.gold_rewards = gold_rewards
                         new.xpBonus = xpBonus
                         new.totalTimeSeconds = totalTimeSeconds
@@ -365,7 +367,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         new.followers_maxed = followers_maxed
                         new.buffCount = buffCount
                         new.isEnvMechanicCountered = isEnvMechanicCountered
-                        new.gr_yield = gr_yield
+                        new.material_yield = material_yield
                         new.gold_yield = gold_yield
                         new.xp_reward_wasted = xp_only_rewards and all_followers_maxed_on_mission
                         new.all_followers_maxed = all_followers_maxed_on_mission
@@ -393,10 +395,10 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
    -- local prof_end = timer() if mode ~= "mission_list" then prof:record("permutation loop - mission page", prof_end - prof_start) end end
 
-   top.gr_rewards = gr_rewards
+   top.material_rewards = material_rewards
    top.gold_rewards = gold_rewards
    -- TODO:
-   -- If we have GR/gold yield list, check it and remove all entries where gr_yield is worse than #1 from regular top list.
+   -- If we have material/gold yield list, check it and remove all entries where material_yield is worse than #1 from regular top list.
    -- dump(top[1])
 
    if party_followers_count > 0 then

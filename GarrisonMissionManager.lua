@@ -52,9 +52,12 @@ local ingored_followers = {}
 SVPC_GarrisonMissionManager = {}
 SVPC_GarrisonMissionManager.ingored_followers = ingored_followers
 
+local currency_texture = {}
+for _, currency in pairs({ GARRISON_CURRENCY, GARRISON_SHIP_OIL_CURRENCY, 823 --[[Apexis]] }) do
+   local _, _, texture = GetCurrencyInfo(currency)
+   currency_texture[currency] = "|T" .. texture .. ":0|t"
+end
 
-local _, _, garrison_currency_texture = GetCurrencyInfo(GARRISON_CURRENCY)
-garrison_currency_texture = "|T" .. garrison_currency_texture .. ":0|t"
 local time_texture = "|TInterface\\Icons\\spell_holy_borrowedtime:0|t"
 
 local hardcoded_salvage_textures = {
@@ -98,7 +101,9 @@ local filtered_followers_dirty = true
 local follower_xp_cap = {}
 
 addon_env.event_frame = addon_env.event_frame or CreateFrame("Frame")
+addon_env.event_handlers = addon_env.event_handlers or {}
 local event_frame = addon_env.event_frame
+local event_handlers = addon_env.event_handlers
 
 -- Pre-declared functions defined below
 local CheckPartyForProfessionFollowers
@@ -125,7 +130,7 @@ local events_for_buildings = {
    GARRISON_BUILDING_UPDATE = true,
 }
 addon_env.events_for_buildings = events_for_buildings
-event_frame:SetScript("OnEvent", function(self, event, arg1)
+event_frame:SetScript("OnEvent", function(self, event, ...)
    -- if events_top_for_mission_dirty[event] then addon_env.top_for_mission_dirty = true end
    -- if events_for_followers[event] then filtered_followers_dirty = true end
    -- Let's clear both for now, or else we often miss one follower state update when we start mission
@@ -134,11 +139,6 @@ event_frame:SetScript("OnEvent", function(self, event, arg1)
    if event_for_followers or events_top_for_mission_dirty[event] then
       addon_env.top_for_mission_dirty = true
       filtered_followers_dirty = true
-   end
-
-   if event == "GARRISON_LANDINGPAGE_SHIPMENTS" then
-      event_frame:UnregisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS")
-      CheckPartyForProfessionFollowers()
    end
 
    local event_for_buildings = events_for_buildings[event]
@@ -169,17 +169,34 @@ event_frame:SetScript("OnEvent", function(self, event, arg1)
       end
    end
 
-   if event == "ADDON_LOADED" and arg1 == addon_name then
-      if SVPC_GarrisonMissionManager then
-         ingored_followers = SVPC_GarrisonMissionManager.ingored_followers
-      end
-      event_frame:UnregisterEvent("ADDON_LOADED")
+   local handler = event_handlers[event]
+   if handler then
+      handler(self, event, ...)
    end
 end)
 for event in pairs(events_top_for_mission_dirty) do event_frame:RegisterEvent(event) end
 for event in pairs(events_for_followers) do event_frame:RegisterEvent(event) end
 for event in pairs(events_for_buildings) do event_frame:RegisterEvent(event) end
-event_frame:RegisterEvent("ADDON_LOADED")
+
+function event_handlers:GARRISON_LANDINGPAGE_SHIPMENTS()
+   event_frame:UnregisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS")
+   CheckPartyForProfessionFollowers()
+end
+
+function event_handlers:ADDON_LOADED(event, addon_loaded)
+   if addon_loaded == addon_name then
+      if SVPC_GarrisonMissionManager then
+         ingored_followers = SVPC_GarrisonMissionManager.ingored_followers
+      end
+      event_frame:UnregisterEvent("ADDON_LOADED")
+   end
+end
+local loaded, finished = IsAddOnLoaded(addon_name)
+if finished then
+   event_handlers:ADDON_LOADED("ADDON_LOADED", addon_name)
+else
+   event_frame:RegisterEvent("ADDON_LOADED")
+end
 
 local gmm_buttons = {}
 addon_env.gmm_buttons = gmm_buttons
@@ -319,9 +336,9 @@ local function SetTeamButtonText(button, top_entry)
       if top_entry.gold_rewards and top_entry.goldMultiplier > 1 then
          multiplier = top_entry.goldMultiplier
          multiplier_icon = "|TInterface\\MoneyFrame\\UI-GoldIcon:0|t"
-      elseif top_entry.gr_rewards and top_entry.materialMultiplier > 1 then
+      elseif top_entry.material_rewards and top_entry.materialMultiplier > 1 then
          multiplier = top_entry.materialMultiplier
-         multiplier_icon = garrison_currency_texture
+         multiplier_icon = currency_texture[top_entry.material_rewards]
       end
 
       button:SetFormattedText(
@@ -409,7 +426,7 @@ local function BestForCurrentSelectedMission(type_id, mission_page, button_prefi
          local button = gmm_buttons[button_prefix .. suffix .. idx]
          local top_entry
          if suffix == 'Yield' then
-            if top.gr_rewards or top.gold_rewards then
+            if top.material_rewards or top.gold_rewards then
                top_entry = top_yield[idx]
             else
                top_entry = false
@@ -630,7 +647,7 @@ local function UpdateMissionListButton(mission, filtered_followers, blizzard_but
             top_for_this_mission.successChance = top1.successChance
             if top_for_this_mission.successChance then
                top_for_this_mission.materialMultiplier = top1.materialMultiplier
-               top_for_this_mission.gr_rewards = top1.gr_rewards
+               top_for_this_mission.material_rewards = top1.material_rewards
                top_for_this_mission.goldMultiplier = top1.goldMultiplier
                top_for_this_mission.gold_rewards = top1.gold_rewards
                top_for_this_mission.xpBonus = top1.xpBonus
