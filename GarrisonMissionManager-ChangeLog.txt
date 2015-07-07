@@ -1,9 +1,13 @@
-Garrison Mission Manager, v35
+Garrison Mission Manager, v36
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-07-08 v36
+ * Treat legendary ship mission status as non-XP reward, allowing full epic teams to be deployed even if you still have ships to level up.
+ * Extend currency multiplier handling to Oil and Apexis. In case they ever appear on same mission priority is Apexis > Oil > GR.
+
 2015-06-30 v35
  * Show item level and quality on mission rewards.
  * Show expiration timer on all rare missions, including XP ones (previously was: on all non-XP missions) - their huge boost for leveling is worth watching.
