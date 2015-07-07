@@ -94,6 +94,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
       if reward.followerXP and xp_only_rewards == nil then xp_only_rewards = true end
       if not reward.followerXP then xp_only_rewards = false end
    end
+   if mission.type == "Ship-Legendary" then xp_only_rewards = false end
 
    if mode ~= "mission_list" then
       if gold_rewards then
