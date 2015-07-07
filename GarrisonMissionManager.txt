@@ -1,4 +1,4 @@
-Garrison Mission Manager, v35
+Garrison Mission Manager, v36
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -21,7 +21,7 @@ And Blizzard's "Start Mission" button with:
  * /run GMM_Click("StartMission")
 
 === Yield mode ===
-A second set of 3 more buttons will appear on missions offering GR or gold, showing best choices for maximizing those resources, sacrificing other optimizations like using lowest possible followers. Those teams are also optimized for long term gain - i.e. you could have lower success rate on individual missions, but your GR/gold yield will be better over time thanks to "Scavenger" or "Treasure Hunter" traits.
+A second set of 3 more buttons will appear on missions offering material (GR/Apexis/Oil) or gold rewards, showing best choices for maximizing those resources, sacrificing other optimizations like using lowest possible followers. Those teams are also optimized for long term gain - i.e. you could have lower success rate on individual missions, but your material/gold yield will be better on average over time.
 
 === Fully maxed followers ===
 GMM will not suggest fully maxed teams on missions that only grant XP as long as you have unmaxed followers. If you don't have salvage yard and only have fully maxed followers GMM will not suggest teams for XP missions at all - this will be indicated by empty suggestion buttons on such missions. However when all your unmaxed are busy and if you do have salvage yard, GMM will send remaining maxed followers on those missions as well to allow you to hunt for salvage crates. This mode is indicated by salvage bag/crate icon appropriate for mission.
