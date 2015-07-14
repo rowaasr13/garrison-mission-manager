@@ -1,4 +1,5 @@
 local addon_name, addon_env = ...
+
 -- [AUTOLOCAL START]
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
 local GetItemInfo = GetItemInfo
@@ -97,7 +98,7 @@ local function UpdateUpgradeItemStates(frame, followerID, followerInfo)
                if ilvl_current_type == 675 or (strength > 600 and ilvl_current_type >= strength) then
                   -- Fadeout and disable button if upgrade is absolutely useless
                   -- i.e. follower has max level or fixed level upgrade is lower than follower current ilevel
-                  -- texture:SetVertexColor(1, 0, 0)
+                  texture:SetVertexColor(1, 1, 1)
                   texture:SetAlpha(0.3)
                   action_button_type = nil
                   shift_action_button_type = nil
