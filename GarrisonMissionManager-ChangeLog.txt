@@ -1,9 +1,12 @@
-Garrison Mission Manager, v36
+Garrison Mission Manager, v37
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-07-15 v37
+ * Follower upgrade items' buttons/summary.
+
 2015-07-08 v36
  * Treat legendary ship mission status as non-XP reward, allowing full epic teams to be deployed even if you still have ships to level up.
  * Extend currency multiplier handling to Oil and Apexis. In case they ever appear on same mission priority is Apexis > Oil > GR.
