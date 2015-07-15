@@ -5,14 +5,17 @@ local c_garrison_cache = addon_env.c_garrison_cache
 -- [AUTOLOCAL START]
 local AddFollowerToMission = C_Garrison.AddFollowerToMission
 local C_Garrison = C_Garrison
+local CreateFrame = CreateFrame
 local GARRISON_CURRENCY = GARRISON_CURRENCY
 local GARRISON_FOLLOWER_MAX_LEVEL = GARRISON_FOLLOWER_MAX_LEVEL
+local GARRISON_SHIP_OIL_CURRENCY = GARRISON_SHIP_OIL_CURRENCY
 local GarrisonMissionFrame = GarrisonMissionFrame
 local GetFramesRegisteredForEvent = GetFramesRegisteredForEvent
 local GetPartyMissionInfo = C_Garrison.GetPartyMissionInfo
 local RemoveFollowerFromMission = C_Garrison.RemoveFollowerFromMission
 local dump = DevTools_Dump
 local pairs = pairs
+local sfind = string.find
 local tinsert = table.insert
 local wipe = wipe
 -- [AUTOLOCAL END]
