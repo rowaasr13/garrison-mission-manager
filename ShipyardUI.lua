@@ -16,6 +16,8 @@ local top_for_mission = addon_env.top_for_mission
 local GetFilteredFollowers = addon_env.GetFilteredFollowers
 local UpdateMissionListButton = addon_env.UpdateMissionListButton
 
+local MissionPage = GarrisonShipyardFrame.MissionTab.MissionPage
+
 local function ShipyardMissionList_PartyButtonOnClick(self)
    if addon_env.RegisterManualInterraction then addon_env.RegisterManualInterraction() end
    addon_env.mission_page_pending_click = "ShipyardMissionPage1"
@@ -75,9 +77,11 @@ local function GarrisonShipyardMap_UpdateMissions_More()
 end
 hooksecurefunc("GarrisonShipyardMap_UpdateMissions", GarrisonShipyardMap_UpdateMissions_More)
 
-addon_env.MissionPage_ButtonsInit("ShipyardMissionPage", GarrisonShipyardFrame.MissionTab.MissionPage)
+addon_env.MissionPage_ButtonsInit("ShipyardMissionPage", MissionPage)
 
 local BestForCurrentSelectedMission = addon_env.BestForCurrentSelectedMission
 hooksecurefunc(GarrisonShipyardFrame, "ShowMission", function()
-   BestForCurrentSelectedMission(LE_FOLLOWER_TYPE_SHIPYARD_6_2, GarrisonShipyardFrame.MissionTab.MissionPage, "ShipyardMissionPage")
+   BestForCurrentSelectedMission(LE_FOLLOWER_TYPE_SHIPYARD_6_2, MissionPage, "ShipyardMissionPage")
 end)
+
+gmm_buttons.StartShipyardMission = MissionPage.StartMissionButton
