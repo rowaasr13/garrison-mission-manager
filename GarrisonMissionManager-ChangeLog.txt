@@ -1,11 +1,15 @@
-Garrison Mission Manager, v37
+Garrison Mission Manager, v38
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-07-15 v38
+ * Treat blockade ship mission status as non-XP reward too, allowing full epic teams to be deployed even if you still have ships to level up.
+ * Expose /run GMM_Click("StartShipyardMission").
+
 2015-07-15 v37
- * Follower upgrade items' buttons/summary.
+ * Follower upgrade items' buttons/summary. [[http://www.curseforge.com/media/images/84/465/GMM_FollowerUpgrades1.png|(screenshot)]]
 
 2015-07-08 v36
  * Treat legendary ship mission status as non-XP reward, allowing full epic teams to be deployed even if you still have ships to level up.

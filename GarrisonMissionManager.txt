@@ -1,4 +1,4 @@
-Garrison Mission Manager, v37
+Garrison Mission Manager, v38
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -17,8 +17,9 @@ People who love macros can access mission page buttons with commands below. GMM_
 
 Other modes in same way with "MissionPageYield1" (2, 3), "ShipyardMissionPage1" (2, 3) and "ShipyardMissionPageYield1" (2, 3).
 
-And Blizzard's "Start Mission" button with:
+Blizzard's "Start Mission" buttons are accessible with:
  * /run GMM_Click("StartMission")
+ * /run GMM_Click("StartShipyardMission")
 
 === Yield mode ===
 A second set of 3 more buttons will appear on missions offering material (GR/Apexis/Oil) or gold rewards, showing best choices for maximizing those resources, sacrificing other optimizations like using lowest possible followers. Those teams are also optimized for long term gain - i.e. you could have lower success rate on individual missions, but your material/gold yield will be better on average over time.
