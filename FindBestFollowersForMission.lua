@@ -99,7 +99,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
    end
 
    local mission_type = mission.type
-   if mission_type == "Ship-Legendary" or sfind(mission_type, "Ship-Siege", 1, true) == 1 then
+   if mission_type == "Ship-Legendary" or (mission_type and sfind(mission_type, "Ship-Siege", 1, true) == 1) then
       xp_only_rewards = false
    end
 
