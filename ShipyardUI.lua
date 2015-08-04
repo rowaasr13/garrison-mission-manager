@@ -6,7 +6,15 @@ local addon_name, addon_env = ...
 
 -- [AUTOLOCAL START]
 local After = C_Timer.After
+local GARRISON_SHIP_OIL_CURRENCY = GARRISON_SHIP_OIL_CURRENCY
 local GetCurrencyInfo = GetCurrencyInfo
+local LE_FOLLOWER_TYPE_SHIPYARD_6_2 = LE_FOLLOWER_TYPE_SHIPYARD_6_2
+local UnitGUID = UnitGUID
+local dump = DevTools_Dump
+local match = string.match
+local pairs = pairs
+local tinsert = table.insert
+local tsort = table.sort
 local wipe = wipe
 -- [AUTOLOCAL END]
 
@@ -85,3 +93,28 @@ hooksecurefunc(GarrisonShipyardFrame, "ShowMission", function()
 end)
 
 gmm_buttons.StartShipyardMission = MissionPage.StartMissionButton
+
+local spec_count = {}
+local spec_name = {}
+local spec_list = {}
+hooksecurefunc("GossipFrameOptionsUpdate", function(...)
+   local guid = UnitGUID("npc")
+   if not (guid and (match(guid, "^Creature%-0%-%d+%-%d+%-%d+%-94429%-") or match(guid, "^Creature%-0%-%d+%-%d+%-%d+%-95002%-"))) then return end
+
+   local filtered_followers = GetFilteredFollowers(LE_FOLLOWER_TYPE_SHIPYARD_6_2)
+   wipe(spec_count)
+   for idx = 1, #filtered_followers do
+      local follower = filtered_followers[idx]
+      local spec = follower.classSpec
+      local prev_count = spec_count[spec] or 0
+      spec_count[spec] = prev_count + 1
+      spec_name[spec] = follower.className
+   end
+   wipe(spec_list)
+   for spec in pairs(spec_name) do tinsert(spec_list, spec) end
+   tsort(spec_list)
+   for idx = 1, #spec_list do
+      local spec = spec_list[idx]
+      print(spec_name[spec] .. ": " .. spec_count[spec])
+   end
+end)
