@@ -36,7 +36,7 @@ local shipyard_mission_list_gmm_button_template = { "Button", nil, "UIPanelButto
 local function GarrisonShipyardMap_UpdateMissions_More()
    -- Blizzard updates those when not visible too, but there's no reason to copy them.
    local self = GarrisonShipyardFrame.MissionTab.MissionList
-   if not self:IsVisible() then return end   
+   if not self:IsVisible() then return end
 
    local missions = self.missions
    local mission_frames = self.missionFrames
@@ -52,7 +52,7 @@ local function GarrisonShipyardMap_UpdateMissions_More()
 
    for i = 1, #missions do
       local mission = missions[i]
-         
+
       -- Cache mission frames
       local frame = mission_frames[i]
       if frame then
@@ -68,12 +68,12 @@ local function GarrisonShipyardMap_UpdateMissions_More()
                gmm_button:SetScale(0.60)
                gmm_buttons['ShipyardMissionList' .. i] = gmm_button
             end
-            
+
             if (mission.inProgress) then
                gmm_button:Hide()
             else
                gmm_button:Show()
-               more_missions_to_cache = UpdateMissionListButton(mission, filtered_followers, frame, gmm_button, more_missions_to_cache, oil, 0.5)               
+               more_missions_to_cache = UpdateMissionListButton(mission, filtered_followers, frame, gmm_button, more_missions_to_cache, oil, 0.5)
             end
          end
       end
