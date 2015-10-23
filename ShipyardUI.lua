@@ -8,6 +8,8 @@ local addon_name, addon_env = ...
 local After = C_Timer.After
 local GARRISON_SHIP_OIL_CURRENCY = GARRISON_SHIP_OIL_CURRENCY
 local GetCurrencyInfo = GetCurrencyInfo
+local GetFollowerSoftCap = C_Garrison.GetFollowerSoftCap
+local GetNumActiveFollowers = C_Garrison.GetNumActiveFollowers
 local LE_FOLLOWER_TYPE_SHIPYARD_6_2 = LE_FOLLOWER_TYPE_SHIPYARD_6_2
 local UnitGUID = UnitGUID
 local dump = DevTools_Dump
@@ -117,4 +119,8 @@ hooksecurefunc("GossipFrameOptionsUpdate", function(...)
       local spec = spec_list[idx]
       print(spec_name[spec] .. ": " .. spec_count[spec])
    end
+
+   local max_followers = GetFollowerSoftCap(LE_FOLLOWER_TYPE_SHIPYARD_6_2)
+   local num_active_followers = GetNumActiveFollowers(LE_FOLLOWER_TYPE_SHIPYARD_6_2)
+   print(GARRISON_FLEET .. ": " .. num_active_followers .. "/" .. max_followers)
 end)
