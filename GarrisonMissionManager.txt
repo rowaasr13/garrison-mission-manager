@@ -58,7 +58,7 @@ A new button is added to the left of mission title that will copy to the chat Wo
 Seeing that all your followers are level 100 is mostly useless - what you really care about is what is their ilevel. Even Blizzard's UI shows follower ilevels on mission party screen when you add them to mission. GMM adopts those special indicators and expands them to follower portraits in all followers lists. It will also display ilevels on mission page even if mission don't require it, so it will be easier to see who you're sending on mission and if those followers would better be used elsewhere. Maxed (675) ilevel will also be colored green so it is easier to see unmaxed followers in the list who you'd want to upgrade.
 
 == Upgrade items summary and use buttons ==
-[[http://www.curseforge.com/media/images/84/465/GMM_FollowerUpgrades1.png|(screenshot)]]
+[[http://legacy.curseforge.com/thumbman/images/84/465/600x184/GMM_FollowerUpgrades1.png.-m1.png|(screenshot)]]
 
 Each follower page on follower tab in main garrison building now shows complete list of all your armor and weapon upgrades. You can click on buttons to instantly use any item on current follower or activate "unidentified" upgrades - those with yellow arrow. Buttons that can no longer upgrade current follower will be automatically disabled and dimmed. Items that would be too much wast on current follower - i.e. +6/+9 upgrades that waste 3 or more levels and 615/630/645 upgrades that provide less than 7 levels - are dyed yellow and will need shift-click to prevent accidental use. Thanks to that you can do things like spam-clicking +9 upgrades and be sure that GMM will stop when you should switch to lesser upgrades near cap.
 
