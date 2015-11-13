@@ -1,9 +1,12 @@
-Garrison Mission Manager, v38
+Garrison Mission Manager, v39
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-11-13 v39
+ * Show fleet summary in chat on accessing ship building NPC. [[http://legacy.curseforge.com/media/images/86/641/GMM_FleetSummary.png|(screenshot)]]
+
 2015-07-15 v38
  * Treat blockade ship mission status as non-XP reward too, allowing full epic teams to be deployed even if you still have ships to level up.
  * Expose /run GMM_Click("StartShipyardMission").
