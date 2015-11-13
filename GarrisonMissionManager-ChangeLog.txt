@@ -12,7 +12,7 @@ Garrison Mission Manager, v39
  * Expose /run GMM_Click("StartShipyardMission").
 
 2015-07-15 v37
- * Follower upgrade items' buttons/summary. [[http://www.curseforge.com/media/images/84/465/GMM_FollowerUpgrades1.png|(screenshot)]]
+ * Follower upgrade items' buttons/summary. [[http://legacy.curseforge.com/thumbman/images/84/465/600x184/GMM_FollowerUpgrades1.png.-m1.png|(screenshot)]]
 
 2015-07-08 v36
  * Treat legendary ship mission status as non-XP reward, allowing full epic teams to be deployed even if you still have ships to level up.
