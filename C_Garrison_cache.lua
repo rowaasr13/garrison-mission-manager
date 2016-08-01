@@ -1,5 +1,10 @@
 local addon_name, addon_env = ...
 
+-- [AUTOLOCAL START]
+local LE_GARRISON_TYPE_6_0 = LE_GARRISON_TYPE_6_0
+local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
+-- [AUTOLOCAL END]
+
 local getters = {}
 local cache = setmetatable({}, { __index = function(t, key)
    local result = getters[key]()
@@ -8,7 +13,10 @@ local cache = setmetatable({}, { __index = function(t, key)
 end})
 addon_env.c_garrison_cache = cache
 
-getters.GetBuildings = C_Garrison.GetBuildings
+local GetBuildings = C_Garrison.GetBuildings
+getters.GetBuildings = function()
+   return GetBuildings(LE_GARRISON_TYPE_6_0)
+end
 
 local salvage_yard_level_building_id = { [52]  = 1, [140] = 2, [141] = 3 }
 getters.salvage_yard_level = function()
@@ -21,15 +29,13 @@ getters.salvage_yard_level = function()
    return false
 end
 
-local function make_cache_arg1(getter)
-   return setmetatable({}, { __index = function(t, key)
-      local result = getter(key)
-      t[key] = result
-      return result
-   end})
-end
+local GetPossibleFollowersForBuilding = C_Garrison.GetPossibleFollowersForBuilding
+local cache_GetPossibleFollowersForBuilding = setmetatable({}, { __index = function(t, key)
+   local result = GetPossibleFollowersForBuilding(LE_FOLLOWER_TYPE_GARRISON_6_0, key)
+   t[key] = result
+   return result
+end})
 
-local cache_GetPossibleFollowersForBuilding = make_cache_arg1(C_Garrison.GetPossibleFollowersForBuilding)
 getters.GetPossibleFollowersForBuilding = function()
    wipe(cache_GetPossibleFollowersForBuilding)
    return cache_GetPossibleFollowersForBuilding
