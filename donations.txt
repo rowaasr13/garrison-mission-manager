@@ -1,4 +1,4 @@
-If you wish to support my projects or just feeeling like saying thanks, feel free to:
+If you wish to support my projects or just feeling like saying thanks, feel free to:
 
 * Invite my characters into raid
 ** I used to raid Heroic (now Mythic) content and though I raid less because of dissolving of my last guild, I still regulary run with normal/heroic PUGs, keep note of tactics and shouldn't be much of liability. :) My Battle.net e-mail is: rowaasr13@gmail.com. At the moment my most geared are Shadow Priest and Frost/Blood DK. I can join Mythic runs on EU-Kazzak.
@@ -15,13 +15,10 @@ If you wish to support my projects or just feeeling like saying thanks, feel fre
 * Donate some money through PayPal
 ** Either send your donation to rowaasr13@gmail.com or just click this link: https://www.paypal.com/cgi-bin/webscr?business=rowaasr13%40gmail.com&item_name=WoW+Addons+Development&cmd=_donations
 
-* Use QIWI.com or Svyaznoy money kiosk or their online service, or any other kiosk that accepts transfers to SvyaznoyBank cards and send some money directly to my card.
-** Svyaznoy card barcode: 2 989591 032141.
-
 * Use Yandex.Money service (Russian #1 search engine, local competitor to Google) to send some money. They accept VISA and MasterCard without registration as well as their own electronic wallet.
 ** Just click this link, default sum is set at 100 roubles: https://money.yandex.ru/embed/donate.xml?account=41001331906908&quickpay=donate&payment-type-choice=on&default-sum=100&targets=WoW+Addons+Development&button-text=05
 
 * Offer me some paid optimization project if you need something written in Lua (including WoW addons), Perl, JS, or C/C++ to work faster and use less memory.
 ** Other languages may be acceptable too, but it really depends on complexity of the project.
 
-* Buy me a drink if you're around Moscow or, sometimes, Lipetsk and Voronezh cities in Russia.
+* Buy me a drink if you're around Moscow in Russia. Sometimes you can catch me in Lipetsk and Voronezh too.
