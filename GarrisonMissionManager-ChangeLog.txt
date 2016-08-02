@@ -1,9 +1,13 @@
-Garrison Mission Manager, v39
+Garrison Mission Manager, v40
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-08-02 v40
+ * Update to Legion API changes; cleanup some old compatibility stuff.
+ (Known minor UI problem: shipyard mission buttons are sticking through debriefing screen.)
+
 2015-11-13 v39
  * Show fleet summary in chat on accessing ship building NPC. [[http://legacy.curseforge.com/media/images/86/641/GMM_FleetSummary.png|(screenshot)]]
 
