@@ -34,7 +34,20 @@ local function ShipyardMissionList_PartyButtonOnClick(self)
    return self:GetParent():Click()
 end
 
-local shipyard_mission_list_gmm_button_template = { "Button", nil, "UIPanelButtonTemplate", Width = 80, Height = 40, OnClick = ShipyardMissionList_PartyButtonOnClick, FrameLevelOffset = 3 }
+local shipyard_mission_list_gmm_button_template = {
+   "Button", nil, "UIPanelButtonTemplate",
+   Width = 80, Height = 40, FrameLevelOffset = 3, Scale = 0.60,
+   OnClick = ShipyardMissionList_PartyButtonOnClick,
+}
+local shipyard_mission_list_gmm_loot_template = {
+   "Button", nil, "UIPanelButtonTemplate",
+   Width = 40, Height = 40, FrameLevelOffset = 3, Scale = 0.75,
+   OnClick = ShipyardMissionList_PartyButtonOnClick,
+   Hide = 1,
+}
+
+local loot_frames = {}
+
 local function GarrisonShipyardMap_UpdateMissions_More()
    -- Blizzard updates those when not visible too, but there's no reason to copy them.
    local self = GarrisonShipyardFrame.MissionTab.MissionList
@@ -67,8 +80,12 @@ local function GarrisonShipyardMap_UpdateMissions_More()
                gmm_button = Widget(shipyard_mission_list_gmm_button_template)
                gmm_button:SetText(i)
                gmm_button:SetPoint("TOP", frame, "BOTTOM", 0, 10)
-               gmm_button:SetScale(0.60)
                gmm_buttons['ShipyardMissionList' .. i] = gmm_button
+
+               shipyard_mission_list_gmm_loot_template.parent = gmm_button
+               local loot_frame = Widget(shipyard_mission_list_gmm_loot_template)
+               loot_frame:SetPoint("LEFT", gmm_button, "RIGHT", -3, 0)
+               loot_frames[i] = loot_frame
             end
 
             if (mission.inProgress) then
@@ -76,6 +93,27 @@ local function GarrisonShipyardMap_UpdateMissions_More()
             else
                gmm_button:Show()
                more_missions_to_cache = UpdateMissionListButton(mission, filtered_followers, frame, gmm_button, more_missions_to_cache, oil, 0.5)
+               local reward_texture
+               for id, reward in pairs(mission.rewards) do
+                  if reward.itemID then
+                     local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(reward.itemID)
+                     reward_texture = itemTexture
+                  elseif reward.currencyID then
+                     local currency_id = reward.currencyID
+                     if currency_id ~= 0 then
+                        local _, _, currencyTexture = GetCurrencyInfo(reward.currencyID);
+                        reward_texture = currencyTexture
+                     end
+                  end
+                  if reward_texture then break end
+               end
+               local loot_frame = loot_frames[i]
+               if reward_texture then
+                  loot_frame:SetNormalTexture(reward_texture)
+                  loot_frame:Show()
+               else
+                  loot_frame:Hide()
+               end
             end
          end
       end
