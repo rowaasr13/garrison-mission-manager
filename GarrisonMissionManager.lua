@@ -60,20 +60,19 @@ end
 
 local time_texture = "|TInterface\\Icons\\spell_holy_borrowedtime:0|t"
 
+local salvage_item = {
+   bag       = 139593,
+   crate     = 114119, -- outdated
+   big_crate = 140590,
+}
+
 local hardcoded_salvage_textures = {
-   [114116] = "Interface\\ICONS\\INV_Misc_Bag_12.blp",
-   [114119] = "Interface\\ICONS\\INV_Crate_01.blp",
-   [114120] = "Interface\\ICONS\\INV_Eng_Crate2.blp",
+   [salvage_item.bag      ] = "Interface\\ICONS\\inv_misc_bag_10_red.blp",
+   [salvage_item.crate    ] = "Interface\\ICONS\\INV_Crate_01.blp",
+   [salvage_item.big_crate] = "Interface\\ICONS\\inv_crate_05.blp",
 }
 local salvage_textures = setmetatable({}, { __index = function(t, key)
-   local item_id
-   if key == "bag" then
-      item_id = 114116
-   elseif key == "crate" then
-      item_id = 114119
-   elseif key == "big_crate" then
-      item_id = 114120
-   end
+   local item_id = salvage_item[key]
 
    if item_id then
       local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item_id)
