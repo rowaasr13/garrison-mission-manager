@@ -187,6 +187,8 @@ function event_handlers:ADDON_LOADED(event, addon_loaded)
          ingored_followers = SVPC_GarrisonMissionManager.ingored_followers
       end
       event_frame:UnregisterEvent("ADDON_LOADED")
+   elseif addon_loaded == "Blizzard_OrderHallUI" and addon_env.OrderHallInitUI then
+      addon_env.OrderHallInitUI()
    end
 end
 local loaded, finished = IsAddOnLoaded(addon_name)
@@ -195,6 +197,11 @@ if finished then
 else
    event_frame:RegisterEvent("ADDON_LOADED")
 end
+
+function event_handlers:GARRISON_MISSION_NPC_OPENED()
+   if addon_env.OrderHallInitUI then addon_env.OrderHallInitUI() end
+end
+event_frame:RegisterEvent("GARRISON_MISSION_NPC_OPENED")
 
 local gmm_buttons = {}
 addon_env.gmm_buttons = gmm_buttons
