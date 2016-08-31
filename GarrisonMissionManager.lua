@@ -92,10 +92,9 @@ local top_for_mission = {}
 addon_env.top_for_mission = top_for_mission
 addon_env.top_for_mission_dirty = true
 
-local filtered_followers = {
-   [LE_FOLLOWER_TYPE_GARRISON_6_0] = {},
-   [LE_FOLLOWER_TYPE_SHIPYARD_6_2] = {},
-}
+local supported_follower_types = { LE_FOLLOWER_TYPE_GARRISON_6_0, LE_FOLLOWER_TYPE_SHIPYARD_6_2, LE_FOLLOWER_TYPE_GARRISON_7_0 }
+local filtered_followers = {}
+for _, type in pairs(supported_follower_types) do filtered_followers[type] = {} end
 local filtered_followers_dirty = true
 local follower_xp_cap = {}
 
@@ -234,7 +233,6 @@ local function SortFollowersByLevel(a, b)
    return a.iLevel > b.iLevel
 end
 
-local supported_follower_types = { LE_FOLLOWER_TYPE_GARRISON_6_0, LE_FOLLOWER_TYPE_SHIPYARD_6_2 }
 local function GetFilteredFollowers(type_id)
    if filtered_followers_dirty then
 
