@@ -599,7 +599,6 @@ local function GarrisonMissionPage_ShowMission_More(self, missionInfo)
    BestForCurrentSelectedMission(LE_FOLLOWER_TYPE_GARRISON_6_0, MissionPage, "MissionPage")
 end
 
-local class_based_SetClearFollower = GarrisonMissionFrame and GarrisonMissionFrame.AssignFollowerToMission and GarrisonMissionFrame.RemoveFollowerFromMission and true
 --[[ localized above ]] MissionPage_PartyButtonOnClick = function(self)
    local method_base = self.method_base
    local follower_frames = self.follower_frames
@@ -607,7 +606,7 @@ local class_based_SetClearFollower = GarrisonMissionFrame and GarrisonMissionFra
    if self[1] then
       event_frame:UnregisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
       for idx = 1, #follower_frames do
-         if class_based_SetClearFollower then method_base:RemoveFollowerFromMission(follower_frames[idx]) else GarrisonMissionPage_ClearFollower(follower_frames[idx]) end
+         method_base:RemoveFollowerFromMission(follower_frames[idx])
       end
 
       for idx = 1, #follower_frames do
@@ -615,17 +614,13 @@ local class_based_SetClearFollower = GarrisonMissionFrame and GarrisonMissionFra
          local follower = self[idx]
          if follower then
             local followerInfo = C_Garrison.GetFollowerInfo(follower)
-            if class_based_SetClearFollower then method_base:AssignFollowerToMission(followerFrame, followerInfo) else GarrisonMissionPage_SetFollower(followerFrame, followerInfo) end
+            method_base:AssignFollowerToMission(followerFrame, followerInfo)
          end
       end
       event_frame:RegisterEvent("GARRISON_FOLLOWER_LIST_UPDATE")
    end
 
-   if GarrisonFollowerMission_class_UpdateMissionParty then
-      method_base:UpdateMissionParty(follower_frames)
-   else
-      GarrisonMissionPage_UpdateMissionForParty()
-   end
+   method_base:UpdateMissionParty(follower_frames)
 end
 
 local function MissionList_PartyButtonOnClick(self)
@@ -918,7 +913,7 @@ end
 addon_env.MissionPage_ButtonsInit("MissionPage", MissionPage)
 MissionList_ButtonsInit()
 MissionPage_WarningInit()
-PostHookFunctionOrClass("GarrisonMissionPage_ShowMission", "GarrisonMissionFrame", "ShowMission", GarrisonMissionPage_ShowMission_More)
+hooksecurefunc(GarrisonMissionFrame, "ShowMission", GarrisonMissionPage_ShowMission_More)
 -- local count = 0
 -- hooksecurefunc("GarrisonFollowerList_UpdateFollowers", function(self) count = count + 1 print("GarrisonFollowerList_UpdateFollowers", count, self:GetName(), self:GetParent():GetName()) end)
 
