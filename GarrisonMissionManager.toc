@@ -6,8 +6,8 @@
 ## Author: Oleg "Rowaa[SR13]" Volkov
 
 ## LoadOnDemand: 1
-## LoadWith: Blizzard_GarrisonUI
-## Dependencies: Blizzard_GarrisonUI
+## LoadWith: Blizzard_GarrisonUI, Blizzard_OrderHallUI
+## RequiredDeps: Blizzard_GarrisonUI, Blizzard_OrderHallUI
 ## OptionalDeps: LibStub, LibDataBroker-1.1, Bagnon, Titan, SR13-TimeRecord
 
 ## SavedVariables: SV_GarrisonMissionManager
@@ -20,5 +20,6 @@ GarrisonMissionManager.lua
 SharedMissionUI.lua
 MissionUI.lua
 ShipyardUI.lua
+OrderHallUI.lua
 GarrisonBuilding.lua
 Broker.lua
