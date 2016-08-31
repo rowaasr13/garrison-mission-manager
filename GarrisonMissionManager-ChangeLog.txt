@@ -1,9 +1,13 @@
-Garrison Mission Manager, v40
+Garrison Mission Manager, v41
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2015-08-31 v41
+ * Class Hall support: buttons on individual mission's page.
+ * Show loot items in shipyard on small attachment to button on naval map.
+
 2015-08-02 v40
  * Update to Legion API changes; cleanup some old compatibility stuff.
  (Known minor UI problem: shipyard mission buttons are sticking through debriefing screen.)
