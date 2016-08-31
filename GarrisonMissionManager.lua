@@ -791,11 +791,15 @@ addon_env.MissionPage_ButtonsInit = function(button_prefix, parent_frame)
          local name = button_prefix .. suffix .. idx
          if not gmm_buttons[name] then
             local set_followers_button = CreateFrame("Button", nil, parent_frame, "UIPanelButtonTemplate")
+            -- TODO: all this stuff should be given to this function as args, not hardcoded
             -- Ugly, but I can't just parent to BorderFrame - buttons would be visible even on map screen
             set_followers_button:SetFrameLevel(set_followers_button:GetFrameLevel() + 4)
             if button_prefix == "ShipyardMissionPage" then
                set_followers_button.method_base = GarrisonShipyardFrame
                set_followers_button.follower_frames = GarrisonShipyardFrame.MissionTab.MissionPage.Followers
+            elseif button_prefix == "OrderHallMissionPage" then
+               set_followers_button.method_base = OrderHallMissionFrame
+               set_followers_button.follower_frames = OrderHallMissionFrame.MissionTab.MissionPage.Followers
             else
                set_followers_button.method_base = GarrisonMissionFrame
                set_followers_button.follower_frames = MissionPage.Followers
