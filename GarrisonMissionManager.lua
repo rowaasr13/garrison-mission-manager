@@ -254,7 +254,7 @@ local function GetFilteredFollowers(type_id)
          local free = 0
          local all_maxed = true
 
-         for idx = 1, #followers do
+         for idx = 1, followers and #followers or 0 do
             local follower = followers[idx]
             repeat
                if not follower.isCollected then break end
