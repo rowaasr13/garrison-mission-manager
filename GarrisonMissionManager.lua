@@ -918,8 +918,6 @@ addon_env.MissionPage_ButtonsInit("MissionPage", MissionPage)
 MissionList_ButtonsInit()
 MissionPage_WarningInit()
 hooksecurefunc(GarrisonMissionFrame, "ShowMission", GarrisonMissionPage_ShowMission_More)
--- local count = 0
--- hooksecurefunc("GarrisonFollowerList_UpdateFollowers", function(self) count = count + 1 print("GarrisonFollowerList_UpdateFollowers", count, self:GetName(), self:GetParent():GetName()) end)
 
 local info_ignore_toggle = {
    notCheckable = true,
@@ -932,7 +930,7 @@ local info_ignore_toggle = {
       addon_env.top_for_mission_dirty = true
       filtered_followers_dirty = true
       if GarrisonMissionFrame:IsShown() then
-         GarrisonFollowerList_UpdateFollowers(GarrisonMissionFrame.FollowerList)
+         GarrisonMissionFrame.FollowerList:UpdateFollowers()
          if MissionPage.missionInfo then
             BestForCurrentSelectedMission()
          end
@@ -991,8 +989,9 @@ local function GarrisonFollowerList_Update_More(self)
          local follower = followers[followersList[index]]
          if ( follower.isCollected ) then
             if ingored_followers[follower.followerID] then
-               button.BusyFrame:Show()
-               button.BusyFrame.Texture:SetTexture(0.5, 0, 0, 0.3)
+               local BusyFrame = follower_frame.BusyFrame
+               BusyFrame.Texture:SetColorTexture(0.5, 0, 0, 0.3)
+               BusyFrame:Show()
             end
 
             if follower.level == GARRISON_FOLLOWER_MAX_LEVEL then
