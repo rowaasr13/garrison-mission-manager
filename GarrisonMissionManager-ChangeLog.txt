@@ -4,7 +4,10 @@ Garrison Mission Manager, v42
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
-2016-08-31 v42
+2016-09-04 v43
+ * Update/fix ignoring followers in WoD garrison and updating their list after that to use new API.
+
+2016-09-02 v42
  * Handle cases when API returns nothing, not even empty list for followers - it seems this happens when you skip WoD garrison/shipyard and go directly to Legion.
 
 2016-08-31 v41
