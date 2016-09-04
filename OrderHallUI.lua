@@ -19,6 +19,7 @@ local BestForCurrentSelectedMission = addon_env.BestForCurrentSelectedMission
 local MissionPage
 
 local function OrderHallMissionFrame_ShowMission_More(self, missionInfo)
+   if not MissionPage:IsShown() then return end
    BestForCurrentSelectedMission(LE_FOLLOWER_TYPE_GARRISON_7_0, MissionPage, button_prefix)
 end
 
