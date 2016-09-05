@@ -58,6 +58,8 @@ local function FindBestFollowersForMission(mission, followers, mode)
    if slots > followers_count then return end
 
    local event_handlers = { GetFramesRegisteredForEvent("GARRISON_FOLLOWER_LIST_UPDATE") }
+   -- TODO: this can break everything else if player initiates combat and gets "too slow" before handlers are returned
+   -- TODO: restoration of events and previous followers should be put in separate function and called through .After
    for idx = 1, #event_handlers do UnregisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
 
    local mission_id = mission.missionID
