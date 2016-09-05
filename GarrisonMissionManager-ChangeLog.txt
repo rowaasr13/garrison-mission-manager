@@ -1,9 +1,12 @@
-Garrison Mission Manager, v42
+Garrison Mission Manager, v44
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2016-09-05 v44
+ * Only calculate parties on mission page, fixes error on Combat Ally page.
+
 2016-09-04 v43
  * Update/fix ignoring followers in WoD garrison and updating their list after that to use new API.
 
