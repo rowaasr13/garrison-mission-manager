@@ -300,6 +300,7 @@ local function GetFilteredFollowers(type_id)
          container.count = count
          container.free = free
          container.all_maxed = all_maxed
+         container.type = follower_type
          tsort(container, SortFollowersByLevel)
       end
 
