@@ -1013,6 +1013,13 @@ local function GarrisonFollowerList_Update_More(self)
 end
 hooksecurefunc(GarrisonMissionFrame.FollowerList, "UpdateData", GarrisonFollowerList_Update_More)
 
+GarrisonLandingPageMinimapButton:HookScript("OnClick", function(self, button, down)
+   if not (button == "RightButton" and not down) then return end
+   HideUIPanel(GarrisonLandingPage)
+   ShowGarrisonLandingPage(LE_GARRISON_TYPE_6_0)
+end)
+GarrisonLandingPageMinimapButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+
 gmm_buttons.StartMission = MissionPage.StartMissionButton
 
 -- Globals deliberately exposed for people outside
