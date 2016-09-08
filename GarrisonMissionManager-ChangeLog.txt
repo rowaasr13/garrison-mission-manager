@@ -4,6 +4,10 @@ Garrison Mission Manager, v44
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2016-09-08 v45
+ * Consider salvage yard level only when calculating party for WoD followers - fixes long standing "misfeature" of showing salvage crates in shipyard and any possible future problems with Class Hall.
+ * Reliably detect max level followers in party calculation.
+
 2016-09-05 v44
  * Only calculate parties on mission page, fixes error on Combat Ally page.
 
