@@ -9,12 +9,14 @@ local After = C_Timer.After
 local GARRISON_SHIP_OIL_CURRENCY = GARRISON_SHIP_OIL_CURRENCY
 local GetCurrencyInfo = GetCurrencyInfo
 local GetFollowerSoftCap = C_Garrison.GetFollowerSoftCap
+local GetItemInfoInstant = GetItemInfoInstant
 local GetNumActiveFollowers = C_Garrison.GetNumActiveFollowers
 local LE_FOLLOWER_TYPE_SHIPYARD_6_2 = LE_FOLLOWER_TYPE_SHIPYARD_6_2
 local UnitGUID = UnitGUID
 local dump = DevTools_Dump
 local match = string.match
 local pairs = pairs
+local print = print
 local tinsert = table.insert
 local tsort = table.sort
 local wipe = wipe
@@ -96,7 +98,7 @@ local function GarrisonShipyardMap_UpdateMissions_More()
                local reward_texture
                for id, reward in pairs(mission.rewards) do
                   if reward.itemID then
-                     local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(reward.itemID)
+                     local _, _, _, _, itemTexture = GetItemInfoInstant(reward.itemID)
                      reward_texture = itemTexture
                   elseif reward.currencyID then
                      local currency_id = reward.currencyID
