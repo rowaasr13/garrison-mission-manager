@@ -16,29 +16,39 @@ local After = C_Timer.After
 local CANCEL = CANCEL
 local C_Garrison = C_Garrison
 local ChatEdit_ActivateChat = ChatEdit_ActivateChat
+local CreateFrame = CreateFrame
 local FONT_COLOR_CODE_CLOSE = FONT_COLOR_CODE_CLOSE
 local GARRISON_CURRENCY = GARRISON_CURRENCY
 local GARRISON_FOLLOWER_IN_PARTY = GARRISON_FOLLOWER_IN_PARTY
 local GARRISON_FOLLOWER_MAX_LEVEL = GARRISON_FOLLOWER_MAX_LEVEL
 local GARRISON_FOLLOWER_ON_MISSION = GARRISON_FOLLOWER_ON_MISSION
 local GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION = GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION
+local GARRISON_SHIP_OIL_CURRENCY = GARRISON_SHIP_OIL_CURRENCY
 local GREEN_FONT_COLOR_CODE = GREEN_FONT_COLOR_CODE
-local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
-local LE_FOLLOWER_TYPE_SHIPYARD_6_2 = LE_FOLLOWER_TYPE_SHIPYARD_6_2
+local GarrisonLandingPage = GarrisonLandingPage
 local GarrisonMissionFrame = GarrisonMissionFrame
 local GetCurrencyInfo = GetCurrencyInfo
 local GetFollowerInfoForBuilding = C_Garrison.GetFollowerInfoForBuilding
 local GetFollowerMissionTimeLeft = C_Garrison.GetFollowerMissionTimeLeft
+local GetFollowers = C_Garrison.GetFollowers
 local GetFollowerStatus = C_Garrison.GetFollowerStatus
-local GetItemInfo = GetItemInfo
+local GetItemInfoInstant = GetItemInfoInstant
 local GetLandingPageShipmentInfo = C_Garrison.GetLandingPageShipmentInfo
+local GetTime = GetTime
 local HybridScrollFrame_GetOffset = HybridScrollFrame_GetOffset
+local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
+local LE_FOLLOWER_TYPE_GARRISON_7_0 = LE_FOLLOWER_TYPE_GARRISON_7_0
+local LE_FOLLOWER_TYPE_SHIPYARD_6_2 = LE_FOLLOWER_TYPE_SHIPYARD_6_2
+local LE_GARRISON_TYPE_6_0 = LE_GARRISON_TYPE_6_0
 local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
+local RemoveFollowerFromMission = C_Garrison.RemoveFollowerFromMission
 local dump = DevTools_Dump
 local format = string.format
 local pairs = pairs
+local print = print
 local tconcat = table.concat
 local tsort = table.sort
+local type = type
 local wipe = wipe
 -- [AUTOLOCAL END]
 
@@ -66,19 +76,11 @@ local salvage_item = {
    big_crate = 140590,
 }
 
-local hardcoded_salvage_textures = {
-   [salvage_item.bag      ] = "Interface\\ICONS\\inv_misc_bag_10_red.blp",
-   [salvage_item.crate    ] = "Interface\\ICONS\\INV_Crate_01.blp",
-   [salvage_item.big_crate] = "Interface\\ICONS\\inv_crate_05.blp",
-}
 local salvage_textures = setmetatable({}, { __index = function(t, key)
    local item_id = salvage_item[key]
 
    if item_id then
-      local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item_id)
-      if not itemTexture then
-         return "|T" .. hardcoded_salvage_textures[item_id] .. ":0|t"
-      end
+      local itemID, itemType, itemSubType, itemEquipLoc, itemTexture = GetItemInfoInstant(item_id)
       itemTexture = "|T" .. itemTexture .. ":0|t"
       t[key] = itemTexture
       return itemTexture
@@ -206,6 +208,7 @@ event_frame:RegisterEvent("GARRISON_MISSION_NPC_OPENED")
 local gmm_buttons = {}
 addon_env.gmm_buttons = gmm_buttons
 local gmm_frames = {}
+addon_env.gmm_frames = gmm_frames
 
 function GMM_dumpl(pattern, ...)
    local names = { strsplit(",", pattern) }
@@ -246,7 +249,7 @@ local function GetFilteredFollowers(type_id)
       for follower_type_idx = 1, #supported_follower_types do
          local follower_type = supported_follower_types[follower_type_idx]
 
-         local followers = C_Garrison.GetFollowers(follower_type)
+         local followers = GetFollowers(follower_type)
 
          local container = filtered_followers[follower_type]
          wipe(container)
