@@ -60,8 +60,10 @@ local function FindBestFollowersForMission(mission, followers, mode)
       wipe(top_unavailable[idx])
    end
 
+   local type70 = followers.type == LE_FOLLOWER_TYPE_GARRISON_7_0
+
    local slots = mission.numFollowers
-   if slots > followers_count then return end
+   if slots > followers_count and not type70 then return end
 
    local event_handlers = { GetFramesRegisteredForEvent("GARRISON_FOLLOWER_LIST_UPDATE") }
    -- TODO: this can break everything else if player initiates combat and gets "too slow" before handlers are returned
@@ -89,6 +91,18 @@ local function FindBestFollowersForMission(mission, followers, mode)
    for idx = slots + 1, 3 do
       max[idx] = followers_count + 1
       min[idx] = followers_count + 1
+   end
+
+   if type70 then
+      for idx = followers_count, 1, -1 do
+         if not followers[idx].isTroop then
+            max[1] = idx
+            break
+         end
+      end
+      for idx = 2, 3 do
+         max[idx] = followers_count + 1
+      end
    end
 
    local best_modes_count = 1
@@ -149,7 +163,12 @@ local function FindBestFollowersForMission(mission, followers, mode)
             if follower2.is_busy_for_mission then follower2_busy = 1 end
             if follower2.isTroop then follower2_is_troop = 1 end
          end
-         for i3 = min[3] or (i2 + 1), max[3] do
+         -- Special handling to calculate precisely one team for 1 filled slot in 3 members missions.
+         local i3_start = min[3] or (i2 + 1)
+         if type70 then
+            if i2 == followers_count + 1 then i3_start = followers_count + 1 end
+         end
+         for i3 = i3_start, max[3] do
             local follower3_maxed = 0
             local follower3 = followers[i3]
             local follower3_id
