@@ -143,6 +143,19 @@ for idx, data in pairs (C_Garrison.GetAllEncounterThreats(LE_FOLLOWER_TYPE_GARRI
    tinsert(mechanic_id, data.id)
 end
 
+local function DrawAbilityCounters(frame, followerID, followerInfo)
+   local self = FollowerTab
+   local abilities = followerInfo.abilities or GetFollowerAbilities(followerID)
+
+   for i=1, #abilities do
+      local ability = abilities[i]
+
+      local abilityFrame = self.AbilitiesFrame.Abilities[i]
+
+      abilityFrame.Name:SetText(ability.name .. '!')
+   end
+end
+
 hooksecurefunc(GarrisonMissionFrame.FollowerList, "ShowFollower", function(self)
    local followerID = FollowerTab.followerID
    if not followerID then return end
