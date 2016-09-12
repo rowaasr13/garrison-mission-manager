@@ -219,7 +219,18 @@ function GMM_dumpl(pattern, ...)
    end
 end
 
-local function SortFollowersByLevel(a, b)
+-- Sort troops to the end of the list,
+-- and greater level and greater ilevel to the start of the list.
+local function SortFollowers(a, b)
+   local a_is_troop = a.isTroop
+   local b_is_troop = b.isTroop
+
+   if a_is_troop then
+      if not b_is_troop then return false end
+   else
+      if b_is_troop then return true end
+   end
+
    local a_level = a.level
    local b_level = b.level
    if a_level ~= b_level then return a_level > b_level end
@@ -287,7 +298,7 @@ local function GetFilteredFollowers(type_id)
          container.free = free
          container.all_maxed = all_maxed
          container.type = follower_type
-         tsort(container, SortFollowersByLevel)
+         tsort(container, SortFollowers)
       end
 
       -- dump(filtered_followers)
@@ -417,7 +428,7 @@ local function BestForCurrentSelectedMission(type_id, mission_page, button_prefi
          local button = gmm_buttons[button_prefix .. suffix .. idx]
          local top_entry
          if suffix == 'Yield' then
-            if top.material_rewards or top.gold_rewards then
+            if top.yield or top.material_rewards or top.gold_rewards then
                top_entry = top_yield[idx]
             else
                top_entry = false
