@@ -1,14 +1,23 @@
 local addon_name, addon_env = ...
 
 -- [AUTOLOCAL START]
-local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
-local GetItemInfo = GetItemInfo
+local C_Garrison = C_Garrison
 local CastSpellOnFollower = C_Garrison.CastSpellOnFollower
-local FollowerTab = GarrisonMissionFrame.FollowerTab
+local CreateFrame = CreateFrame
+local GARRISON_FOLLOWER_MAX_LEVEL = GARRISON_FOLLOWER_MAX_LEVEL
+local GarrisonMissionFrame = GarrisonMissionFrame
+local GetFollowerAbilities = C_Garrison.GetFollowerAbilities
 local GetFollowerInfo = C_Garrison.GetFollowerInfo
 local GetFollowerItems = C_Garrison.GetFollowerItems
-local GetFollowerAbilities = C_Garrison.GetFollowerAbilities
+local GetItemInfo = GetItemInfo
+local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
+local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
+local pairs = pairs
+local tinsert = table.insert
+local type = type
 -- [AUTOLOCAL END]
+
+local FollowerTab = GarrisonMissionFrame.FollowerTab
 
 local Widget = addon_env.Widget
 local event_frame = addon_env.event_frame
