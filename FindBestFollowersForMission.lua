@@ -187,57 +187,40 @@ local function FindBestFollowersForMission(mission, followers, mode)
             -- at least one follower in party is busy (i.e. staus non-empty/non-party) for mission
             local follower_is_busy_for_mission = (follower1_busy + follower2_busy + follower3_busy) > 0
 
-            if
-               -- On follower XP-only missions throw away any team that is completely filled with maxed out followers
-               (xp_only_rewards and slots == followers_maxed and not (salvage_yard_level and all_followers_maxed))
-               -- On mission list screen don't bother calculating unavailable followers for now
-               or (mode == "mission_list" and follower_is_busy_for_mission)
-            then
-               -- skip
-            else
-               local follower_level_total = follower1_level + follower2_level + follower3_level
+            local skip -- if set, skip this team completely
 
-               if follower3 then
-                  if follower3_added and follower3_added ~= follower3_id then
-                     RemoveFollowerFromMission(mission_id, follower3_added)
-                     follower3_added = nil
+            if xp_only_rewards then
+               -- Throw away teams that are completely filled with maxed out followers
+               if slots == followers_maxed then
+                  -- However, if ALL free followers are maxed and we have salvage yard - don't.
+                  if not (salvage_yard_level and all_followers_maxed) then
+                     skip = true
                   end
                end
+            end
 
-               if follower2 then
-                  if follower2_added and follower2_added ~= follower2_id then
-                     RemoveFollowerFromMission(mission_id, follower2_added)
-                     follower2_added = nil
-                  end
+            -- Throw away "potential" teams with busy followers if we're just calculating one button for mission list
+            if mode == "mission_list" and follower_is_busy_for_mission then
+               skip = true
+            end
+
+            if not skip then
+               if follower3_added ~= follower3_id then
+                  if follower3_added then RemoveFollowerFromMission(mission_id, follower3_added) end
+                  if follower3_id then AddFollowerToMission(mission_id, follower3_id) end
+                  follower3_added = follower3_id
                end
 
-               if follower1_added and follower1_added ~= follower1_id then
-                  RemoveFollowerFromMission(mission_id, follower1_added)
-                  follower1_added = nil
+               if follower2_added ~= follower2_id then
+                  if follower2_added then RemoveFollowerFromMission(mission_id, follower2_added) end
+                  if follower2_id then AddFollowerToMission(mission_id, follower2_id) end
+                  follower2_added = follower2_id
                end
 
-               if not follower1_added then
-                  if AddFollowerToMission(mission_id, follower1_id) then
-                     follower1_added = follower1_id
-                  else
-                     --[[ error handling! ]]
-                  end
-               end
-
-               if follower2 and not follower2_added then
-                  if AddFollowerToMission(mission_id, follower2_id) then
-                     follower2_added = follower2_id
-                  else
-                     --[[ error handling! ]]
-                  end
-               end
-
-               if follower3 and not follower3_added then
-                  if AddFollowerToMission(mission_id, follower3_id) then
-                     follower3_added = follower3_id
-                  else
-                     --[[ error handling! ]]
-                  end
+               if follower1_added ~= follower1_id then
+                  if follower1_added then RemoveFollowerFromMission(mission_id, follower1_added) end
+                  AddFollowerToMission(mission_id, follower1_id)
+                  follower1_added = follower1_id
                end
 
                -- Calculate result
