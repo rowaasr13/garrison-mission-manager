@@ -299,9 +299,10 @@ local function FindBestFollowersForMission(mission, followers, mode)
                            if c_gold_yield > gold_yield then break end
                         end
 
-                        local cSuccessChance = current.successChance
-                        if cSuccessChance < successChance then found = true break end
-                        if cSuccessChance > successChance then break end
+                        do
+                           if prev_SuccessChance < successChance then found = true break end
+                           if prev_SuccessChance > successChance then break end
+                        end
 
                         if material_rewards then
                            local cMaterialMultiplier = prev_top.materialMultiplier
