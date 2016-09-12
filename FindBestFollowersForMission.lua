@@ -224,6 +224,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                end
 
                -- Calculate result
+               local follower_level_total = follower1_level + follower2_level + follower3_level
                local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier, goldMultiplier = GetPartyMissionInfo(mission_id)
                -- Uh, thanks 6.2, for lots of new calls and tables going directly to garbage right in the middle of most computational heavy loop.
                -- At least I can eliminate "type" after first check.
