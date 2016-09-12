@@ -5,6 +5,8 @@ local addon_name, addon_env = ...
 -- Underscore are my own variables
 
 -- [AUTOLOCAL START]
+local CreateFrame = CreateFrame
+local LE_FOLLOWER_TYPE_GARRISON_7_0 = LE_FOLLOWER_TYPE_GARRISON_7_0
 -- [AUTOLOCAL END]
 
 local button_prefix = "OrderHallMissionPage"
