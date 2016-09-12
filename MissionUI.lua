@@ -227,3 +227,6 @@ for item_type = 1, #upgrade_items do
       prev = u
    end
 end
+
+hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList,            "Update", addon_env.GarrisonMissionList_Update_More)
+hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList.listScroll, "update", addon_env.GarrisonMissionList_Update_More)
