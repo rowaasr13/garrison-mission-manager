@@ -2,33 +2,9 @@ local addon_name, addon_env = ...
 
 -- [AUTOLOCAL START]
 local CreateFrame = CreateFrame
-local GetItemInfo = GetItemInfo
-local tinsert = table.insert
-local tremove = table.remove
+local GetItemInfoInstant = GetItemInfoInstant
+local type = type
 -- [AUTOLOCAL END]
-
-local event_frame = CreateFrame("Frame")
-local event_handlers = {}
-event_frame:SetScript("OnEvent", function(self, event, ...)
-   local handler = event_handlers[event]
-   if handler then return handler(self, event, ...) end
-end)
-
-local pending_item_textures = {}
-local function ApplyPendingItemTextures(self)
-   for idx = #pending_item_textures, 1, -1 do
-      local entry = pending_item_textures[idx]
-      local item_id = entry[3]
-      local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item_id)
-      if itemTexture then
-         local widget = entry[1]
-         widget[entry[2]](widget, itemTexture)
-         tremove(pending_item_textures, idx)
-      end
-   end
-   if #pending_item_textures == 0 then self:UnregisterEvent("GET_ITEM_INFO_RECEIVED") end
-end
-event_handlers.GET_ITEM_INFO_RECEIVED = ApplyPendingItemTextures
 
 local function SetTextureOrItem(widget, method, texture, item_id)
    if texture then
@@ -36,13 +12,11 @@ local function SetTextureOrItem(widget, method, texture, item_id)
       return
    end
    if item_id then
-      local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item_id)
+      local itemID, itemType, itemSubType, itemEquipLoc, itemTexture = GetItemInfoInstant(item_id)
       if itemTexture then
          widget[method](widget, itemTexture)
       else
-         widget[method](widget, 0, 0, 0, 0)
-         tinsert(pending_item_textures, { widget, method, item_id })
-         event_frame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+         assert(nil, "SHOULD NEVER HAPPEN")
       end
       return
    end
