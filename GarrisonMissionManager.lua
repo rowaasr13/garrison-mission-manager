@@ -220,22 +220,6 @@ function GMM_dumpl(pattern, ...)
    end
 end
 
--- easy hooking for similar old style (functional) and new style (class-like) functions
--- returns true on hooking class
-local function PostHookFunctionOrClass(old_function, new_class, new_method, post_hook)
-   if new_class then
-      local new_class_table = type(new_class) == "string" and _G[new_class] or new_class
-      if new_class_table and new_class_table[new_method] then
-         -- print("GMM: hooking", new_class, new_method)
-         hooksecurefunc(new_class_table, new_method, post_hook)
-         return true
-      end
-   end
-
-   -- print("GMM: hooking", old_function)
-   hooksecurefunc(old_function, post_hook)
-end
-
 local function SortFollowersByLevel(a, b)
    local a_level = a.level
    local b_level = b.level
@@ -548,8 +532,7 @@ CheckPartyForProfessionFollowers = function()
       end
    end
 end
-
-local GarrisonFollowerMission_class_UpdateMissionParty = PostHookFunctionOrClass("GarrisonMissionPage_UpdateMissionForParty", "GarrisonMissionFrame", "UpdateMissionParty", CheckPartyForProfessionFollowers)
+hooksecurefunc(GarrisonMissionFrame, "UpdateMissionParty", CheckPartyForProfessionFollowers)
 
 local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, followerInfo, forMissionPage)
    if not forMissionPage then return end
