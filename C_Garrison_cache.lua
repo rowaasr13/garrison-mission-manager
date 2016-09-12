@@ -1,8 +1,10 @@
 local addon_name, addon_env = ...
 
 -- [AUTOLOCAL START]
-local LE_GARRISON_TYPE_6_0 = LE_GARRISON_TYPE_6_0
+local C_Garrison = C_Garrison
 local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
+local LE_GARRISON_TYPE_6_0 = LE_GARRISON_TYPE_6_0
+local wipe = wipe
 -- [AUTOLOCAL END]
 
 local getters = {}
