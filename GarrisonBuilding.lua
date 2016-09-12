@@ -7,12 +7,15 @@ local addon_name, addon_env = ...
 -- [AUTOLOCAL START] Automatic local aliases for Blizzard's globals
 local After = C_Timer.After
 local AssignFollowerToBuilding = C_Garrison.AssignFollowerToBuilding
+local C_Garrison = C_Garrison
+local CreateFrame = CreateFrame
 local FONT_COLOR_CODE_CLOSE = FONT_COLOR_CODE_CLOSE
 local GARRISON_FOLLOWER_WORKING = GARRISON_FOLLOWER_WORKING
 local GetFollowerInfoForBuilding = C_Garrison.GetFollowerInfoForBuilding
 local GetFollowerStatus = C_Garrison.GetFollowerStatus
-local PlaySound = PlaySound
 local ORANGE_FONT_COLOR_CODE = ORANGE_FONT_COLOR_CODE
+local PlaySound = PlaySound
+local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
 local RemoveFollowerFromBuilding = C_Garrison.RemoveFollowerFromBuilding
 local dump = DevTools_Dump
 local pairs = pairs
