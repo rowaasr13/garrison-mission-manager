@@ -17,6 +17,7 @@ local dump = DevTools_Dump
 local pairs = pairs
 local sfind = string.find
 local tinsert = table.insert
+local tremove = table.remove
 local wipe = wipe
 -- [AUTOLOCAL END]
 
@@ -128,17 +129,20 @@ local function FindBestFollowersForMission(mission, followers, mode)
       local follower1_maxed = follower1.levelXP == 0 and 1 or 0
       local follower1_level = follower1.isMaxLevel and follower1.iLevel or follower1.level
       local follower1_busy = follower1.is_busy_for_mission and 1 or 0
+      local follower1_is_troop = follower1.isTroop and 1 or 0
       for i2 = min[2] or (i1 + 1), max[2] do
          local follower2_maxed = 0
          local follower2 = followers[i2]
          local follower2_id
          local follower2_level = 0
          local follower2_busy = 0
+         local follower2_is_troop = 0
          if follower2 then
             follower2_id = follower2.followerID
             if follower2.levelXP == 0 then follower2_maxed = 1 end
             follower2_level = follower2.isMaxLevel and follower2.iLevel or follower2.level
             if follower2.is_busy_for_mission then follower2_busy = 1 end
+            if follower2.isTroop then follower2_is_troop = 1 end
          end
          for i3 = min[3] or (i2 + 1), max[3] do
             local follower3_maxed = 0
@@ -146,11 +150,13 @@ local function FindBestFollowersForMission(mission, followers, mode)
             local follower3_id
             local follower3_level = 0
             local follower3_busy = 0
+            local follower3_is_troop = 0
             if follower3 then
                follower3_id = follower3.followerID
                if follower3.levelXP == 0 then follower3_maxed = 1 end
                follower3_level = follower3.isMaxLevel and follower3.iLevel or follower3.level
                if follower3.is_busy_for_mission then follower3_busy = 1 end
+               if follower3.isTroop then follower3_is_troop = 1 end
             end
 
             local followers_maxed = follower1_maxed + follower2_maxed + follower3_maxed
