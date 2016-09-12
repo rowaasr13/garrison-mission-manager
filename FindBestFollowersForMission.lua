@@ -268,7 +268,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   end
 
                   for idx = 1, top_entries do
-                     local current = top_list[idx]
+                     local prev_top = top_list[idx]
 
                      local found
                      repeat -- Checking if new candidate for top is better than any top 3 already sored
@@ -282,15 +282,18 @@ local function FindBestFollowersForMission(mission, followers, mode)
                            break
                         end
 
-                        if not current[1] then found = true break end
+                        if not prev_top[1] then found = true break end
 
-                        local c_material_yield = current.material_yield
+                        local prev_SuccessChance = prev_top.successChance
+                        local prev_followers_maxed = prev_top.followers_maxed
+
+                        local c_material_yield = prev_top.material_yield
                         if mode == 'material_yield' then
                            if c_material_yield < material_yield then found = true break end
                            if c_material_yield > material_yield then break end
                         end
 
-                        local c_gold_yield = current.gold_yield
+                        local c_gold_yield = prev_top.gold_yield
                         if mode == 'gold_yield' then
                            if c_gold_yield < gold_yield then found = true break end
                            if c_gold_yield > gold_yield then break end
@@ -301,27 +304,26 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         if cSuccessChance > successChance then break end
 
                         if material_rewards then
-                           local cMaterialMultiplier = current.materialMultiplier
+                           local cMaterialMultiplier = prev_top.materialMultiplier
                            if cMaterialMultiplier < materialMultiplier then found = true break end
                            if cMaterialMultiplier > materialMultiplier then break end
                         end
 
-                        local c_followers_maxed = current.followers_maxed
-                        if c_followers_maxed > followers_maxed then found = true break end
-                        if c_followers_maxed < followers_maxed then break end
+                        if prev_followers_maxed > followers_maxed then found = true break end
+                        if prev_followers_maxed < followers_maxed then break end
 
-                        local cXpBonus = current.xpBonus
+                        local cXpBonus = prev_top.xpBonus
                         -- Maximize XP bonus only if party have unmaxed followers
                         if slots ~= followers_maxed then
                            if cXpBonus < xpBonus then found = true break end
                            if cXpBonus > xpBonus then break end
                         end
 
-                        local cTotalTimeSeconds = current.totalTimeSeconds
+                        local cTotalTimeSeconds = prev_top.totalTimeSeconds
                         if cTotalTimeSeconds > totalTimeSeconds then found = true break end
                         if cTotalTimeSeconds < totalTimeSeconds then break end
 
-                        local c_follower_level_total = current.follower_level_total
+                        local c_follower_level_total = prev_top.follower_level_total
                         if c_follower_level_total > follower_level_total then found = true break end
                         if c_follower_level_total < follower_level_total then break end
 
@@ -347,18 +349,18 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
                         -- Minimize material/gold multiplier if possible if no corresponding reward is available.
                         if not material_rewards then
-                           local c_material_multiplier = current.materialMultiplier
+                           local c_material_multiplier = prev_top.materialMultiplier
                            if c_material_multiplier > materialMultiplier then found = true break end
                            if c_material_multiplier < materialMultiplier then break end
                         end
 
                         if not gold_rewards then
-                           local c_gold_multiplier = current.goldMultiplier
+                           local c_gold_multiplier = prev_top.goldMultiplier
                            if c_gold_multiplier > goldMultiplier then found = true break end
                            if c_gold_multiplier < goldMultiplier then break end
                         end
 
-                        local cBuffCount = current.buffCount
+                        local cBuffCount = prev_top.buffCount
                         if cBuffCount > buffCount then found = true break end
                         if cBuffCount < buffCount then break end
 
@@ -369,7 +371,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                            end
                         end
 
-                        local cIsEnvMechanicCountered = current.isEnvMechanicCountered
+                        local cIsEnvMechanicCountered = prev_top.isEnvMechanicCountered
                         if cIsEnvMechanicCountered > isEnvMechanicCountered then found = true break end
                         if cIsEnvMechanicCountered < isEnvMechanicCountered then break end
                      until true
