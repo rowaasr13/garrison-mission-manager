@@ -1,12 +1,18 @@
-Garrison Mission Manager, v44
+Garrison Mission Manager, v46
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2016-09-16 v46
+ * Always send at least one champion on Class Hall missions.
+ * Support and optimize for teams that don't fill all slots on Class Hall missions in case you don't have enough free followers or if it would be simply a waste to send more than necessary.
+ * Internal clean-up and preparations for troop count unnecessary overmax (yeah, that's how Blizzard calls it) optimization.
+
 2016-09-08 v45
  * Consider salvage yard level only when calculating party for WoD followers - fixes long standing "misfeature" of showing salvage crates in shipyard and any possible future problems with Class Hall.
  * Reliably detect max level followers in party calculation.
+ * Right-clicking minimap button AFTER GMM was loaded (i.e. after you've seen mission table or already opened landing page at least once) will show WoD garrison lading page even if you have Class Hall.
 
 2016-09-05 v44
  * Only calculate parties on mission page, fixes error on Combat Ally page.
