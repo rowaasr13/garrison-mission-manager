@@ -138,6 +138,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
    local salvage_yard_level = followers.type == LE_FOLLOWER_TYPE_GARRISON_6_0 and c_garrison_cache.salvage_yard_level
    local all_followers_maxed = followers.all_maxed
 
+   local overmax_reward = mission.overmaxRewards
+   overmax_reward = #overmax_reward > 0
+
    local follower1_added, follower2_added, follower3_added
 
    -- for prof_runs = 1, mode ~= "mission_list" and 100 or 1 do local prof_start = timer()
@@ -228,6 +231,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier, goldMultiplier = GetPartyMissionInfo(mission_id)
                -- Uh, thanks 6.2, for lots of new calls and tables going directly to garbage right in the middle of most computational heavy loop.
                -- At least I can eliminate "type" after first check.
+               -- TODO: remove old API support
                if not currencyMultipliers_type and materialMultiplier then
                   local detected_type = type(materialMultiplier)
                   if detected_type == "table" or detected_type == "number" then currencyMultipliers_type = detected_type end
@@ -299,9 +303,35 @@ local function FindBestFollowersForMission(mission, followers, mode)
                            if c_gold_yield > gold_yield then break end
                         end
 
-                        do
+                        if not type70 or overmax_reward then -- TODO: FollowerOptions
                            if prev_SuccessChance < successChance then found = true break end
                            if prev_SuccessChance > successChance then break end
+                        else
+                           -- No point in going over 100%. Try to find team >= 100%, but with as little overkill as posible.
+                           local prev_SuccessChance_clamped
+                           local successChance_clamped
+                           local prev_SuccessChance_over
+                           local successChance_over
+                           if prev_SuccessChance > 100 then
+                              prev_SuccessChance_clamped = 100
+                              prev_SuccessChance_over = prev_SuccessChance - 100
+                           else
+                              prev_SuccessChance_clamped = prev_SuccessChance
+                              prev_SuccessChance_over = 0
+                           end
+                           if successChance > 100 then
+                              successChance_clamped = 100
+                              successChance_over = successChance - 100
+                           else
+                              successChance_clamped = successChance
+                              successChance_over = 0
+                           end
+
+                           if prev_SuccessChance_clamped > successChance_clamped then break end
+                           if prev_SuccessChance_clamped < successChance_clamped then found = true break end
+
+                           if prev_SuccessChance_over < successChance_over then break end
+                           if prev_SuccessChance_over > successChance_over then found = true break end
                         end
 
                         if material_rewards then
