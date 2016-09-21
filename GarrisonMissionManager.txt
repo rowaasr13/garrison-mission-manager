@@ -1,4 +1,4 @@
-Garrison Mission Manager, v46
+Garrison Mission Manager, v47
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -60,7 +60,7 @@ Seeing that all your followers are level 100 is mostly useless - what you really
 == Upgrade items summary and use buttons ==
 [[http://legacy.curseforge.com/thumbman/images/84/465/600x184/GMM_FollowerUpgrades1.png.-m1.png|(screenshot)]]
 
-Each follower page on follower tab in main garrison building now shows complete list of all your armor and weapon upgrades. You can click on buttons to instantly use any item on current follower or activate "unidentified" upgrades - those with yellow arrow. Buttons that can no longer upgrade current follower will be automatically disabled and dimmed. Items that would be too much wast on current follower - i.e. +6/+9 upgrades that waste 3 or more levels and 615/630/645 upgrades that provide less than 7 levels - are dyed yellow and will need shift-click to prevent accidental use. Thanks to that you can do things like spam-clicking +9 upgrades and be sure that GMM will stop when you should switch to lesser upgrades near cap.
+Each follower page on follower tab in main garrison building now shows complete list of all your armor and weapon upgrades. You can click on buttons to instantly use any item on current follower or activate "unidentified" upgrades - those with yellow arrow. Buttons that can no longer upgrade current follower will be automatically disabled and dimmed. Items that would be too much waste on current follower - i.e. +6/+9 upgrades that waste 3 or more levels and 615/630/645 upgrades that provide less than 7 levels - are dyed yellow and will need shift-click to prevent accidental use. Thanks to that you can do things like spam-clicking +9 upgrades and be sure that GMM will stop when you should switch to lesser upgrades near cap.
 
 == Fleet summary ==
 [[http://legacy.curseforge.com/media/images/86/641/GMM_FleetSummary.png|(screenshot)]]
