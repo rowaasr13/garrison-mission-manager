@@ -1,13 +1,16 @@
-Garrison Mission Manager, v46
+Garrison Mission Manager, v47
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2016-09-21 v47
+ * Party for missions without bonus loot will be optimized to have as little "extra" success over 100% as possible.
+
 2016-09-16 v46
  * Always send at least one champion on Class Hall missions.
  * Support and optimize for teams that don't fill all slots on Class Hall missions in case you don't have enough free followers or if it would be simply a waste to send more than necessary.
- * Internal clean-up and preparations for troop count unnecessary overmax (yeah, that's how Blizzard calls it) optimization.
+ * Internal clean-up and preparations for troop count and unnecessary overmax (yeah, that's how Blizzard calls it) optimization.
 
 2016-09-08 v45
  * Consider salvage yard level only when calculating party for WoD followers - fixes long standing "misfeature" of showing salvage crates in shipyard and any possible future problems with Class Hall.
