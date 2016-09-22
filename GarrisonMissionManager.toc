@@ -18,6 +18,10 @@ LazyWidget.lua
 C_Garrison_cache.lua
 FindBestFollowersForMission.lua
 GarrisonMissionManager.lua
+MissionUI_Shared.lua
+MissionUI_Garrison.lua
+MissionUI_Shipyard.lua
+MissionUI_OrderHall.lua
 SharedMissionUI.lua
 MissionUI.lua
 ShipyardUI.lua
