@@ -20,16 +20,13 @@ local BestForCurrentSelectedMission = addon_env.BestForCurrentSelectedMission
 
 local MissionPage
 
-local function OrderHallMissionFrame_ShowMission_More(self, missionInfo)
-   if not MissionPage:IsShown() then return end
-   BestForCurrentSelectedMission(LE_FOLLOWER_TYPE_GARRISON_7_0, MissionPage, button_prefix)
-end
-
 function addon_env.OrderHallInitUI()
    if not OrderHallMissionFrame then return end
    MissionPage = OrderHallMissionFrame.MissionTab.MissionPage
    addon_env.MissionPage_ButtonsInit(button_prefix, MissionPage)
-   hooksecurefunc(OrderHallMissionFrame, "ShowMission", OrderHallMissionFrame_ShowMission_More)
+   addon_env.mission_page_button_prefix_for_type_id[LE_FOLLOWER_TYPE_GARRISON_7_0] = button_prefix
+   hooksecurefunc(OrderHallMissionFrame, "ShowMission", addon_env.ShowMission_More)
+
    addon_env.OrderHallInitUI = nil
 end
 
