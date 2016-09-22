@@ -17,11 +17,14 @@ local tinsert = table.insert
 local type = type
 -- [AUTOLOCAL END]
 
+local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
+local MissionPageFollowers = MissionPage.Followers
 local FollowerTab = GarrisonMissionFrame.FollowerTab
 
 local Widget = addon_env.Widget
 local event_frame = addon_env.event_frame
 local event_handlers = addon_env.event_handlers
+local gmm_frames = addon_env.gmm_frames
 
 hooksecurefunc("GarrisonMissionButton_SetRewards", function(self, rewards, numRewards)
    local index = 1
@@ -228,5 +231,33 @@ for item_type = 1, #upgrade_items do
    end
 end
 
-hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList,            "Update", addon_env.GarrisonMissionList_Update_More)
-hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList.listScroll, "update", addon_env.GarrisonMissionList_Update_More)
+local function MissionPage_WarningInit()
+   for idx = 1, #MissionPageFollowers do
+      local follower_frame = MissionPageFollowers[idx]
+      -- TODO: inherit from name?
+      local warning = follower_frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+      warning:SetWidth(185)
+      warning:SetHeight(1)
+      warning:SetPoint("BOTTOM", follower_frame, "TOP", 0, -68)
+      gmm_frames["MissionPageFollowerWarning" .. idx] = warning
+
+      gmm_frames["MissionPageFollowerXP" .. idx]          = Widget{type = "Texture", parent = follower_frame, SubLayer = 3, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0.212, 0, 0.337 }, Hide = true }
+      gmm_frames["MissionPageFollowerXPGainBase" .. idx]  = Widget{type = "Texture", parent = follower_frame, SubLayer = 2, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0.6, 1, 0 }, Hide = true }
+      gmm_frames["MissionPageFollowerXPGainBonus" .. idx] = Widget{type = "Texture", parent = follower_frame, SubLayer = 1, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0, 0.75, 1 }, Hide = true }
+   end
+end
+
+addon_env.MissionPage_ButtonsInit("MissionPage", MissionPage)
+addon_env.MissionList_ButtonsInit()
+MissionPage_WarningInit()
+
+addon_env.mission_page_button_prefix_for_type_id[LE_FOLLOWER_TYPE_GARRISON_6_0] = "MissionPage"
+hooksecurefunc(GarrisonMissionFrame, "ShowMission", addon_env.ShowMission_More)
+
+local MissionList_Update_More = addon_env.MissionList_Update_More
+local function GarrisonMissionFrame_MissionList_Update_More()
+   MissionList_Update_More(GarrisonMissionFrame.MissionTab.MissionList, GarrisonMissionFrame_MissionList_Update_More)
+end
+
+hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList,            "Update", GarrisonMissionFrame_MissionList_Update_More)
+hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList.listScroll, "update", GarrisonMissionFrame_MissionList_Update_More)
