@@ -26,6 +26,8 @@ local event_frame = addon_env.event_frame
 local event_handlers = addon_env.event_handlers
 local gmm_frames = addon_env.gmm_frames
 
+local tts = LibStub:GetLibrary("LibTTScan-1.0", true)
+
 hooksecurefunc("GarrisonMissionButton_SetRewards", function(self, rewards, numRewards)
    local index = 1
    local Rewards = self.Rewards
@@ -33,10 +35,17 @@ hooksecurefunc("GarrisonMissionButton_SetRewards", function(self, rewards, numRe
       local button = Rewards[index]
       local item_id = reward.itemID
       if item_id and reward.quantity == 1 then
-         local _, _, itemRarity, itemLevel = GetItemInfo(item_id)
+         local _, link, itemRarity, itemLevel = GetItemInfo(item_id)
+         local text
          if itemRarity and itemLevel and itemLevel >= 500 then
+            text = ITEM_QUALITY_COLORS[itemRarity].hex .. itemLevel
+         end
+         if not text and tts then
+            text = tts.GetItemArtifactPower(item_id)
+         end
+         if text then
             local Quantity = button.Quantity
-            Quantity:SetText(ITEM_QUALITY_COLORS[itemRarity].hex .. itemLevel)
+            Quantity:SetText(text)
             Quantity:Show()
          end
       end
