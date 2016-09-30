@@ -39,6 +39,7 @@ local UnregisterEvent = event_frame.UnregisterEvent
 
 -- will be "table" in 6.2, number before it
 local currencyMultipliers_type
+-- TODO: Fix this, broken for OH
 local class_based_SetClearFollower = GarrisonMissionFrame and GarrisonMissionFrame.AssignFollowerToMission and GarrisonMissionFrame.RemoveFollowerFromMission and true
 
 local top = {{}, {}, {}, {}}
@@ -58,12 +59,13 @@ local function FindBestFollowersForMission(mission, followers, mode)
       wipe(top[idx])
       wipe(top_yield[idx])
       wipe(top_unavailable[idx])
+      top.yield = nil
    end
 
    local type70 = followers.type == LE_FOLLOWER_TYPE_GARRISON_7_0
 
    local slots = mission.numFollowers
-   if slots > followers_count and not type70 then return end
+   if (slots > followers_count and not type70) or addon_env.b then return end
 
    local event_handlers = { GetFramesRegisteredForEvent("GARRISON_FOLLOWER_LIST_UPDATE") }
    -- TODO: this can break everything else if player initiates combat and gets "too slow" before handlers are returned
@@ -187,6 +189,8 @@ local function FindBestFollowersForMission(mission, followers, mode)
             end
 
             local followers_maxed = follower1_maxed + follower2_maxed + follower3_maxed
+            local followers_troop = follower1_is_troop + follower2_is_troop + follower3_is_troop
+
             -- at least one follower in party is busy (i.e. staus non-empty/non-party) for mission
             local follower_is_busy_for_mission = (follower1_busy + follower2_busy + follower3_busy) > 0
 
@@ -288,6 +292,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
                         if not prev_top[1] then found = true break end
 
+                        local prev_followers_troop = prev_top.followers_troop
                         local prev_SuccessChance = prev_top.successChance
                         local prev_followers_maxed = prev_top.followers_maxed
 
@@ -430,6 +435,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         new.all_followers_maxed = all_followers_maxed_on_mission
                         new.follower_level_total = follower_level_total
                         new.mission_level = mission.level
+                        new.followers_troop = followers_troop
                         tinsert(top_list, idx, new)
                         top_list[5] = nil
                         break
