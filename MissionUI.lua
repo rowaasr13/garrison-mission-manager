@@ -257,15 +257,14 @@ local function MissionPage_WarningInit()
 end
 
 addon_env.MissionPage_ButtonsInit("MissionPage", MissionPage)
-addon_env.MissionList_ButtonsInit()
 MissionPage_WarningInit()
-
 addon_env.mission_page_button_prefix_for_type_id[LE_FOLLOWER_TYPE_GARRISON_6_0] = "MissionPage"
 hooksecurefunc(GarrisonMissionFrame, "ShowMission", addon_env.ShowMission_More)
 
+addon_env.MissionList_ButtonsInit(GarrisonMissionFrame.MissionTab.MissionList, "GarnisonMissionList")
 local MissionList_Update_More = addon_env.MissionList_Update_More
 local function GarrisonMissionFrame_MissionList_Update_More()
-   MissionList_Update_More(GarrisonMissionFrame.MissionTab.MissionList, GarrisonMissionFrame_MissionList_Update_More)
+   MissionList_Update_More(GarrisonMissionFrame.MissionTab.MissionList, GarrisonMissionFrame_MissionList_Update_More, "GarnisonMissionList", LE_FOLLOWER_TYPE_GARRISON_6_0, GARRISON_CURRENCY)
 end
 
 hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList,            "Update", GarrisonMissionFrame_MissionList_Update_More)
