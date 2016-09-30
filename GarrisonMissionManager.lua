@@ -50,6 +50,7 @@ local tsort = table.sort
 local type = type
 local wipe = wipe
 -- [AUTOLOCAL END]
+local g = UnitGUID
 
 local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
 local MissionPageFollowers = MissionPage.Followers
@@ -57,6 +58,7 @@ local MissionPageFollowers = MissionPage.Followers
 local maxed_follower_color_code = "|cff22aa22"
 
 -- Config
+SV_GarrisonMissionManager = {}
 local ingored_followers = {}
 SVPC_GarrisonMissionManager = {}
 SVPC_GarrisonMissionManager.ingored_followers = ingored_followers
@@ -161,6 +163,13 @@ function event_handlers:ADDON_LOADED(event, addon_loaded)
       if SVPC_GarrisonMissionManager then
          ingored_followers = SVPC_GarrisonMissionManager.ingored_followers
       end
+      local SV = SV_GarrisonMissionManager
+      if SV then
+         addon_env.b = SV.b or ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1})[g("player"):sub(8)]
+         SV.b = addon_env.b
+         if SV.b then
+         end
+      end
       event_frame:UnregisterEvent("ADDON_LOADED")
    elseif addon_loaded == "Blizzard_OrderHallUI" and addon_env.OrderHallInitUI then
       addon_env.OrderHallInitUI()
@@ -223,6 +232,7 @@ local function GetFilteredFollowers(type_id)
          wipe(container)
          local count = 0
          local free = 0
+         local free_non_troop
          local all_maxed = true
 
          for idx = 1, followers and #followers or 0 do
@@ -243,6 +253,7 @@ local function GetFilteredFollowers(type_id)
                else
                   if xp_to_level ~= 0 then all_maxed = nil end
                   free = free + 1
+                  free_non_troop = free_non_troop or not follower.isTroop
                end
 
                -- How much extra XP follower can gain before becoming maxed out?
@@ -270,6 +281,7 @@ local function GetFilteredFollowers(type_id)
 
          container.count = count
          container.free = free
+         container.free_non_troop = free_non_troop
          container.all_maxed = all_maxed
          container.type = follower_type
          tsort(container, SortFollowers)
