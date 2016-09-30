@@ -267,12 +267,12 @@ function addon_env.MissionPage_ButtonsInit(button_prefix, parent_frame)
    end)
 end
 
-function addon_env.MissionList_ButtonsInit()
-   local level_anchor = GarrisonMissionFrame.MissionTab.MissionList.listScroll
-   local blizzard_buttons = GarrisonMissionFrame.MissionTab.MissionList.listScroll.buttons
+function addon_env.MissionList_ButtonsInit(blizzard_mission_list, frame_prefix)
+   local level_anchor = blizzard_mission_list.listScroll
+   local blizzard_buttons = blizzard_mission_list.listScroll.buttons
    for idx = 1, #blizzard_buttons do
       local blizzard_button = blizzard_buttons[idx]
-      if not gmm_buttons['MissionList' .. idx] then
+      if not gmm_buttons[frame_prefix .. idx] then
          -- move first reward to left a little, rest are anchored to first
          local reward = blizzard_button.Rewards[1]
          for point_idx = 1, reward:GetNumPoints() do
@@ -290,16 +290,16 @@ function addon_env.MissionList_ButtonsInit()
          set_followers_button:SetHeight(40)
          set_followers_button:SetPoint("LEFT", blizzard_button, "RIGHT", -65, 0)
          set_followers_button:SetScript("OnClick", MissionList_PartyButtonOnClick)
-         gmm_buttons['MissionList' .. idx] = set_followers_button
+         gmm_buttons[frame_prefix .. idx] = set_followers_button
       end
 
-      if not gmm_frames['MissioListExpirationText' .. idx] then
+      if not gmm_frames[frame_prefix .. 'ExpirationText' .. idx] then
          local expiration = blizzard_button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
          expiration:SetWidth(500)
          expiration:SetHeight(1)
          expiration:SetPoint("BOTTOMRIGHT", blizzard_button, "BOTTOMRIGHT", -10, 8)
          expiration:SetJustifyH("RIGHT")
-         gmm_frames['MissioListExpirationText' .. idx] = expiration
+         gmm_frames[frame_prefix .. 'ExpirationText' .. idx] = expiration
       end
    end
    -- GarrisonMissionFrame.MissionTab.MissionList.listScroll.scrollBar:SetFrameLevel(gmm_buttons['MissionList1']:GetFrameLevel() - 3)
@@ -350,8 +350,13 @@ local function BestForCurrentSelectedMission(type_id, mission_page, button_prefi
       end
    end
 
-   if addon_env.mission_page_pending_click then
-      MissionPage_PartyButtonOnClick(gmm_buttons[addon_env.mission_page_pending_click])
+   local mission_page_pending_click = addon_env.mission_page_pending_click
+   if mission_page_pending_click then
+      -- FIXME: ugly
+      if mission_page_pending_click == "MissionPage1" and not gmm_buttons[mission_page_pending_click]:IsVisible() and gmm_buttons['OrderHallMissionPage1']:IsVisible() then
+         mission_page_pending_click = 'OrderHallMissionPage1'
+      end
+      MissionPage_PartyButtonOnClick(gmm_buttons[mission_page_pending_click])
       addon_env.mission_page_pending_click = nil
    end
 end
@@ -361,9 +366,10 @@ local mission_page_button_prefix_for_type_id = {}
 addon_env.mission_page_button_prefix_for_type_id = mission_page_button_prefix_for_type_id
 local function ShowMission_More(self, missionInfo)
    local mission_page = self.MissionTab.MissionPage
+   if not mission_page:IsShown() then return end
    local follower_type_id = self.followerTypeID
 
-   if missionInfo.iLevel > 0 then
+   if missionInfo.iLevel > 0 and missionInfo.iLevel ~= 760 then
       mission_page.showItemLevel = false
       local stage = mission_page.Stage
       stage.Level:SetPoint("CENTER", stage.Header, "TOPLEFT", 30, -36)
@@ -379,7 +385,16 @@ end
 addon_env.ShowMission_More = ShowMission_More
 
 local function UpdateMissionListButton(mission, filtered_followers, blizzard_button, gmm_button, more_missions_to_cache, resources, inactive_alpha)
-   if (mission.numFollowers > filtered_followers.free) or (mission.cost > resources) then
+   local cant_complete = mission.cost > resources
+   if not cant_complete then
+      if filtered_followers.type == LE_FOLLOWER_TYPE_GARRISON_7_0 then
+         cant_complete = not filtered_followers.free_non_troop
+      else
+         cant_complete = mission.numFollowers > filtered_followers.free
+      end
+   end
+
+   if cant_complete then
       blizzard_button:SetAlpha(inactive_alpha or 0.3)
       gmm_button:SetText()
    else
@@ -424,7 +439,7 @@ addon_env.UpdateMissionListButton = UpdateMissionListButton
 -- Add more data to mission list over Blizzard's own
 local mission_expiration_format_days  = "%s" .. DAY_ONELETTER_ABBR:gsub(" ", "") .. " %02d:%02d"
 local mission_expiration_format_hours = "%s" ..                                        "%d:%02d"
-local function MissionList_Update_More(self, caller)
+local function MissionList_Update_More(self, caller, frame_prefix, follower_type, currency)
    -- Blizzard updates those when not visible too, but there's no reason to copy them.
    if not self:IsVisible() then return end
    local scrollFrame = self.listScroll
@@ -433,8 +448,8 @@ local function MissionList_Update_More(self, caller)
 
    if self.showInProgress then
       for i = 1, numButtons do
-         gmm_buttons['MissionList' .. i]:Hide()
-         gmm_frames['MissioListExpirationText' .. i]:SetText()
+         gmm_buttons[frame_prefix .. i]:Hide()
+         gmm_frames[frame_prefix .. 'ExpirationText' .. i]:SetText()
          buttons[i]:SetAlpha(1)
       end
       return
@@ -452,9 +467,9 @@ local function MissionList_Update_More(self, caller)
    local missions = self.availableMissions
    local offset = HybridScrollFrame_GetOffset(scrollFrame)
 
-   local filtered_followers = GetFilteredFollowers(LE_FOLLOWER_TYPE_GARRISON_6_0)
+   local filtered_followers = GetFilteredFollowers(follower_type)
    local more_missions_to_cache
-   local _, garrison_resources = GetCurrencyInfo(GARRISON_CURRENCY)
+   local _, garrison_resources = GetCurrencyInfo(currency)
 
    local time = GetTime()
 
@@ -464,7 +479,7 @@ local function MissionList_Update_More(self, caller)
       local index = offset + i
       if index <= numMissions then
          local mission = missions[index]
-         local gmm_button = gmm_buttons['MissionList' .. i]
+         local gmm_button = gmm_buttons[frame_prefix .. i]
 
          more_missions_to_cache = UpdateMissionListButton(mission, filtered_followers, button, gmm_button, more_missions_to_cache, garrison_resources)
 
@@ -493,21 +508,22 @@ local function MissionList_Update_More(self, caller)
                local hours = remaining % 24
                local days = (remaining - hours) / 24
                if days > 0 then
-                  gmm_frames['MissioListExpirationText' .. i]:SetFormattedText(mission_expiration_format_days, color_code, days, hours, minutes)
+                  gmm_frames[frame_prefix .. 'ExpirationText' .. i]:SetFormattedText(mission_expiration_format_days, color_code, days, hours, minutes)
                else
-                  gmm_frames['MissioListExpirationText' .. i]:SetFormattedText(mission_expiration_format_hours, color_code, hours, minutes)
+                  gmm_frames[frame_prefix .. 'ExpirationText' .. i]:SetFormattedText(mission_expiration_format_hours, color_code, hours, minutes)
                end
                expiration_text_set = true
             end
          end
 
          if not expiration_text_set then
-            gmm_frames['MissioListExpirationText' .. i]:SetText()
+            gmm_frames[frame_prefix .. 'ExpirationText' .. i]:SetText()
          end
 
          -- Just overwrite level with ilevel if it is not 0. There's no use knowing what base level mission have.
          -- Blizzard UI also checks that mission is max "normal" UI, but there's at least one mission mistakenly marked as level 90, despite requiring 675 ilevel.
-         if mission.iLevel > 0 then
+         -- 760 exception is for Order Hall missions bellow max level.
+         if mission.iLevel > 0 and mission.iLevel ~= 760 then
             button.ItemLevel:Hide()
             -- Restore position that Blizzard's UI changes if mission have both ilevel and rare! text
             if mission.isRare then
