@@ -369,11 +369,14 @@ local function ShowMission_More(self, missionInfo)
    if not mission_page:IsShown() then return end
    local follower_type_id = self.followerTypeID
 
-   if missionInfo.iLevel > 0 and missionInfo.iLevel ~= 760 then
+   local stage = mission_page.Stage
+   if mission_page.showItemLevel then
       mission_page.showItemLevel = false
-      local stage = mission_page.Stage
       stage.Level:SetPoint("CENTER", stage.Header, "TOPLEFT", 30, -36)
       stage.ItemLevel:Hide()
+   end
+
+   if missionInfo.iLevel > 0 and missionInfo.iLevel ~= 760 then
       stage.Level:SetText(missionInfo.iLevel)
       mission_page.ItemLevelHitboxFrame:Show()
    else
@@ -523,12 +526,15 @@ local function MissionList_Update_More(self, caller, frame_prefix, follower_type
          -- Just overwrite level with ilevel if it is not 0. There's no use knowing what base level mission have.
          -- Blizzard UI also checks that mission is max "normal" UI, but there's at least one mission mistakenly marked as level 90, despite requiring 675 ilevel.
          -- 760 exception is for Order Hall missions bellow max level.
-         if mission.iLevel > 0 and mission.iLevel ~= 760 then
+         if button.ItemLevel:IsShown() then
             button.ItemLevel:Hide()
             -- Restore position that Blizzard's UI changes if mission have both ilevel and rare! text
             if mission.isRare then
                button.Level:SetPoint("CENTER", button, "TOPLEFT", 40, -36)
             end
+         end
+
+         if mission.iLevel > 0 and mission.iLevel ~= 760 then
             button.Level:SetFormattedText("|cffffffd9%d", mission.iLevel)
          end
       end
