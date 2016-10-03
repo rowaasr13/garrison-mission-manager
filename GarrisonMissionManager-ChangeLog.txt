@@ -1,9 +1,14 @@
-Garrison Mission Manager, v47
+Garrison Mission Manager, v48
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2016-10-01 v48
+ * Mostly internal changes: lots of garrison code is adapted to be shared with Class Hall. Next version will activate mission list buttons/expiration timers and rest of features previously available in garrison.
+ * Mission page display is now shared with garrison too: mission level will now display only level or only ilevel as appropriate, just like it worked in garrison.
+ * Artifact Power rewards now have amount of AP shown directly on item icons in mission list. This requires [[https://www.curse.com/addons/wow/libttscan-1|LibTTScan-1.0]] to work.
+
 2016-09-21 v47
  * Party for missions without bonus loot will be optimized to have as little "extra" success over 100% as possible.
 
