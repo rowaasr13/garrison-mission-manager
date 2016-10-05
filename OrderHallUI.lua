@@ -34,6 +34,17 @@ function addon_env.OrderHallInitUI()
    addon_env.mission_page_button_prefix_for_type_id[follower_type] = mission_page_prefix
    hooksecurefunc(base_frame, "ShowMission", addon_env.ShowMission_More)
 
+   addon_env.MissionList_ButtonsInit(MissionList, mission_list_prefix)
+   local MissionList_Update_More = addon_env.MissionList_Update_More
+
+   local function MissionList_Update_More_Settings()
+      MissionList_Update_More(MissionList, MissionList_Update_More_Settings, mission_list_prefix, follower_type, currency)
+   end
+
+   hooksecurefunc(MissionList,            "Update", MissionList_Update_More_Settings)
+   hooksecurefunc(MissionList.listScroll, "update", MissionList_Update_More_Settings)
+   MissionList_Update_More_Settings()
+
    addon_env.OrderHallInitUI = nil
 end
 
