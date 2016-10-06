@@ -1,9 +1,12 @@
-Garrison Mission Manager, v48
+Garrison Mission Manager, v49
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2016-10-01 v49
+ * Hook Class Hall mission list with code previously available for garrison, adding there all previously available features: best team button directly in list, mission expiration time and ilevel display.
+
 2016-10-01 v48
  * Mostly internal changes: lots of garrison code is adapted to be shared with Class Hall. Next version will activate mission list buttons/expiration timers and rest of features previously available in garrison.
  * Mission page display is now shared with garrison too: mission level will now display only level or only ilevel as appropriate, just like it worked in garrison.
