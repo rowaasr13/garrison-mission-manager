@@ -214,10 +214,35 @@ local function SortFollowers(a, b)
       if b_is_troop then return true end
    end
 
-   local a_level = a.level
-   local b_level = b.level
-   if a_level ~= b_level then return a_level > b_level end
-   return a.iLevel > b.iLevel
+   local term = "level"
+   local a_val = a[term]
+   local b_val = b[term]
+   if a_val ~= b_val then return a_val > b_val end
+
+   local term = "iLevel"
+   local a_val = a[term]
+   local b_val = b[term]
+   if a_val ~= b_val then return a_val > b_val end
+
+   local term = "classSpec"
+   local a_val = a[term] or 999999
+   local b_val = b[term] or 999999
+   if a_val ~= b_val then return a_val > b_val end
+
+   local term = "durability"
+   local a_val = a[term]
+   local b_val = b[term]
+   if a_val ~= b_val then return a_val > b_val end
+
+   local term = "is_busy_for_mission"
+   local a_val = a[term]
+   local b_val = b[term]
+   if a_val ~= b_val then return a_val end
+
+   local term = "followerID"
+   local a_val = a[term]
+   local b_val = b[term]
+   if a_val ~= b_val then return a_val > b_val end
 end
 
 local function GetFilteredFollowers(type_id)
