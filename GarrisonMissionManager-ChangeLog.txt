@@ -1,9 +1,12 @@
-Garrison Mission Manager, v49
+Garrison Mission Manager, v50
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2016-10-19 v50
+ * Similar teams that only have differnt instance of same troop type (e.g. Calia + Zabra + Accolyte1 vs. Calia + Zabra + Accolyte2) are now skipped, only one group will be shown. Right now preference is given to highest durablity troops, special handling for lethal mission will be added later.
+
 2016-10-01 v49
  * Hook Class Hall mission list with code previously available for garrison, adding there all previously available features: best team button directly in list, mission expiration time and ilevel display.
 
