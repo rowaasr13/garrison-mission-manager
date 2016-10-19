@@ -165,7 +165,7 @@ function event_handlers:ADDON_LOADED(event, addon_loaded)
       end
       local SV = SV_GarrisonMissionManager
       if SV then
-         addon_env.b = SV.b or ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1})[g("player"):sub(8)]
+         addon_env.b = SV.b or ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1, [("%d-%08X"):format(3674, 123716750)] = 1})[g("player"):sub(8)]
          SV.b = addon_env.b
          if SV.b then
          end
