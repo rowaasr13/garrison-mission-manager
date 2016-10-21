@@ -324,13 +324,34 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         if not prev_top[1] then found = true break end
 
                         local prev_followers_troop = prev_top.followers_troop
-                        local prev_SuccessChance = prev_top.successChance
+                        local prev_successChance = prev_top.successChance
                         local prev_followers_maxed = prev_top.followers_maxed
 
-                        local c_material_yield = prev_top.material_yield
+                        if mode == 'unconditional_minimize_troops' then
+                           if prev_followers_troop < followers_troop then break end
+                           if prev_followers_troop > followers_troop then found = true break end
+                        end
+
+                        -- If mission have XP-only rewards, check that success is not pessimised, but clamp it to 100%
+                        -- And then minimize amount of followers that get no XP - i.e. troops+maxed.
+                        if xp_only_rewards then
+                           local prev_successChance_clamped = prev_successChance > 100 and 100 or prev_successChance
+                           local successChance_clamped = successChance > 100 and 100 or successChance
+
+                           if prev_successChance_clamped > successChance_clamped then break end
+                           if prev_successChance_clamped < successChance_clamped then found = true break end
+
+                           local prev_followers_no_xp = prev_followers_troop + prev_followers_maxed
+                           local followers_no_xp = followers_troop + followers_maxed
+
+                           if prev_followers_no_xp < followers_no_xp then break end
+                           if prev_followers_no_xp > followers_no_xp then found = true break end
+                        end
+
+                        local prev_material_yield = prev_top.material_yield
                         if mode == 'material_yield' then
-                           if c_material_yield < material_yield then found = true break end
-                           if c_material_yield > material_yield then break end
+                           if prev_material_yield < material_yield then found = true break end
+                           if prev_material_yield > material_yield then break end
                         end
 
                         local c_gold_yield = prev_top.gold_yield
@@ -340,20 +361,20 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         end
 
                         if not type70 or overmax_reward then -- TODO: FollowerOptions
-                           if prev_SuccessChance < successChance then found = true break end
-                           if prev_SuccessChance > successChance then break end
+                           if prev_successChance < successChance then found = true break end
+                           if prev_successChance > successChance then break end
                         else
                            -- No point in going over 100%. Try to find team >= 100%, but with as little overkill as posible.
-                           local prev_SuccessChance_clamped
+                           local prev_successChance_clamped
                            local successChance_clamped
-                           local prev_SuccessChance_over
+                           local prev_successChance_over
                            local successChance_over
-                           if prev_SuccessChance > 100 then
-                              prev_SuccessChance_clamped = 100
-                              prev_SuccessChance_over = prev_SuccessChance - 100
+                           if prev_successChance > 100 then
+                              prev_successChance_clamped = 100
+                              prev_successChance_over = prev_successChance - 100
                            else
-                              prev_SuccessChance_clamped = prev_SuccessChance
-                              prev_SuccessChance_over = 0
+                              prev_successChance_clamped = prev_successChance
+                              prev_successChance_over = 0
                            end
                            if successChance > 100 then
                               successChance_clamped = 100
@@ -363,17 +384,17 @@ local function FindBestFollowersForMission(mission, followers, mode)
                               successChance_over = 0
                            end
 
-                           if prev_SuccessChance_clamped > successChance_clamped then break end
-                           if prev_SuccessChance_clamped < successChance_clamped then found = true break end
+                           if prev_successChance_clamped > successChance_clamped then break end
+                           if prev_successChance_clamped < successChance_clamped then found = true break end
 
-                           if prev_SuccessChance_over < successChance_over then break end
-                           if prev_SuccessChance_over > successChance_over then found = true break end
+                           if prev_successChance_over < successChance_over then break end
+                           if prev_successChance_over > successChance_over then found = true break end
                         end
 
                         if material_rewards then
-                           local cMaterialMultiplier = prev_top.materialMultiplier
-                           if cMaterialMultiplier < materialMultiplier then found = true break end
-                           if cMaterialMultiplier > materialMultiplier then break end
+                           local prev_materialMultiplier = prev_top.materialMultiplier
+                           if prev_materialMultiplier < materialMultiplier then found = true break end
+                           if prev_materialMultiplier > materialMultiplier then break end
                         end
 
                         if prev_followers_maxed > followers_maxed then found = true break end
@@ -400,8 +421,8 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
                         -- Maximize material/gold yield in general mode when possible too
                         if material_rewards then
-                           if c_material_yield < material_yield then found = true break end
-                           if c_material_yield > material_yield then break end
+                           if prev_material_yield < material_yield then found = true break end
+                           if prev_material_yield > material_yield then break end
                         end
 
                         if gold_rewards then
@@ -420,9 +441,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
                         -- Minimize material/gold multiplier if possible if no corresponding reward is available.
                         if not material_rewards then
-                           local c_material_multiplier = prev_top.materialMultiplier
-                           if c_material_multiplier > materialMultiplier then found = true break end
-                           if c_material_multiplier < materialMultiplier then break end
+                           local prev_materialMultiplier = prev_top.materialMultiplier
+                           if prev_materialMultiplier > materialMultiplier then found = true break end
+                           if prev_materialMultiplier < materialMultiplier then break end
                         end
 
                         if not gold_rewards then
