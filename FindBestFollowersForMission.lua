@@ -13,6 +13,7 @@ local GARRISON_FOLLOWER_MAX_LEVEL = GARRISON_FOLLOWER_MAX_LEVEL
 local GARRISON_SHIP_OIL_CURRENCY = GARRISON_SHIP_OIL_CURRENCY
 local GarrisonMissionFrame = GarrisonMissionFrame
 local GetFramesRegisteredForEvent = GetFramesRegisteredForEvent
+local GetMissionCost = C_Garrison.GetMissionCost
 local GetNumFollowersOnMission = C_Garrison.GetNumFollowersOnMission
 local GetPartyMissionInfo = C_Garrison.GetPartyMissionInfo
 local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
@@ -86,6 +87,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
          RemoveFollowerFromMission(mission_id, followers[idx].followerID)
       end
    end
+
+   local baseCost, cost = GetMissionCost(mission_id)
+   local increased_cost = cost > baseCost
 
    for idx = 1, slots do
       max[idx] = followers_count - slots + idx
@@ -254,6 +258,12 @@ local function FindBestFollowersForMission(mission, followers, mode)
                -- Calculate result
                local follower_level_total = follower1_level + follower2_level + follower3_level
                local totalTimeString, totalTimeSeconds, isMissionTimeImproved, successChance, partyBuffs, isEnvMechanicCountered, xpBonus, materialMultiplier, goldMultiplier = GetPartyMissionInfo(mission_id)
+               local cost = 0
+               if type70 then
+                  local baseCost
+                  baseCost, cost = GetMissionCost(mission_id)
+               end
+
                -- Uh, thanks 6.2, for lots of new calls and tables going directly to garbage right in the middle of most computational heavy loop.
                -- At least I can eliminate "type" after first check.
                -- TODO: remove old API support
@@ -380,6 +390,10 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         if cTotalTimeSeconds > totalTimeSeconds then found = true break end
                         if cTotalTimeSeconds < totalTimeSeconds then break end
 
+                        local prev_cost = prev_top.cost
+                        if prev_cost > cost then found = true break end
+                        if prev_cost < cost then break end
+
                         local c_follower_level_total = prev_top.follower_level_total
                         if c_follower_level_total > follower_level_total then found = true break end
                         if c_follower_level_total < follower_level_total then break end
@@ -457,6 +471,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         new.follower_level_total = follower_level_total
                         new.mission_level = mission.level
                         new.followers_troop = followers_troop
+                        new.cost = cost
                         tinsert(top_list, idx, new)
                         top_list[5] = nil
                         break
