@@ -22,9 +22,5 @@ MissionUI_Shared.lua
 MissionUI_Garrison.lua
 MissionUI_Shipyard.lua
 MissionUI_OrderHall.lua
-SharedMissionUI.lua
-MissionUI.lua
-ShipyardUI.lua
-OrderHallUI.lua
 GarrisonBuilding.lua
 Broker.lua
