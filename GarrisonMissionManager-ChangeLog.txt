@@ -1,11 +1,15 @@
-Garrison Mission Manager, v50
+Garrison Mission Manager, v51
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2016-10-25 v51
+ * Fix similar team detection - it skipped pretty much most of non-busy followers, but should be fine now.
+ * Mission cost optimization. It comes after success chance so it should be most visible on those 200% teams that many players should have by now.
+
 2016-10-19 v50
- * Similar teams that only have differnt instance of same troop type (e.g. Calia + Zabra + Accolyte1 vs. Calia + Zabra + Accolyte2) are now skipped, only one group will be shown. Right now preference is given to highest durablity troops, special handling for lethal mission will be added later.
+ * Similar teams that only have different instance of same troop type (e.g. Calia + Zabra + Accolyte1 vs. Calia + Zabra + Accolyte2) are now skipped, only one group will be shown. Right now preference is given to highest durability troops, special handling for lethal mission will be added later.
 
 2016-10-01 v49
  * Hook Class Hall mission list with code previously available for garrison, adding there all previously available features: best team button directly in list, mission expiration time and ilevel display.
@@ -87,7 +91,7 @@ Garrison Mission Manager, v50
  * Clicking red button in mission list now automatically sets best party on mission page.
  * Some optimizations to try to use less important followers (i.e. leveled/traited) that could be used on other missions.
  * Copy Wowhead mission link to chat button to the left of mission name on mission page.
- * Silently skip LDB loading if no LDB is avaialble.
+ * Silently skip LDB loading if no LDB is available.
 
 2015-03-06 v28
  * Gold yield mode: same as already available GR yield mode - it will prefer bigger gold bonus to any other optimizations and will risk lower chance if "Treasure Hunter" trait compensates lower success chance in the long run. Gold yield teams are shown on same set of buttons where GR yield appears on GR missions.
