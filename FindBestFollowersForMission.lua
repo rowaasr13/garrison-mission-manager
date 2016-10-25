@@ -52,7 +52,19 @@ local min, max = {}, {}
 local best_modes = { "success" }
 local best_mode_unavailable = {}
 local preserve_mission_page_followers = {}
+
+local FindBestFollowersForMission_compare
+
 local function FindBestFollowersForMission(mission, followers, mode)
+   local compare_top_1
+   if FindBestFollowersForMission_compare then
+      FindBestFollowersForMission_compare(mission, followers, mode)
+      compare_top_1 = {}
+      for key, val in pairs(top[1]) do
+         compare_top_1[key] = val
+      end
+   end
+
    local followers_count = #followers
 
    local top_entries = mode == "mission_list" and 1 or 3
@@ -513,6 +525,25 @@ local function FindBestFollowersForMission(mission, followers, mode)
             GarrisonMissionFrame:AssignFollowerToMission(MissionPageFollowers[party_idx], preserve_mission_page_followers[party_idx])
          end
       end
+   end
+
+   if compare_top_1 then
+      local diff
+      for key, val in pairs(top[1]) do
+         if compare_top_1[key] ~= val and key ~= "cost" then
+            print("compare diff", key,
+               type(compare_top_1[key]) == "table" and compare_top_1[key].name or compare_top_1[key],
+               type(val) == "table" and val.name or val
+            )
+            diff = true
+         end
+         compare_top_1[key] = nil
+      end
+      for key, val in pairs(compare_top_1) do
+         print("compare extra", key, val)
+         diff = true
+      end
+      if not diff then print("compare no diffs") end
    end
 
    for idx = 1, #event_handlers do RegisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
