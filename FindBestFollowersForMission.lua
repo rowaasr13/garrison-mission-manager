@@ -188,7 +188,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
             if follower2.isTroop then
                follower2_is_troop = 1
                -- Only used to remove "duplicate" teams with different instance of same troop class
-               follower2_troop_spec = follower2.classSpec * (-follower2_busy)
+               follower2_troop_spec = follower2.classSpec * (follower2_busy == 1 and 1 or -1)
             end
          end
          -- Special handling to calculate precisely one team for 1 filled slot in 3 members missions.
@@ -213,7 +213,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                if follower3.isTroop then
                   follower3_is_troop = 1
                   -- Only used to remove "duplicate" teams with different instance of same troop class
-                  follower3_troop_spec = follower3.classSpec * (-follower3_busy)
+                  follower3_troop_spec = follower3.classSpec * (follower3_busy == 1 and 1 or -1)
                end
             end
 
