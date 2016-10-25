@@ -22,7 +22,7 @@ local function SetTextureOrItem(widget, method, texture, item_id)
    end
 end
 
-local points = { "BOTTOMRIGHT", "BOTTOMLEFT", "TOPLEFT" }
+local points = { "BOTTOMRIGHT", "BOTTOMLEFT", "TOPLEFT", "TOP" }
 
 local function Widget(a)
    local type = a.type or a[1]
@@ -41,12 +41,15 @@ local function Widget(a)
    local prop = a.Atlas if prop then widget:SetAtlas(prop, a.AtlasSize) end
    local prop = a.Width if prop then widget:SetWidth(prop) end
    local prop = a.Height if prop then widget:SetHeight(prop) end
+   local prop = a.EnableMouse if prop ~= nil then widget:EnableMouse(prop) end
 
    for idx = 1, #points do
       local point_name = points[idx]
       local prop = a[point_name] if prop then
-         if prop == true then widget:SetPoint(point_name, parent, point_name, 0, 0)
-         elseif #prop == 2 then widget:SetPoint(point_name, parent, point_name, prop[1], prop[2]) end
+         if prop == true then widget:SetPoint(point_name, parent, point_name, 0, 0)                 -- TOP = true,                         -- attach TOP to parrent's TOP
+         elseif #prop == 2 then widget:SetPoint(point_name, parent, point_name, prop[1], prop[2])   -- TOP = { 0, 20 }                     -- attach TOP to parrent's TOP +0,20
+         elseif #prop == 3 then widget:SetPoint(point_name, parent, prop[1], prop[2], prop[3])      -- TOP = { "BOTTOM", 0, 20 }           -- attach TOP to parrent's BOTTOM +0,20
+         elseif #prop == 4 then widget:SetPoint(point_name, prop[1], prop[2], prop[3], prop[4]) end -- TOP = { UIParent, "BOTTOM", 0, 20 } -- attach TOP to another frame's BOTTOM +0,20
       end
    end
 
