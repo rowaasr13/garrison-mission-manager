@@ -1,9 +1,12 @@
-Garrison Mission Manager, v51
+Garrison Mission Manager, v52
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 == Change log ==
+2016-10-26 v52
+ * TOC update for 7.1.
+
 2016-10-25 v51
  * Fix similar team detection - it skipped pretty much most of non-busy followers, but should be fine now.
  * Mission cost optimization. It comes after success chance so it should be most visible on those 200% teams that many players should have by now.
