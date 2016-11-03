@@ -42,6 +42,12 @@ local event_frame = addon_env.event_frame
 local GetFilteredFollowers = addon_env.GetFilteredFollowers
 local FindBestFollowersForMission = addon_env.FindBestFollowersForMission
 
+local ignored_followers
+function addon_env.LocalIgnoredFollowers()
+   ignored_followers = addon_env.ignored_followers
+end
+addon_env.LocalIgnoredFollowers()
+
 local currency_texture = {}
 for _, currency in pairs({ GARRISON_CURRENCY, GARRISON_SHIP_OIL_CURRENCY, 823 --[[Apexis]] }) do
    local _, _, texture = GetCurrencyInfo(currency)
@@ -322,6 +328,7 @@ local function BestForCurrentSelectedMission(type_id, mission_page, button_prefi
    FindBestFollowersForMission(mission, filtered_followers)
 
    for suffix_idx = 1, #button_suffixes do
+      if addon_env.b then button:Disable() end
       local suffix = button_suffixes[suffix_idx]
       for idx = 1, 3 do
          local button = gmm_buttons[button_prefix .. suffix .. idx]
@@ -492,6 +499,7 @@ local function MissionList_Update_More(self, caller, frame_prefix, follower_type
          local offerEndTime = mission.offerEndTime
 
          -- offerEndTime seems to be present on all missions, though Blizzard UI shows tooltips only on rare
+         -- some Legion missions actually have no end time - seems like they're permanent
          if offerEndTime then
             local xp_only_rewards
             if not is_rare then
