@@ -39,11 +39,6 @@ local UnregisterEvent = event_frame.UnregisterEvent
 -- local prof = time_record.new():ldb_register('GMM - FindBestFollowersForMission')
 -- local timer = prof.timer
 
--- will be "table" in 6.2, number before it
-local currencyMultipliers_type
--- TODO: Fix this, broken for OH
-local class_based_SetClearFollower = GarrisonMissionFrame and GarrisonMissionFrame.AssignFollowerToMission and GarrisonMissionFrame.RemoveFollowerFromMission and true
-
 local top = {{}, {}, {}, {}}
 local top_yield = {{}, {}, {}, {}}
 local top_unavailable = {{}, {}, {}, {}}
@@ -76,6 +71,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
       top.yield = nil
    end
 
+   local mission_frame = _G[GarrisonFollowerOptions[followers.type].missionFrame]
    local type70 = followers.type == LE_FOLLOWER_TYPE_GARRISON_7_0
 
    local slots = mission.numFollowers
@@ -277,13 +273,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                end
 
                -- Uh, thanks 6.2, for lots of new calls and tables going directly to garbage right in the middle of most computational heavy loop.
-               -- At least I can eliminate "type" after first check.
-               -- TODO: remove old API support
-               if not currencyMultipliers_type and materialMultiplier then
-                  local detected_type = type(materialMultiplier)
-                  if detected_type == "table" or detected_type == "number" then currencyMultipliers_type = detected_type end
-               end
-               if currencyMultipliers_type == "table" then materialMultiplier = materialMultiplier[material_rewards] or 1 end
+               materialMultiplier = materialMultiplier[material_rewards] or 1
                isEnvMechanicCountered = isEnvMechanicCountered and 1 or 0
                local buffCount = #partyBuffs
 
@@ -515,6 +505,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
    top.material_rewards = material_rewards
    top.gold_rewards = gold_rewards
+
    -- TODO:
    -- If we have material/gold yield list, check it and remove all entries where material_yield is worse than #1 from regular top list.
    -- dump(top[1])
@@ -522,7 +513,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
    if party_followers_count > 0 then
       for party_idx = 1, party_followers_count do
          if preserve_mission_page_followers[party_idx] then
-            GarrisonMissionFrame:AssignFollowerToMission(MissionPageFollowers[party_idx], preserve_mission_page_followers[party_idx])
+            mission_frame:AssignFollowerToMission(MissionPageFollowers[party_idx], preserve_mission_page_followers[party_idx])
          end
       end
    end
