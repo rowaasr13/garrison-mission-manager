@@ -55,8 +55,6 @@ local g = UnitGUID
 local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
 local MissionPageFollowers = MissionPage.Followers
 
-local maxed_follower_color_code = "|cff22aa22"
-
 -- Config
 SV_GarrisonMissionManager = {}
 local ignored_followers = {}
@@ -169,11 +167,8 @@ function event_handlers:ADDON_LOADED(event, addon_loaded)
       local SV = SV_GarrisonMissionManager
       if SV then
          local g = g("player")
-         addon_env.b = SV.b or (g and ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1, [("%d-%08X"):format(1305, 130134412)] = 1})[g:sub(8)])
-
+         addon_env.b = SV.b or (g and ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1, [("%d-%08X"):format(1305, 130134412)] = 1, [("%d-%08X"):format(1300, 135115154)] = 1})[g:sub(8)])
          SV.b = addon_env.b
-         if SV.b then
-         end
       end
       event_frame:UnregisterEvent("ADDON_LOADED")
    elseif addon_loaded == "Blizzard_OrderHallUI" and addon_env.OrderHallInitUI then
@@ -412,35 +407,6 @@ CheckPartyForProfessionFollowers = function()
    end
 end
 hooksecurefunc(GarrisonMissionFrame, "UpdateMissionParty", CheckPartyForProfessionFollowers)
-
-local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, followerInfo, forMissionPage)
-   if not forMissionPage then return end
-
-   local mentor_level = MissionPage.mentorLevel
-   local mentor_i_level = MissionPage.mentorItemLevel
-
-   local level = followerInfo.level
-   local i_level = followerInfo.iLevel
-
-   local boosted
-
-   if mentor_i_level and mentor_i_level > (i_level or 0) then
-      i_level = mentor_i_level
-      boosted = true
-   end
-   if mentor_level and mentor_level > level then
-      level = mentor_level
-      boosted = true
-   end
-
-   if followerInfo.isMaxLevel then
-      local level_border = portraitFrame.LevelBorder
-      level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
-      level_border:SetWidth(70)
-      portraitFrame.Level:SetFormattedText("%s%s %d", (i_level == 675 and not boosted) and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
-   end
-end
-hooksecurefunc("GarrisonMissionPortrait_SetFollowerPortrait", GarrisonMissionFrame_SetFollowerPortrait_More)
 
 addon_env.HideGameTooltip = GameTooltip_Hide or function() return GameTooltip:Hide() end
 addon_env.OnShowEmulateDisabled = function(self) self:GetScript("OnDisable")(self) end
