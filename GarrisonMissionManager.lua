@@ -59,9 +59,10 @@ local maxed_follower_color_code = "|cff22aa22"
 
 -- Config
 SV_GarrisonMissionManager = {}
-local ingored_followers = {}
+local ignored_followers = {}
+addon_env.ignored_followers = ignored_followers
 SVPC_GarrisonMissionManager = {}
-SVPC_GarrisonMissionManager.ingored_followers = ingored_followers
+SVPC_GarrisonMissionManager.ignored_followers = ignored_followers
 
 local button_suffixes = { '', 'Yield', 'Unavailable' }
 addon_env.button_suffixes = button_suffixes
@@ -161,11 +162,15 @@ end
 function event_handlers:ADDON_LOADED(event, addon_loaded)
    if addon_loaded == addon_name then
       if SVPC_GarrisonMissionManager then
-         ingored_followers = SVPC_GarrisonMissionManager.ingored_followers
+         if SVPC_GarrisonMissionManager.ignored_followers then ignored_followers = SVPC_GarrisonMissionManager.ignored_followers else SVPC_GarrisonMissionManager.ignored_followers = ignored_followers end
+         addon_env.ignored_followers = ignored_followers
+         addon_env.LocalIgnoredFollowers()
       end
       local SV = SV_GarrisonMissionManager
       if SV then
-         addon_env.b = SV.b or ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1, [("%d-%08X"):format(3674, 123716750)] = 1})[g("player"):sub(8)]
+         local g = g("player")
+         addon_env.b = SV.b or (g and ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1, [("%d-%08X"):format(1305, 130134412)] = 1})[g:sub(8)])
+
          SV.b = addon_env.b
          if SV.b then
          end
@@ -265,7 +270,7 @@ local function GetFilteredFollowers(type_id)
             repeat
                if not follower.isCollected then break end
 
-               if ingored_followers[follower.followerID] then break end
+               if ignored_followers[follower.followerID] then break end
 
                count = count + 1
                container[count] = follower
@@ -444,10 +449,10 @@ addon_env.OnEnterShowGameTooltip = function(self) GameTooltip:SetOwner(self, "AN
 local info_ignore_toggle = {
    notCheckable = true,
    func = function(self, followerID)
-      if ingored_followers[followerID] then
-         ingored_followers[followerID] = nil
+      if ignored_followers[followerID] then
+         ignored_followers[followerID] = nil
       else
-         ingored_followers[followerID] = true
+         ignored_followers[followerID] = true
       end
       addon_env.top_for_mission_dirty = true
       filtered_followers_dirty = true
@@ -470,7 +475,7 @@ hooksecurefunc(GarrisonFollowerOptionDropDown, "initialize", function(self)
    local follower = C_Garrison.GetFollowerInfo(followerID)
    if follower and follower.isCollected then
       info_ignore_toggle.arg1 = followerID
-      info_ignore_toggle.text = ingored_followers[followerID] and "GMM: Unignore" or "GMM: Ignore"
+      info_ignore_toggle.text = ignored_followers[followerID] and "GMM: Unignore" or "GMM: Ignore"
       local old_num_buttons = DropDownList1.numButtons
       local old_last_button = _G["DropDownList1Button" .. old_num_buttons]
       local old_is_cancel = old_last_button.value == CANCEL
