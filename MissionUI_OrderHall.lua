@@ -95,12 +95,15 @@ addon_env.ThrottleRequestLandingPageShipmentInfo()
 function addon_env.OrderHallInitUI()
    if not OrderHallMissionFrame then return end
 
-   local base_frame = OrderHallMissionFrame
-   local prefix = "OrderHall"
-   local currency = C_Garrison.GetCurrencyTypes(LE_GARRISON_TYPE_7_0)
+   -- Hardcoded
+   local prefix = "OrderHall" -- hardcoded, because it is used in OUR frame names and should be static for GMM_Click
    local follower_type = LE_FOLLOWER_TYPE_GARRISON_7_0
 
-   local MissionTab = OrderHallMissionFrame.MissionTab
+   -- Detected/calculated
+   local options = GarrisonFollowerOptions[follower_type]
+   local base_frame = _G[options.missionFrame]
+   local currency = C_Garrison.GetCurrencyTypes(options.garrisonType)
+   local MissionTab = base_frame.MissionTab
    local MissionPage = MissionTab.MissionPage
    local MissionList = MissionTab.MissionList
    local mission_page_prefix = prefix .. "MissionPage"
