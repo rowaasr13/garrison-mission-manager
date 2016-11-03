@@ -555,6 +555,38 @@ local function MissionList_Update_More(self, caller, frame_prefix, follower_type
 end
 addon_env.MissionList_Update_More = MissionList_Update_More
 
+local maxed_follower_color_code = "|cff22aa22"
+
+local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, followerInfo, forMissionPage)
+   if not forMissionPage then return end
+
+   local MissionPage = portraitFrame:GetParent():GetParent()
+   local mentor_level = MissionPage.mentorLevel
+   local mentor_i_level = MissionPage.mentorItemLevel
+
+   local level = followerInfo.level
+   local i_level = followerInfo.iLevel
+
+   local boosted
+
+   if mentor_i_level and mentor_i_level > (i_level or 0) then
+      i_level = mentor_i_level
+      boosted = true
+   end
+   if mentor_level and mentor_level > level then
+      level = mentor_level
+      boosted = true
+   end
+
+   if followerInfo.isMaxLevel then
+      local level_border = portraitFrame.LevelBorder
+      level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
+      level_border:SetWidth(70)
+      portraitFrame.Level:SetFormattedText("%s%s %d", ((i_level == 675 or i_level == 850) and not boosted) and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
+   end
+end
+hooksecurefunc("GarrisonMissionPortrait_SetFollowerPortrait", GarrisonMissionFrame_SetFollowerPortrait_More)
+
 local last_shipment_request = 0
 local function ThrottleRequestLandingPageShipmentInfo()
    local time = GetTime()
