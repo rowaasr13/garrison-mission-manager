@@ -154,7 +154,13 @@ for event in pairs(events_for_buildings) do event_frame:RegisterEvent(event) end
 
 function event_handlers:GARRISON_LANDINGPAGE_SHIPMENTS()
    event_frame:UnregisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS")
-   CheckPartyForProfessionFollowers()
+   if addon_env.CheckPartyForProfessionFollowers then addon_env.CheckPartyForProfessionFollowers() end
+   if addon_env.CheckIfArtifactResearchIsReady then addon_env.CheckIfArtifactResearchIsReady() end
+end
+
+function event_handlers:GARRISON_SHIPMENT_RECEIVED()
+   event_frame:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS")
+   C_Garrison.RequestLandingPageShipmentInfo()
 end
 
 function event_handlers:ADDON_LOADED(event, addon_loaded)
@@ -321,92 +327,6 @@ local function GetFilteredFollowers(type_id)
    return filtered_followers[type_id]
 end
 addon_env.GetFilteredFollowers = GetFilteredFollowers
-
-local last_shipment_request = 0
-local shipment_followers = {}
-CheckPartyForProfessionFollowers = function()
-   local party_followers_count = #MissionPageFollowers
-   local present
-   for idx = 1, party_followers_count do
-      if MissionPageFollowers[idx].info then present = true end
-      gmm_frames["MissionPageFollowerWarning" .. idx]:Hide()
-
-      local follower = MissionPageFollowers[idx].info
-      local xp_bar = gmm_frames["MissionPageFollowerXP" .. idx]
-      if (not follower or follower.xp == 0 or follower.levelXP == 0) then
-         xp_bar:Hide()
-         gmm_frames["MissionPageFollowerXPGainBase" .. idx]:Hide()
-         gmm_frames["MissionPageFollowerXPGainBonus" .. idx]:Hide()
-      else
-         xp_bar:Hide()
-         xp_bar:SetWidth((follower.xp/follower.levelXP) * 104)
-      end
-   end
-   if not present then return end
-
-   local time = GetTime()
-   if last_shipment_request + 5 < time then
-      last_shipment_request = time
-      event_frame:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS")
-      C_Garrison.RequestLandingPageShipmentInfo()
-      return
-   end
-
-   wipe(shipment_followers)
-   local buildings = c_garrison_cache.GetBuildings
-   for idx = 1, #buildings do
-      local building = buildings[idx]
-      local buildingID = building.buildingID;
-      if buildingID then
-         local nameLanding, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = GetLandingPageShipmentInfo(buildingID)
-         -- Level 2
-         -- No follower
-         -- Have follower in possible list
-         -- GMM_dumpl("name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID", C_Garrison.GetLandingPageShipmentInfo(buildingID))
-         -- GMM_dumpl("id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate", C_Garrison.GetOwnedBuildingInfo(buildingID))
-         if shipmentCapacity and shipmentCapacity > 0 then
-            local plotID = building.plotID
-            local id, name, texPrefix, icon, description, rank, currencyID, currencyQty, goldQty, buildTime, needsPlan, isPrebuilt, possSpecs, upgrades, canUpgrade, isMaxLevel, hasFollowerSlot, knownSpecs, currSpec, specCooldown, isBuilding, startTime, buildDuration, timeLeftStr, canActivate = C_Garrison.GetOwnedBuildingInfo(plotID)
-            -- print(nameLanding, hasFollowerSlot, rank, shipmentsReady)
-            if hasFollowerSlot and rank and rank > 1 then -- TODO: check if just hasFollowerSlot is enough
-               local followerName, level, quality, displayID, followerID, garrFollowerID, status, portraitIconID = GetFollowerInfoForBuilding(plotID)
-               if not followerName then
-                  local possible_followers = c_garrison_cache.GetPossibleFollowersForBuilding[plotID]
-                  if #possible_followers > 0 then
-                     for idx = 1, #possible_followers do
-                        local possible_follower = possible_followers[idx]
-                        for party_idx = 1, party_followers_count do
-                           local party_follower = MissionPageFollowers[party_idx].info
-                           if party_follower and possible_follower.followerID == party_follower.followerID then
-                              shipment_followers[party_idx .. 'b'] = name
-                              shipment_followers[party_idx .. 'r'] = shipmentsTotal and (shipmentsTotal - shipmentsReady)
-                              shipment_followers[party_idx .. 't'] = timeleftString
-                           end
-                        end
-                     end
-                  end
-               end
-            end
-         end
-      end
-   end
-
-   for idx = 1, party_followers_count do
-      local warning = gmm_frames["MissionPageFollowerWarning" .. idx]
-      local building_name = shipment_followers[idx .. 'b']
-      local time_left = shipment_followers[idx .. 't']
-      local incomplete_shipments = shipment_followers[idx .. 'r']
-      if building_name then
-         if time_left then
-            warning:SetFormattedText("%s%s %s (%d)", RED_FONT_COLOR_CODE, time_left, building_name, incomplete_shipments)
-         else
-            warning:SetFormattedText("%s%s", YELLOW_FONT_COLOR_CODE, building_name)
-         end
-         warning:Show()
-      end
-   end
-end
-hooksecurefunc(GarrisonMissionFrame, "UpdateMissionParty", CheckPartyForProfessionFollowers)
 
 addon_env.HideGameTooltip = GameTooltip_Hide or function() return GameTooltip:Hide() end
 addon_env.OnShowEmulateDisabled = function(self) self:GetScript("OnDisable")(self) end
