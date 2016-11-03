@@ -587,6 +587,60 @@ local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, foll
 end
 hooksecurefunc("GarrisonMissionPortrait_SetFollowerPortrait", GarrisonMissionFrame_SetFollowerPortrait_More)
 
+local function GarrisonFollowerList_Update_More(self)
+   -- Somehow Blizzard UI insists on updating hidden frames AND explicitly updates them OnShow.
+   --  Following suit is just a waste of CPU, so we'll update only when frame is actually visible.
+   if not self:IsVisible() then return end
+
+   local followerFrame = self:GetParent()
+   local followers = followerFrame.FollowerList.followers
+   local followersList = followerFrame.FollowerList.followersList
+   local numFollowers = #followersList
+   local scrollFrame = followerFrame.FollowerList.listScroll
+   local offset = HybridScrollFrame_GetOffset(scrollFrame)
+   local buttons = scrollFrame.buttons
+   local numButtons = #buttons
+
+   for i = 1, numButtons do
+      local button = buttons[i]
+      local index = offset + i
+
+      local show_ilevel
+      local follower_frame = button.Follower
+      local portrait_frame = follower_frame.PortraitFrame
+      local level_border = portrait_frame.LevelBorder
+
+      if ( index <= numFollowers ) then
+         local follower_index = followersList[index]
+         -- follower_index 0 - category header
+         if follower_index ~= 0 then
+            local follower = followers[follower_index]
+            if ( follower.isCollected ) then
+               if ignored_followers[follower.followerID] then
+                  local BusyFrame = follower_frame.BusyFrame
+                  BusyFrame.Texture:SetColorTexture(0.5, 0, 0, 0.3)
+                  BusyFrame:Show()
+               end
+
+               if follower.isMaxLevel then
+                  level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
+                  level_border:SetWidth(70)
+                  local i_level = follower.iLevel
+                  portrait_frame.Level:SetFormattedText("%s%s %d", (i_level == 675 or i_level == 850) and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
+                  follower_frame.ILevel:SetText(nil)
+                  show_ilevel = true
+               end
+            end
+         end
+      end
+      if follower_index ~= 0 and not show_ilevel then
+         level_border:SetAtlas("GarrMission_PortraitRing_LevelBorder")
+         level_border:SetWidth(58)
+      end
+   end
+end
+addon_env.GarrisonFollowerList_Update_More = GarrisonFollowerList_Update_More
+
 local last_shipment_request = 0
 local function ThrottleRequestLandingPageShipmentInfo()
    local time = GetTime()
