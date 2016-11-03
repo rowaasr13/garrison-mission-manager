@@ -45,6 +45,8 @@ function addon_env.OrderHallInitUI()
    hooksecurefunc(MissionList.listScroll, "update", MissionList_Update_More_Settings)
    MissionList_Update_More_Settings()
 
+   hooksecurefunc(base_frame.FollowerList, "UpdateData", addon_env.GarrisonFollowerList_Update_More)
+
    addon_env.OrderHallInitUI = nil
 end
 
