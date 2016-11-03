@@ -76,6 +76,8 @@ local function Widget(a)
    local prop = a.OnClick if prop then widget:SetScript("OnClick", prop) end
    local prop = a.OnEnter if prop then widget:SetScript("OnEnter", prop) end
    local prop = a.OnLeave if prop then widget:SetScript("OnLeave", prop) end
+   local prop = a.OnEvent if prop then widget:SetScript("OnEvent", prop) end
+
    local prop = a.Scale   if prop then widget:SetScale(prop) end
 
    return widget
