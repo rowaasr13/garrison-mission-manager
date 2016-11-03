@@ -167,6 +167,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
       local follower1_level = follower1.isMaxLevel and follower1.iLevel or follower1.level
       local follower1_busy = follower1.is_busy_for_mission and 1 or 0
       local follower1_is_troop = follower1.isTroop and 1 or 0
+      local follower1_not_maxed = (follower1_is_troop == 0 and follower1_maxed == 0) and 1 or 0
       local prev_follower2_troop_spec
       for i2 = min[2] or (i1 + 1), max[2] do
          local follower2_maxed = 0
@@ -176,6 +177,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
          local follower2_busy = 0
          local follower2_is_troop = 0
          local follower2_troop_spec
+         local follower2_not_maxed = 0
          if follower2 then
             follower2_id = follower2.followerID
             if follower2.levelXP == 0 then follower2_maxed = 1 end
@@ -186,6 +188,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                -- Only used to remove "duplicate" teams with different instance of same troop class
                follower2_troop_spec = follower2.classSpec * (follower2_busy == 1 and 1 or -1)
             end
+            follower2_not_maxed = (follower2_is_troop == 0 and follower2_maxed == 0) and 1 or 0
          end
          -- Special handling to calculate precisely one team for 1 filled slot in 3 members missions.
          local i3_start = min[3] or (i2 + 1)
@@ -201,6 +204,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
             local follower3_busy = 0
             local follower3_is_troop = 0
             local follower3_troop_spec
+            local follower3_not_maxed = 0
             if follower3 then
                follower3_id = follower3.followerID
                if follower3.levelXP == 0 then follower3_maxed = 1 end
@@ -211,10 +215,12 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   -- Only used to remove "duplicate" teams with different instance of same troop class
                   follower3_troop_spec = follower3.classSpec * (follower3_busy == 1 and 1 or -1)
                end
+               follower3_not_maxed = (follower3_is_troop == 0 and follower3_maxed == 0) and 1 or 0
             end
 
             local followers_maxed = follower1_maxed + follower2_maxed + follower3_maxed
             local followers_troop = follower1_is_troop + follower2_is_troop + follower3_is_troop
+            local followers_not_maxed = follower1_not_maxed + follower2_not_maxed + follower3_not_maxed
 
             -- at least one follower in party is busy (i.e. staus non-empty/non-party) for mission
             local follower_is_busy_for_mission = (follower1_busy + follower2_busy + follower3_busy) > 0
@@ -479,6 +485,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         new.mission_level = mission.level
                         new.followers_troop = followers_troop
                         new.cost = cost
+                        new.followers_not_maxed = followers_not_maxed
                         tinsert(top_list, idx, new)
                         top_list[5] = nil
                         break
