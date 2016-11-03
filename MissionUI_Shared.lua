@@ -328,10 +328,10 @@ local function BestForCurrentSelectedMission(type_id, mission_page, button_prefi
    FindBestFollowersForMission(mission, filtered_followers)
 
    for suffix_idx = 1, #button_suffixes do
-      if addon_env.b then button:Disable() end
       local suffix = button_suffixes[suffix_idx]
       for idx = 1, 3 do
          local button = gmm_buttons[button_prefix .. suffix .. idx]
+         if addon_env.b then button:Disable() end
          local top_entry
          if suffix == 'Yield' then
             if top.yield or top.material_rewards or top.gold_rewards then
@@ -554,3 +554,15 @@ local function MissionList_Update_More(self, caller, frame_prefix, follower_type
    end
 end
 addon_env.MissionList_Update_More = MissionList_Update_More
+
+local last_shipment_request = 0
+local function ThrottleRequestLandingPageShipmentInfo()
+   local time = GetTime()
+   if last_shipment_request + 5 < time then
+      last_shipment_request = time
+      event_frame:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS")
+      C_Garrison.RequestLandingPageShipmentInfo()
+      return true
+   end
+end
+addon_env.ThrottleRequestLandingPageShipmentInfo = ThrottleRequestLandingPageShipmentInfo
