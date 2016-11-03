@@ -135,4 +135,12 @@ end
 if OrderHallMissionFrame and addon_env.OrderHallInitUI then
    addon_env.OrderHallInitUI()
 end
+
 -- Set an additional timer to catch load if we STILL manage to miss it?
+-- /dump C_Garrison.GetFollowers(LE_FOLLOWER_TYPE_GARRISON_7_0)
+-- /dump C_Garrison.GetFollowerShipments(LE_GARRISON_TYPE_7_0)
+-- /dump C_Garrison.GetLooseShipments(LE_GARRISON_TYPE_7_0)
+-- /dump C_Garrison.GetLandingPageShipmentInfoByContainerID
+-- local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString = C_Garrison.GetLandingPageShipmentInfoByContainerID(188)
+-- C_Garrison.RequestLandingPageShipmentInfo();
+-- /dump OrderHallMissionFrame.FollowerList.UpdateData
