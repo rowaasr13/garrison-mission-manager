@@ -401,7 +401,7 @@ local function GarrisonFollowerList_Update_More(self)
       if ( index <= numFollowers ) then
          local follower = followers[followersList[index]]
          if ( follower.isCollected ) then
-            if ingored_followers[follower.followerID] then
+            if ignored_followers[follower.followerID] then
                local BusyFrame = follower_frame.BusyFrame
                BusyFrame.Texture:SetColorTexture(0.5, 0, 0, 0.3)
                BusyFrame:Show()
