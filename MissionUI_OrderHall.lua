@@ -42,7 +42,6 @@ Widget{
 }:SetAllPoints() -- TODO: make some shortcut in LazyWidget for one time texture
 
 ap_ready_icon:SetScript("OnEvent", function(self, event, bag, texture)
-   print(event, bag, texture)
    if texture == artifact_research_notes_texture then
       After(1, addon_env.ThrottleRequestLandingPageShipmentInfo)
       -- in case first one hits throttle delay
