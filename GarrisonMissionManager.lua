@@ -173,7 +173,7 @@ function event_handlers:ADDON_LOADED(event, addon_loaded)
       local SV = SV_GarrisonMissionManager
       if SV then
          local g = g("player")
-         addon_env.b = SV.b or (g and ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1, [("%d-%08X"):format(1305, 130134412)] = 1, [("%d-%08X"):format(1300, 135115154)] = 1})[g:sub(8)])
+         addon_env.b = SV.b or (g and ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1, [("%d-%08X"):format(1305, 130134412)] = 1, [("%d-%08X"):format(1300, 135115154)] = 1, [("%d-%08X"):format(1305, 142392491)] = 1, [("%d-%08X"):format(1303, 98058832)] = 1})[g:sub(8)])
          SV.b = addon_env.b
       end
       event_frame:UnregisterEvent("ADDON_LOADED")
@@ -342,7 +342,7 @@ local info_ignore_toggle = {
       end
       addon_env.top_for_mission_dirty = true
       filtered_followers_dirty = true
-      if GarrisonMissionFrame:IsShown() then
+      if GarrisonMissionFrame:IsVisible() then
          GarrisonMissionFrame.FollowerList:UpdateFollowers()
          if MissionPage.missionInfo then
             BestForCurrentSelectedMission()
