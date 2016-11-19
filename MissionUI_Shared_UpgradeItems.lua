@@ -46,6 +46,10 @@ local template_upgrade_button = {
    -- },
 }
 
+local function UpgradeItemButton_CastSpellOnCurrentFollower()
+   C_Garrison.CastSpellOnFollower(GarrisonMissionFrame.FollowerTab.followerID)
+end
+
 local function UpgradeItems_InitButtons()
    for item_type = 1, #upgrade_items do
       local item_list = upgrade_items[item_type]
@@ -64,11 +68,16 @@ local function UpgradeItems_InitButtons()
             local strength = upgrade_item_strength[item_id]
             if strength then
                -- Widget{"FontString", u, "NumberFontNormal", TOPLEFT = true, Text = strength > 100 and strength or "+" .. strength}
-               local macro_text = "/use item:" .. item_id .."\n/run C_Garrison.CastSpellOnFollower(GarrisonMissionFrame.FollowerTab.followerID)"
-               u:SetAttribute("type", "macro")
-               u:SetAttribute("macrotext", macro_text)
-               u:SetAttribute("shift-type*", "macro")
-               u:SetAttribute("shift-macrotext*", macro_text)
+               u:SetAttribute("type", "item")
+               u:SetAttribute("item", "item:" .. item_id)
+               u:SetAttribute("shift-type*", "item")
+               u:SetAttribute("shift-item*", "item:" .. item_id)
+               u.UpgradeItemButton_CastSpellOnCurrentFollower = UpgradeItemButton_CastSpellOnCurrentFollower
+               SecureHandlerWrapScript(u, "OnClick", u, "return nil, 'postclick'", [[
+                  if self:GetEffectiveAttribute("type", button) == "item" then
+                     self:CallMethod("UpgradeItemButton_CastSpellOnCurrentFollower")
+                  end
+               ]])
             else
                u:SetAttribute("type", "item")
                u:SetAttribute("item", "item:" .. item_id)
@@ -125,8 +134,8 @@ local function UpdateUpgradeItemStates(self, followerID, followerInfo)
 
             local strength = upgrade_item_strength[item_id]
             if strength then
-               local action_button_type = "macro"
-               local shift_action_button_type = "macro"
+               local action_button_type = "item"
+               local shift_action_button_type = "item"
                if ilvl_current_type == 675 or (strength > 600 and ilvl_current_type >= strength) then
                   -- Fadeout and disable button if upgrade is absolutely useless
                   -- i.e. follower has max level or fixed level upgrade is lower than follower current ilevel
