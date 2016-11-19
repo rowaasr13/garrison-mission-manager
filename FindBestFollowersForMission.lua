@@ -340,6 +340,28 @@ local function FindBestFollowersForMission(mission, followers, mode)
                            if prev_followers_troop > followers_troop then found = true break end
                         end
 
+                        -- If mission have XP-only rewards:
+                        -- 1) Check that we meet at least 100%.
+                        -- 2) Check that we have as many unmaxed followers as possible
+                        -- 3) If there's overmax reward - check for biggest success chance
+                        if xp_only_rewards then
+                           local prev_successChance_clamped = prev_successChance > 100 and 100 or prev_successChance
+                           local successChance_clamped = successChance > 100 and 100 or successChance
+
+                           if prev_successChance_clamped > successChance_clamped then break end
+                           if prev_successChance_clamped < successChance_clamped then found = true break end
+
+                           local prev_followers_not_maxed = prev_top.followers_not_maxed
+
+                           if prev_followers_not_maxed > followers_not_maxed then break end
+                           if prev_followers_not_maxed < followers_not_maxed then found = true break end
+
+                           if overmax_reward then
+                              if prev_successChance < successChance then found = true break end
+                              if prev_successChance > successChance then break end
+                           end
+                        end
+
                         local prev_material_yield = prev_top.material_yield
                         if mode == 'material_yield' then
                            if prev_material_yield < material_yield then found = true break end
