@@ -392,11 +392,11 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         if prev_followers_maxed > followers_maxed then found = true break end
                         if prev_followers_maxed < followers_maxed then break end
 
-                        local cXpBonus = prev_top.xpBonus
+                        local prev_xpBonus = prev_top.xpBonus
                         -- Maximize XP bonus only if party have unmaxed followers
-                        if slots ~= followers_maxed then
-                           if cXpBonus < xpBonus then found = true break end
-                           if cXpBonus > xpBonus then break end
+                        if followers_not_maxed > 0 then
+                           if prev_xpBonus < xpBonus then found = true break end
+                           if prev_xpBonus > xpBonus then break end
                         end
 
                         local cTotalTimeSeconds = prev_top.totalTimeSeconds
@@ -425,9 +425,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
                         -- Minimize XP bonus if all followers are maxed, because it indicates either overkill or XP-bonus traits better used elsewhere
                         -- but only if there are unmaxed followers. Otherwise minimize it after other optimizations.
                         if not all_followers_maxed then
-                           if slots == followers_maxed then
-                              if cXpBonus > xpBonus then found = true break end
-                              if cXpBonus < xpBonus then break end
+                           if followers_not_maxed == 0 then
+                              if prev_xpBonus > xpBonus then found = true break end
+                              if prev_xpBonus < xpBonus then break end
                            end
                         end
 
@@ -450,8 +450,8 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
                         if all_followers_maxed then
                            if slots == followers_maxed then
-                              if cXpBonus > xpBonus then found = true break end
-                              if cXpBonus < xpBonus then break end
+                              if prev_xpBonus > xpBonus then found = true break end
+                              if prev_xpBonus < xpBonus then break end
                            end
                         end
 
@@ -461,7 +461,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                      until true
 
                      if found then
-                        local all_followers_maxed_on_mission = slots == followers_maxed
+                        local all_followers_maxed_on_mission = followers_not_maxed == 0
                         local new = top_list[4]
                         new[1] = follower1
                         new[2] = follower2
