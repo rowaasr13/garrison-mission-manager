@@ -115,13 +115,13 @@ function addon_env.OrderHallInitUI()
    addon_env.MissionList_ButtonsInit(MissionList, mission_list_prefix)
    local MissionList_Update_More = addon_env.MissionList_Update_More
 
-   local function MissionList_Update_More_Settings()
-      MissionList_Update_More(MissionList, MissionList_Update_More_Settings, mission_list_prefix, follower_type, currency)
+   local function MissionList_Update_More_With_Settings()
+      MissionList_Update_More(MissionList, MissionList_Update_More_With_Settings, mission_list_prefix, follower_type, currency)
    end
 
-   hooksecurefunc(MissionList,            "Update", MissionList_Update_More_Settings)
-   hooksecurefunc(MissionList.listScroll, "update", MissionList_Update_More_Settings)
-   MissionList_Update_More_Settings()
+   hooksecurefunc(MissionList,            "Update", MissionList_Update_More_With_Settings)
+   hooksecurefunc(MissionList.listScroll, "update", MissionList_Update_More_With_Settings)
+   MissionList_Update_More_With_Settings()
 
    hooksecurefunc(base_frame.FollowerList, "UpdateData", addon_env.GarrisonFollowerList_Update_More)
 
