@@ -28,9 +28,6 @@ local type = type
 local wipe = wipe
 -- [AUTOLOCAL END]
 
-local MissionPage = GarrisonMissionFrame.MissionTab.MissionPage
-local MissionPageFollowers = MissionPage.Followers
-
 addon_env.event_frame = addon_env.event_frame or CreateFrame("Frame")
 local event_frame = addon_env.event_frame
 local RegisterEvent = event_frame.RegisterEvent
@@ -83,6 +80,8 @@ local function FindBestFollowersForMission(mission, followers, mode)
    for idx = 1, #event_handlers do UnregisterEvent(event_handlers[idx], "GARRISON_FOLLOWER_LIST_UPDATE") end
 
    local mission_id = mission.missionID
+   local MissionPage = mission_frame.MissionTab.MissionPage
+   local MissionPageFollowers = MissionPage.Followers
    local party_followers_count = #MissionPageFollowers
    if party_followers_count > 0 then
       for party_idx = 1, party_followers_count do
@@ -542,9 +541,10 @@ local function FindBestFollowersForMission(mission, followers, mode)
    if party_followers_count > 0 then
       for party_idx = 1, party_followers_count do
          if preserve_mission_page_followers[party_idx] then
-            mission_frame:AssignFollowerToMission(MissionPageFollowers[party_idx], preserve_mission_page_followers[party_idx])
+            AddFollowerToMission(mission_id, preserve_mission_page_followers[party_idx].followerID)
          end
       end
+      if MissionPage:IsVisible() then mission_frame:UpdateMissionParty(MissionPageFollowers) end
    end
 
    if compare_top_1 then
