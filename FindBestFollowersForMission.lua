@@ -228,7 +228,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
 
             if xp_only_rewards then
                -- Throw away teams that are completely filled with maxed out followers
-               if slots == followers_maxed then
+               if followers_not_maxed == 0 then
                   -- However, if ALL free followers are maxed and we have salvage yard - don't.
                   if not (salvage_yard_level and all_followers_maxed) then
                      skip = true
