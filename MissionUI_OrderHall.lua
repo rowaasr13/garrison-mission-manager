@@ -122,6 +122,7 @@ function addon_env.OrderHallInitUI()
    hooksecurefunc(MissionList,            "Update", MissionList_Update_More_With_Settings)
    hooksecurefunc(MissionList.listScroll, "update", MissionList_Update_More_With_Settings)
    MissionList_Update_More_With_Settings()
+   addon_env.update_if_visible[MissionList] = MissionList_Update_More_With_Settings
 
    hooksecurefunc(base_frame.FollowerList, "UpdateData", addon_env.GarrisonFollowerList_Update_More)
 
