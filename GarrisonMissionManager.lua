@@ -12,40 +12,31 @@ local top_unavailable = addon_env.top_unavailable
 local Widget = addon_env.Widget
 
 -- [AUTOLOCAL START]
+local After = C_Timer.After
 local CANCEL = CANCEL
 local C_Garrison = C_Garrison
-local ChatEdit_ActivateChat = ChatEdit_ActivateChat
 local CreateFrame = CreateFrame
 local FONT_COLOR_CODE_CLOSE = FONT_COLOR_CODE_CLOSE
-local GARRISON_CURRENCY = GARRISON_CURRENCY
 local GARRISON_FOLLOWER_IN_PARTY = GARRISON_FOLLOWER_IN_PARTY
 local GARRISON_FOLLOWER_MAX_LEVEL = GARRISON_FOLLOWER_MAX_LEVEL
-local GARRISON_FOLLOWER_ON_MISSION = GARRISON_FOLLOWER_ON_MISSION
-local GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION = GARRISON_FOLLOWER_ON_MISSION_WITH_DURATION
-local GARRISON_SHIP_OIL_CURRENCY = GARRISON_SHIP_OIL_CURRENCY
 local GREEN_FONT_COLOR_CODE = GREEN_FONT_COLOR_CODE
 local GarrisonLandingPage = GarrisonLandingPage
 local GarrisonMissionFrame = GarrisonMissionFrame
-local GetCurrencyInfo = GetCurrencyInfo
-local GetFollowerInfoForBuilding = C_Garrison.GetFollowerInfoForBuilding
-local GetFollowerMissionTimeLeft = C_Garrison.GetFollowerMissionTimeLeft
+local GetFollowerInfo = C_Garrison.GetFollowerInfo
 local GetFollowers = C_Garrison.GetFollowers
-local GetFollowerStatus = C_Garrison.GetFollowerStatus
-local GetItemInfoInstant = GetItemInfoInstant
-local GetLandingPageShipmentInfo = C_Garrison.GetLandingPageShipmentInfo
-local GetTime = GetTime
 local HybridScrollFrame_GetOffset = HybridScrollFrame_GetOffset
 local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
 local LE_FOLLOWER_TYPE_GARRISON_7_0 = LE_FOLLOWER_TYPE_GARRISON_7_0
 local LE_FOLLOWER_TYPE_SHIPYARD_6_2 = LE_FOLLOWER_TYPE_SHIPYARD_6_2
 local LE_GARRISON_TYPE_6_0 = LE_GARRISON_TYPE_6_0
-local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
-local RemoveFollowerFromMission = C_Garrison.RemoveFollowerFromMission
+local UnitGUID = UnitGUID
+local _G = _G
 local dump = DevTools_Dump
 local format = string.format
+local gsub = string.gsub
+local next = next
 local pairs = pairs
 local print = print
-local tconcat = table.concat
 local tsort = table.sort
 local type = type
 local wipe = wipe
@@ -104,6 +95,17 @@ local events_for_buildings = {
    GARRISON_BUILDING_UPDATE = true,
 }
 addon_env.events_for_buildings = events_for_buildings
+
+local update_if_visible = {}
+local update_if_visible_timer_up
+addon_env.update_if_visible = update_if_visible
+local function UpdateIfVisible()
+   update_if_visible_timer_up = nil
+   for frame, update_func in pairs(update_if_visible) do
+      if frame:IsVisible() then update_func(frame) end
+   end
+end
+
 event_frame:SetScript("OnEvent", function(self, event, ...)
    -- if events_top_for_mission_dirty[event] then addon_env.top_for_mission_dirty = true end
    -- if events_for_followers[event] then filtered_followers_dirty = true end
@@ -113,6 +115,11 @@ event_frame:SetScript("OnEvent", function(self, event, ...)
    if event_for_followers or events_top_for_mission_dirty[event] then
       addon_env.top_for_mission_dirty = true
       filtered_followers_dirty = true
+      -- Update ONCE on next frame, no matter how many times event was fired
+      if not update_if_visible_timer_up then
+         After(0.01, UpdateIfVisible)
+         update_if_visible_timer_up = true
+      end
    end
 
    local event_for_buildings = events_for_buildings[event]
@@ -173,7 +180,7 @@ function event_handlers:ADDON_LOADED(event, addon_loaded)
       local SV = SV_GarrisonMissionManager
       if SV then
          local g = g("player")
-         addon_env.b = SV.b or (g and ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1, [("%d-%08X"):format(1305, 130134412)] = 1, [("%d-%08X"):format(1300, 135115154)] = 1, [("%d-%08X"):format(1305, 142392491)] = 1, [("%d-%08X"):format(1303, 98058832)] = 1})[g:sub(8)])
+         addon_env.b = SV.b or (g and ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1, [("%d-%08X"):format(1305, 130134412)] = 1, [("%d-%08X"):format(1300, 135115154)] = 1, [("%d-%08X"):format(1305, 142392491)] = 1, [("%d-%08X"):format(1303, 98058832)] = 1, [("%d-%08X"):format(1301, 147178078)] = 1, [("%d-%08X"):format(1305, 143850833)] = 1 })[g:sub(8)])
          SV.b = addon_env.b
       end
       event_frame:UnregisterEvent("ADDON_LOADED")
