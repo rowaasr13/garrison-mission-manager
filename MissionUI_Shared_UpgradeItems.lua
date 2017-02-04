@@ -47,7 +47,7 @@ local template_upgrade_button = {
 }
 
 local function UpgradeItemButton_CastSpellOnCurrentFollower()
-   C_Garrison.CastSpellOnFollower(GarrisonMissionFrame.FollowerTab.followerID)
+   CastSpellOnFollower(GarrisonMissionFrame.FollowerTab.followerID)
 end
 
 local function UpgradeItems_InitButtons()
