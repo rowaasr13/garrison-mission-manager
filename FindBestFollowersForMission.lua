@@ -167,7 +167,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
       local follower1_busy = follower1.is_busy_for_mission and 1 or 0
       local follower1_is_troop = follower1.isTroop and 1 or 0
       local follower1_not_maxed = (follower1_is_troop == 0 and follower1_maxed == 0) and 1 or 0
-      local prev_follower2_troop_spec
+      local prev_follower2_troop_uniq
       for i2 = min[2] or (i1 + 1), max[2] do
          local follower2_maxed = 0
          local follower2 = followers[i2]
@@ -175,7 +175,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
          local follower2_level = 0
          local follower2_busy = 0
          local follower2_is_troop = 0
-         local follower2_troop_spec
+         local follower2_troop_uniq
          local follower2_not_maxed = 0
          if follower2 then
             follower2_id = follower2.followerID
@@ -185,7 +185,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
             if follower2.isTroop then
                follower2_is_troop = 1
                -- Only used to remove "duplicate" teams with different instance of same troop class
-               follower2_troop_spec = follower2.classSpec * (follower2_busy == 1 and 1 or -1)
+               follower2_troop_uniq = follower2.classSpec * (follower2_busy == 1 and 1 or -1)
             end
             follower2_not_maxed = (follower2_is_troop == 0 and follower2_maxed == 0) and 1 or 0
          end
@@ -194,7 +194,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
          if type70 then
             if i2 == followers_count + 1 then i3_start = followers_count + 1 end
          end
-         local prev_follower3_troop_spec
+         local prev_follower3_troop_uniq
          for i3 = i3_start, max[3] do
             local follower3_maxed = 0
             local follower3 = followers[i3]
@@ -202,7 +202,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
             local follower3_level = 0
             local follower3_busy = 0
             local follower3_is_troop = 0
-            local follower3_troop_spec
+            local follower3_troop_uniq
             local follower3_not_maxed = 0
             if follower3 then
                follower3_id = follower3.followerID
@@ -212,7 +212,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                if follower3.isTroop then
                   follower3_is_troop = 1
                   -- Only used to remove "duplicate" teams with different instance of same troop class
-                  follower3_troop_spec = follower3.classSpec * (follower3_busy == 1 and 1 or -1)
+                  follower3_troop_uniq = follower3.classSpec * (follower3_busy == 1 and 1 or -1)
                end
                follower3_not_maxed = (follower3_is_troop == 0 and follower3_maxed == 0) and 1 or 0
             end
@@ -241,11 +241,11 @@ local function FindBestFollowersForMission(mission, followers, mode)
                skip = true
             end
 
-            if not skip and (follower2_is_troop == 1 and follower2_troop_spec == prev_follower2_troop_spec) then
+            if not skip and (follower2_is_troop == 1 and follower2_troop_uniq == prev_follower2_troop_uniq) then
                skip = true
             end
 
-            if not skip and (follower3_is_troop == 1 and follower3_troop_spec == prev_follower3_troop_spec) then
+            if not skip and (follower3_is_troop == 1 and follower3_troop_uniq == prev_follower3_troop_uniq) then
                skip = true
             end
 
@@ -519,9 +519,9 @@ local function FindBestFollowersForMission(mission, followers, mode)
                   best_modes_count = saved_best_modes_count
                end
             end
-            prev_follower3_troop_spec = follower3_troop_spec
+            prev_follower3_troop_uniq = follower3_troop_uniq
          end -- for i3
-         prev_follower2_troop_spec = follower2_troop_spec
+         prev_follower2_troop_uniq = follower2_troop_uniq
       end -- for i2
    end -- for i1
 
