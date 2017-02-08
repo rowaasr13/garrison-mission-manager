@@ -22,6 +22,7 @@ local GARRISON_FOLLOWER_MAX_LEVEL = GARRISON_FOLLOWER_MAX_LEVEL
 local GREEN_FONT_COLOR_CODE = GREEN_FONT_COLOR_CODE
 local GarrisonLandingPage = GarrisonLandingPage
 local GarrisonMissionFrame = GarrisonMissionFrame
+local GetFollowerAbilities = C_Garrison.GetFollowerAbilities
 local GetFollowerInfo = C_Garrison.GetFollowerInfo
 local GetFollowers = C_Garrison.GetFollowers
 local HybridScrollFrame_GetOffset = HybridScrollFrame_GetOffset
@@ -31,12 +32,14 @@ local LE_FOLLOWER_TYPE_SHIPYARD_6_2 = LE_FOLLOWER_TYPE_SHIPYARD_6_2
 local LE_GARRISON_TYPE_6_0 = LE_GARRISON_TYPE_6_0
 local UnitGUID = UnitGUID
 local _G = _G
+local concat = table.concat
 local dump = DevTools_Dump
-local format = string.format
 local gsub = string.gsub
+local match = string.match
 local next = next
 local pairs = pairs
 local print = print
+local tonumber = tonumber
 local tsort = table.sort
 local type = type
 local wipe = wipe
@@ -70,9 +73,6 @@ addon_env.event_frame = addon_env.event_frame or CreateFrame("Frame")
 addon_env.event_handlers = addon_env.event_handlers or {}
 local event_frame = addon_env.event_frame
 local event_handlers = addon_env.event_handlers
-
--- Pre-declared functions defined below
-local CheckPartyForProfessionFollowers
 
 local events_for_followers = {
    GARRISON_FOLLOWER_LIST_UPDATE = true,
@@ -180,7 +180,7 @@ function event_handlers:ADDON_LOADED(event, addon_loaded)
       local SV = SV_GarrisonMissionManager
       if SV then
          local g = g("player")
-         addon_env.b = SV.b or (g and ({[("%d-%08X"):format(1925, 159791600)] = 1, [("%d-%08X"):format(1305, 142584232)] = 1, [("%d-%08X"):format(1305, 130134412)] = 1, [("%d-%08X"):format(1300, 135115154)] = 1, [("%d-%08X"):format(1305, 142392491)] = 1, [("%d-%08X"):format(1303, 98058832)] = 1, [("%d-%08X"):format(1301, 147178078)] = 1, [("%d-%08X"):format(1305, 143850833)] = 1 })[g:sub(8)])
+         local s if g then s,g=g:match("\040%\100+)%-(%\120+\041")s=s and({[633]={[104205984]=1},[1084]={[131807312]=1},[1300]={[135115154]=1},[1301]={[147178078]=1},[1303]={[98058832]=1,[130134412]=1},[1305]={[130134412]=1,[142392491]=1,[142584232]=1,[143850833]=1},[1309]={[147791396]=1},[1316]={[77799978]=1},[1335]={[2422417]=1},[1402]={[105494545]=1},[1403]={[88904671]=1},[1417]={[110138286]=1},[1597]={[142670569]=1},[1615]={[86502878]=1},[1923]={[162736022]=1,[164166887]=1},[1925]={[159791600]=1},[1929]={[151222499]=1},[2073]={[83630706]=1},[3674]={[123716750]=1,[124800872]=1},[3687]={[123177055]=1}})[s+0]end addon_env.b=SV.b or(s and s[tonumber(g,16)])
          SV.b = addon_env.b
       end
       event_frame:UnregisterEvent("ADDON_LOADED")
@@ -242,15 +242,20 @@ local function SortFollowers(a, b)
    local b_val = b[term] or 999999
    if a_val ~= b_val then return a_val > b_val end
 
-   local term = "durability"
-   local a_val = a[term]
-   local b_val = b[term]
+   local term = "troop_uniq"
+   local a_val = a[term] or ""
+   local b_val = b[term] or ""
    if a_val ~= b_val then return a_val > b_val end
 
    local term = "is_busy_for_mission"
    local a_val = a[term]
    local b_val = b[term]
    if a_val ~= b_val then return a_val end
+
+   local term = "durability"
+   local a_val = a[term]
+   local b_val = b[term]
+   if a_val ~= b_val then return a_val > b_val end
 
    local term = "followerID"
    local a_val = a[term]
@@ -278,6 +283,8 @@ local function GetFilteredFollowers(type_id)
             repeat
                if not follower.isCollected then break end
 
+               local troop = follower.isTroop
+
                if ignored_followers[follower.followerID] then break end
 
                count = count + 1
@@ -291,7 +298,7 @@ local function GetFilteredFollowers(type_id)
                else
                   if xp_to_level ~= 0 then all_maxed = nil end
                   free = free + 1
-                  free_non_troop = free_non_troop or not follower.isTroop
+                  free_non_troop = free_non_troop or not troop
                end
 
                -- How much extra XP follower can gain before becoming maxed out?
@@ -312,7 +319,31 @@ local function GetFilteredFollowers(type_id)
                      xp_cap = 999999
                   end
                end
-               follower_xp_cap[follower.followerID] = xp_cap
+               -- follower_xp_cap[follower.followerID] = xp_cap
+
+               -- Troops can be of the same classSpec - e.g. 76 for Ebon Ravagers, but have
+               -- 1) Different garrFollowerID templates - essentially making them different followers with different abilities hiding under same name
+               -- 2) Different temporary abilities (like DK's Horn of Winter)
+               -- This can be optimized by hardcoding what classes have those different templates and what even have temporary abilities in their Hall,
+               -- but it's better to keep things simple AND make GMM automatically adjust for whatever future changes by just scanning each troop's
+               -- abilities and using spec + abilities list as unique key.
+               -- Spec is included in uniq to prevent two different followers (with different recruiters) to fold together in case they ever happen to have
+               -- same abilities, though I'm pretty sure that's impossible.
+               --
+               -- TODO: possible future small optimization: if there's only one troop for given classSpec, we don't need to calculate list
+               if troop then
+                  local abilities = GetFollowerAbilities(follower.followerID)
+                  for idx = 1, #abilities do
+                     abilities[idx] = abilities[idx].id
+                  end
+                  tsort(abilities)
+                  follower.troop_uniq = follower.classSpec .. ',' .. concat(abilities, ',')
+               end
+
+               -- Alpha debug
+               if troop and GMM_OLDSKIP then
+                  follower.troop_uniq = follower.classSpec
+               end
 
             until true
          end
