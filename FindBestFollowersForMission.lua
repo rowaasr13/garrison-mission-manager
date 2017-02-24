@@ -47,6 +47,43 @@ local preserve_mission_page_followers = {}
 
 local FindBestFollowersForMission_compare
 
+local debug_follower
+local debug_follower_string
+local function debug_report_group(follower1, follower2, follower3, ...)
+   if not debug_follower then debug_follower = {} end
+   if not debug_follower_string then debug_follower_string = {} end
+
+   debug_follower[1] = follower1
+   debug_follower[2] = follower2
+   debug_follower[3] = follower3
+
+   for idx = 1, 3 do
+      if debug_follower[idx] then
+         local name = debug_follower[idx].name
+         local garrFollowerID = debug_follower[idx].garrFollowerID
+         
+         if false then
+         elseif garrFollowerID == 659 then name = "T.Appr.-FHuman"
+         elseif garrFollowerID == 716 then name = "Kalec"
+         elseif garrFollowerID == 717 then name = "Modera"
+         elseif garrFollowerID == 724 then name = "A.Destroyer"
+         elseif garrFollowerID == 726 then name = "Esara"
+         elseif garrFollowerID == 822 then name = "T.Appr.-MElf"
+         end
+
+         debug_follower_string[idx] = name .. "-" .. garrFollowerID
+      else
+         debug_follower_string[idx] = "."
+      end
+   end
+   print(debug_follower_string[1] .. " * " .. debug_follower_string[2] .. " * " .. debug_follower_string[3] .. " :: ", ...)
+end
+
+-- dd7e31478690-alpha typo debug - c/p to: if xp_only_rewards then
+-- if successChance_clamped >= 90 then
+--    debug_report_group(follower1, follower2, follower3, follower_is_busy_for_mission, prev_successChance, prev_successChance_clamped, prev_top.followers_not_maxed, successChance, successChance_clamped, followers_not_maxed)
+-- end
+
 local function FindBestFollowersForMission(mission, followers, mode)
    local compare_top_1
    if FindBestFollowersForMission_compare then
