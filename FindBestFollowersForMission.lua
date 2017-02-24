@@ -249,7 +249,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
                if follower3.isTroop then
                   follower3_is_troop = 1
                   -- Only used to remove "duplicate" teams with different instance of same troop class
-                  follower3_troop_uniq = follower3.troop_uniq .. (follower2_busy == 1 and 'b' or '')
+                  follower3_troop_uniq = follower3.troop_uniq .. (follower3_busy == 1 and 'b' or '')
                end
                follower3_not_maxed = (follower3_is_troop == 0 and follower3_maxed == 0) and 1 or 0
             end
