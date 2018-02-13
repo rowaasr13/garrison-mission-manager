@@ -17,6 +17,9 @@ local ORANGE_FONT_COLOR_CODE = ORANGE_FONT_COLOR_CODE
 local PlaySound = PlaySound
 local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
 local RemoveFollowerFromBuilding = C_Garrison.RemoveFollowerFromBuilding
+local SOUNDKIT_GS_TITLE_OPTION_OK = SOUNDKIT.GS_TITLE_OPTION_OK
+local SOUNDKIT_UI_GARRISON_COMMAND_TABLE_ASSIGN_FOLLOWER = SOUNDKIT.UI_GARRISON_COMMAND_TABLE_ASSIGN_FOLLOWER
+local SOUNDKIT_UI_GARRISON_COMMAND_TABLE_UNASSIGN_FOLLOWER = SOUNDKIT.UI_GARRISON_COMMAND_TABLE_UNASSIGN_FOLLOWER
 local dump = DevTools_Dump
 local pairs = pairs
 local tconcat = table.concat
@@ -270,7 +273,7 @@ end
 addon_env.RemoveAllWorkers_TooltipShow = RemoveAllWorkers_TooltipShow
 
 local function AssignRemove_PerformInit()
-   PlaySound("gsTitleOptionOK")
+   PlaySound(SOUNDKIT_GS_TITLE_OPTION_OK)
    for event in pairs(events_for_buildings) do UnregisterEvent(event_frame, event) end
    assign_remove_in_progress = true
    GarrisonBuilding_UpdateButtons()
@@ -303,7 +306,7 @@ local function AssignAllWorkers_Perform()
       end
    end
    if not empty then
-      AssignRemove_PerformFinalize("UI_Garrison_CommandTable_AssignFollower")
+      AssignRemove_PerformFinalize(SOUNDKIT_UI_GARRISON_COMMAND_TABLE_ASSIGN_FOLLOWER)
    else
       After(0.001, AssignAllWorkers_Perform)
    end
@@ -331,7 +334,7 @@ local function RemoveAllWorkers_Perform()
       end
    end
    if empty then
-      AssignRemove_PerformFinalize("UI_Garrison_CommandTable_UnassignFollower")
+      AssignRemove_PerformFinalize(SOUNDKIT_UI_GARRISON_COMMAND_TABLE_UNASSIGN_FOLLOWER)
    else
       After(0.001, RemoveAllWorkers_Perform)
    end
