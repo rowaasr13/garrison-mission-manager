@@ -7,17 +7,12 @@ Garrison Mission Manager, v56
 
 # Additional downloads
 * [LibTTScan](https://mods.curse.com/addons/wow/libttscan-1) - to show Artifact Power amount on mission rewards.
-* [GMM - Load On Login](https://mods.curse.com/addons/wow/gmm-on-login) - to make GMM load on login and make features like Artifact Research Notes reminder or right-clicking for WoD available right from entering the game instead of delaying load until you interact with Blizzard UI.
+* [GMM - Load On Login](https://mods.curse.com/addons/wow/gmm-on-login) - to make GMM load on login and make all its features available right from entering the game instead of delaying load until you interact with Blizzard UI.
 
 # Best team selection
 The core of GMM is team selection: mission list will have one button and individual mission page will have top 3 buttons in Class Hall, Shipyard and Garrison. Clicking any of those button set suggested team. Each button will show you success rate along with icons of bonuses gained by that team or reduced time. Hovering over those buttons will show tooltip with suggested team.
 
 GMM checks all combinations of all followers and selects those that give best total success chance reported directly from WoW. This takes care of each and every trait and ability your followers have, present and future, without any need for special updates.
-
-# Class Hall-specific features
-
-## Artifact Research Notes tracker
-Picking up fresh notes and activating them before gaining any new AP is probably the most important thing about your shipments. A small scroll icon will be displayed over minimap button when there's notes ready and waiting to be picked up or if notes are still unused in your bags. Scroll will turn orange if there are less than 2 shipments running and red if there are none. (Just like all other feature this requires GMM to be loaded -  i.e. you need any garrison interface or landing page at least once or install [GMM - Load On Login](https://mods.curse.com/addons/wow/gmm-on-login)).
 
 # Shared features
 
