@@ -1,11 +1,15 @@
 [![Donate to the author of Garrison Mission Manager](https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cn=Add+special+instructions+to+the+addon+author%28s%29&business=rowaasr13%40gmail.com&bn=PP-DonationsBF%3Abtn_donateCC_LG.gif%3ANonHosted&lc=US&cmd=_donations&rm=1&no_shipping=1&currency_code=USD&return=https%3A%2F%2Fwww.curse.com%2Faddons%2Fwow%2Fgarrison-mission-manager&cancel_return=https%3A%2F%2Fwww.curse.com%2Faddons%2Fwow%2Fgarrison-mission-manager&item_name=Garrison+Mission+Manager+%28from+Curse.com%29) [![Support author of Garrison Mission Manager on Patreon](https://media-elerium.cursecdn.com/attachments/192/602/support-on-patreon26.png)](https://www.patreon.com/rowaasr13)
 
-Garrison Mission Manager, v56
+Garrison Mission Manager, v57
 
 * http://www.curse.com/addons/wow/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 ## Change log
+
+### 2018-08-18 v57
+ * Remove Artifact Research tracker from code/docs - research is not available for quite some time already.
+ * Prepare placeholder for upcoming BfA mission table code.
 
 ### 2018-08-14 v56
  * TBD. Mostly fixes and temporary workarounds for Battle for Azeroth changes.
