@@ -36,7 +36,7 @@ function addon_env.OrderHallInitUI()
 
    -- Detected/calculated
    local options = GarrisonFollowerOptions[follower_type]
-   local base_frame = _G[options.missionFrame]
+   local base_frame = o.base_frame
    local currency = C_Garrison.GetCurrencyTypes(options.garrisonType)
    local MissionTab = base_frame.MissionTab
    local MissionPage = MissionTab.MissionPage
