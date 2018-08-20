@@ -74,6 +74,36 @@ local salvage_textures = setmetatable({}, { __index = function(t, key)
    return --[[ some default texture ]]
 end})
 
+local ilevel_maximums = {}
+local gmm_follower_options = {}
+addon_env.gmm_follower_options = gmm_follower_options
+local function InitGMMFollowerOptions(gmm_options)
+   local follower_type = gmm_options.follower_type
+   local options = GarrisonFollowerOptions[follower_type]
+
+   local gmm_prefix = gmm_options.gmm_prefix
+   local base_frame = _G[options.missionFrame]
+   local MissionTab = base_frame.MissionTab
+
+   -- Calculated shortcuts
+   gmm_options.base_frame  = base_frame
+   gmm_options.currency    = C_Garrison.GetCurrencyTypes(options.garrisonType)
+   gmm_options.MissionTab  = MissionTab
+   gmm_options.MissionPage = MissionTab.MissionPage
+   gmm_options.MissionList = MissionTab.MissionList
+   gmm_options.gmm_button_mission_page_prefix = gmm_prefix .. "MissionPage"
+   gmm_options.gmm_button_mission_list_prefix = gmm_prefix .. "MissionList"
+
+   gmm_follower_options[follower_type] = gmm_options
+
+   if gmm_options.ilevel_max then
+      ilevel_maximums[gmm_options.ilevel_max] = true
+   end
+
+   return gmm_options
+end
+addon_env.InitGMMFollowerOptions = InitGMMFollowerOptions
+
 local function SetTeamButtonText(button, top_entry)
    if top_entry.successChance then
       local xp_bonus, xp_bonus_icon

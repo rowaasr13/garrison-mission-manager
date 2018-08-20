@@ -27,6 +27,12 @@ function addon_env.OrderHallInitUI()
    -- Hardcoded
    local prefix = "OrderHall" -- hardcoded, because it is used in OUR frame names and should be static for GMM_Click
    local follower_type = LE_FOLLOWER_TYPE_GARRISON_7_0
+   local o = addon_env.InitGMMFollowerOptions({
+      follower_type                = follower_type,
+      gmm_prefix                   = prefix,
+      ilevel_max                   = 950,
+      party_requires_one_non_troop = true
+   })
 
    -- Detected/calculated
    local options = GarrisonFollowerOptions[follower_type]

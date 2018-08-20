@@ -198,6 +198,18 @@ local function MissionPage_WarningInit()
    end
 end
 
+local function GarrisonInitUI()
+   local follower_type = LE_FOLLOWER_TYPE_GARRISON_6_0
+   local o = addon_env.InitGMMFollowerOptions({
+      follower_type                = follower_type,
+      gmm_prefix                   = "",
+      ilevel_max                   = 675
+   })
+
+   GarrisonInitUI = nil
+end
+GarrisonInitUI()
+
 addon_env.MissionPage_ButtonsInit("MissionPage", MissionPage)
 MissionPage_WarningInit()
 addon_env.mission_page_button_prefix_for_type_id[LE_FOLLOWER_TYPE_GARRISON_6_0] = "MissionPage"
