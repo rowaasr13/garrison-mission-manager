@@ -302,7 +302,11 @@ function addon_env.MissionPage_ButtonsInit(follower_type)
    end)
 end
 
-function addon_env.MissionList_ButtonsInit(blizzard_mission_list, frame_prefix)
+function addon_env.MissionList_ButtonsInit(follower_type)
+   local opt = gmm_follower_options[follower_type]
+   local blizzard_mission_list = opt.MissionList
+   local frame_prefix          = opt.gmm_button_mission_list_prefix
+
    local level_anchor = blizzard_mission_list.listScroll
    local blizzard_buttons = blizzard_mission_list.listScroll.buttons
    for idx = 1, #blizzard_buttons do
@@ -325,6 +329,7 @@ function addon_env.MissionList_ButtonsInit(blizzard_mission_list, frame_prefix)
          set_followers_button:SetHeight(40)
          set_followers_button:SetPoint("LEFT", blizzard_button, "RIGHT", -65, 0)
          set_followers_button:SetScript("OnClick", MissionList_PartyButtonOnClick)
+         set_followers_button.follower_type = follower_type
          gmm_buttons[frame_prefix .. idx] = set_followers_button
       end
 
