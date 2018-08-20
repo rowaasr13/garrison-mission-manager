@@ -424,7 +424,8 @@ addon_env.ShowMission_More = ShowMission_More
 local function UpdateMissionListButton(mission, filtered_followers, blizzard_button, gmm_button, more_missions_to_cache, resources, inactive_alpha)
    local cant_complete = mission.cost > resources
    if not cant_complete then
-      if filtered_followers.type == LE_FOLLOWER_TYPE_GARRISON_7_0 then
+      local options = gmm_follower_options[filtered_followers.type]
+      if options.party_requires_one_non_troop then
          cant_complete = not filtered_followers.free_non_troop
       else
          cant_complete = mission.numFollowers > filtered_followers.free
