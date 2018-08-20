@@ -44,7 +44,7 @@ function addon_env.OrderHallInitUI()
    local mission_page_prefix = prefix .. "MissionPage"
    local mission_list_prefix = prefix .. "MissionList"
 
-   addon_env.MissionPage_ButtonsInit(mission_page_prefix, MissionPage)
+   addon_env.MissionPage_ButtonsInit(follower_type)
    hooksecurefunc(base_frame, "ShowMission", addon_env.ShowMission_More)
    addon_env.update_if_visible[MissionPage] = function() addon_env.ShowMission_More(base_frame, MissionPage.missionInfo) end
 
