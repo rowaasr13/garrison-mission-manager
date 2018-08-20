@@ -127,6 +127,19 @@ local function GarrisonShipyardMap_UpdateMissions_More()
 end
 hooksecurefunc("GarrisonShipyardMap_UpdateMissions", GarrisonShipyardMap_UpdateMissions_More)
 
+local function ShipyardInitUI()
+   local prefix = "Shipyard" -- hardcoded, because it is used in OUR frame names and should be static for GMM_Click
+   local follower_type = LE_FOLLOWER_TYPE_SHIPYARD_6_2
+   local o = addon_env.InitGMMFollowerOptions({
+      follower_type                = follower_type,
+      gmm_prefix                   = prefix,
+      custom_mission_list          = true
+   })
+
+   ShipyardInitUI = nil
+end
+ShipyardInitUI()
+
 addon_env.MissionPage_ButtonsInit("ShipyardMissionPage", MissionPage)
 
 local BestForCurrentSelectedMission = addon_env.BestForCurrentSelectedMission
