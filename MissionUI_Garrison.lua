@@ -210,10 +210,10 @@ local function GarrisonInitUI()
    MissionPage_WarningInit()
    hooksecurefunc(GarrisonMissionFrame, "ShowMission", addon_env.ShowMission_More)
 
-   addon_env.MissionList_ButtonsInit(GarrisonMissionFrame.MissionTab.MissionList, "GarnisonMissionList")
+   addon_env.MissionList_ButtonsInit(follower_type)
    local MissionList_Update_More = addon_env.MissionList_Update_More
    local function GarrisonMissionFrame_MissionList_Update_More()
-      MissionList_Update_More(GarrisonMissionFrame.MissionTab.MissionList, GarrisonMissionFrame_MissionList_Update_More, "GarnisonMissionList", LE_FOLLOWER_TYPE_GARRISON_6_0, GARRISON_CURRENCY)
+      MissionList_Update_More(GarrisonMissionFrame.MissionTab.MissionList, GarrisonMissionFrame_MissionList_Update_More, "MissionList", follower_type, GARRISON_CURRENCY)
    end
 
    hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList,            "Update", GarrisonMissionFrame_MissionList_Update_More)

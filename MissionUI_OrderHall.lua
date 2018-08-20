@@ -48,7 +48,7 @@ function addon_env.OrderHallInitUI()
    hooksecurefunc(base_frame, "ShowMission", addon_env.ShowMission_More)
    addon_env.update_if_visible[MissionPage] = function() addon_env.ShowMission_More(base_frame, MissionPage.missionInfo) end
 
-   addon_env.MissionList_ButtonsInit(MissionList, mission_list_prefix)
+   addon_env.MissionList_ButtonsInit(follower_type)
    local MissionList_Update_More = addon_env.MissionList_Update_More
 
    local function MissionList_Update_More_With_Settings()
