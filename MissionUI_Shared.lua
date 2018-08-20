@@ -224,7 +224,14 @@ end
 
 local function MissionList_PartyButtonOnClick(self)
    if addon_env.RegisterManualInterraction then addon_env.RegisterManualInterraction() end
-   addon_env.mission_page_pending_click = "MissionPage1"
+   local pending_click
+   local follower_type = self.follower_type
+   if follower_type then
+      pending_click = gmm_follower_options[follower_type].gmm_button_mission_page_prefix .. '1'
+   else
+      pending_click = "MissionPage1"
+   end
+   addon_env.mission_page_pending_click = pending_click
    return self:GetParent():Click()
 end
 
@@ -393,10 +400,6 @@ local function BestForCurrentSelectedMission(type_id, mission_page, button_prefi
 
    local mission_page_pending_click = addon_env.mission_page_pending_click
    if mission_page_pending_click then
-      -- FIXME: ugly
-      if mission_page_pending_click == "MissionPage1" and not gmm_buttons[mission_page_pending_click]:IsVisible() and gmm_buttons['OrderHallMissionPage1']:IsVisible() then
-         mission_page_pending_click = 'OrderHallMissionPage1'
-      end
       MissionPage_PartyButtonOnClick(gmm_buttons[mission_page_pending_click])
       addon_env.mission_page_pending_click = nil
    end
