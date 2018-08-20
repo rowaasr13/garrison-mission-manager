@@ -136,11 +136,11 @@ local function ShipyardInitUI()
       custom_mission_list          = true
    })
 
+   addon_env.MissionPage_ButtonsInit(follower_type)
+
    ShipyardInitUI = nil
 end
 ShipyardInitUI()
-
-addon_env.MissionPage_ButtonsInit("ShipyardMissionPage", MissionPage)
 
 local BestForCurrentSelectedMission = addon_env.BestForCurrentSelectedMission
 hooksecurefunc(GarrisonShipyardFrame, "ShowMission", function()

@@ -206,11 +206,12 @@ local function GarrisonInitUI()
       ilevel_max                   = 675
    })
 
+   addon_env.MissionPage_ButtonsInit(follower_type)
+
    GarrisonInitUI = nil
 end
 GarrisonInitUI()
 
-addon_env.MissionPage_ButtonsInit("MissionPage", MissionPage)
 MissionPage_WarningInit()
 hooksecurefunc(GarrisonMissionFrame, "ShowMission", addon_env.ShowMission_More)
 
