@@ -399,8 +399,6 @@ local function BestForCurrentSelectedMission(type_id, mission_page, button_prefi
 end
 addon_env.BestForCurrentSelectedMission = BestForCurrentSelectedMission
 
-local mission_page_button_prefix_for_type_id = {}
-addon_env.mission_page_button_prefix_for_type_id = mission_page_button_prefix_for_type_id
 local function ShowMission_More(self, missionInfo)
    local mission_page = self.MissionTab.MissionPage
    if not mission_page:IsShown() then return end
@@ -420,7 +418,7 @@ local function ShowMission_More(self, missionInfo)
       mission_page.ItemLevelHitboxFrame:Hide()
    end
 
-   BestForCurrentSelectedMission(follower_type_id, mission_page, mission_page_button_prefix_for_type_id[follower_type_id])
+   BestForCurrentSelectedMission(follower_type_id, mission_page, gmm_follower_options[follower_type_id].gmm_button_mission_page_prefix)
 end
 addon_env.ShowMission_More = ShowMission_More
 
