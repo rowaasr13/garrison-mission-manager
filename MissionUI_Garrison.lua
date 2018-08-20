@@ -212,7 +212,6 @@ GarrisonInitUI()
 
 addon_env.MissionPage_ButtonsInit("MissionPage", MissionPage)
 MissionPage_WarningInit()
-addon_env.mission_page_button_prefix_for_type_id[LE_FOLLOWER_TYPE_GARRISON_6_0] = "MissionPage"
 hooksecurefunc(GarrisonMissionFrame, "ShowMission", addon_env.ShowMission_More)
 
 addon_env.MissionList_ButtonsInit(GarrisonMissionFrame.MissionTab.MissionList, "GarnisonMissionList")
