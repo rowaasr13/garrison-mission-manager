@@ -20,9 +20,11 @@ FindBestFollowersForMission.lua
 GarrisonMissionManager.lua
 MissionUI_Shared.lua
 MissionUI_Shared_UpgradeItems.lua
+MissionUI_Shared_Init.lua
 MissionUI_Garrison.lua
 MissionUI_Shipyard.lua
 MissionUI_OrderHall.lua
 MissionUI_BFA.lua
+MissionUI_Covenant.lua
 GarrisonBuilding.lua
 Broker.lua
