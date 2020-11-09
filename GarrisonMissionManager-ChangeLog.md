@@ -2,7 +2,7 @@
 
 Garrison Mission Manager, v60
 
-* http://www.curse.com/addons/wow/garrison-mission-manager
+* https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 ## Change log

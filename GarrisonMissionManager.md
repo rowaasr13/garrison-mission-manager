@@ -2,14 +2,14 @@
 
 Garrison Mission Manager, v60
 
-* http://www.curse.com/addons/wow/garrison-mission-manager
+* https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 A tool to assists you with selecting best team for Battle for Azeroth mission table, Legion's Class Hall and WoD's Garrison/Shipyard missions and other followers management tasks.
 
 # Additional downloads
-* [LibTTScan](https://mods.curse.com/addons/wow/libttscan-1) - to show Artifact Power amount on mission rewards.
-* [GMM - Load On Login](https://mods.curse.com/addons/wow/gmm-on-login) - to make GMM load on login and make all its features available right from entering the game instead of delaying load until you interact with Blizzard UI.
+* [LibTTScan](https://www.curseforge.com/wow/addons/libttscan-1) - to show Artifact Power amount on mission rewards.
+* [GMM - Load On Login](https://www.curseforge.com/wow/addons/gmm-on-login) - to make GMM load on login and make all its features available right from entering the game instead of delaying load until you interact with Blizzard UI.
 
 # Best team selection
 The core of GMM is team selection: mission list will have one button and individual mission page will have top 3 buttons at Battle for Azeroth mission table, Class Hall, Shipyard and Garrison. Clicking any of those button set suggested team. Each button will show you success rate along with icons of bonuses gained by that team or reduced time. Hovering over those buttons will show tooltip with suggested team.
