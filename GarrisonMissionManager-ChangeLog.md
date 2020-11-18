@@ -21,7 +21,7 @@ Garrison Mission Manager, v60
 
 ### 2018-08-23 v58
  * Battle for Azeroth mission table support enabled.
- * Lots of internal changes to make adding new tables faster and simplier and make code more universal. Check your old tables to make sure they work correctly!
+ * Lots of internal changes to make adding new tables faster and simpler and make code more universal. Check your old tables to make sure they work correctly!
 
 ### 2018-08-18 v57
  * Remove Artifact Research tracker from code/docs - research is not available for quite some time already.
