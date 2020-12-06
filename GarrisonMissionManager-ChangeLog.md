@@ -1,11 +1,14 @@
 [![Donate to the author of Garrison Mission Manager](https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cn=Add+special+instructions+to+the+addon+author%28s%29&business=rowaasr13%40gmail.com&bn=PP-DonationsBF%3Abtn_donateCC_LG.gif%3ANonHosted&lc=US&cmd=_donations&rm=1&no_shipping=1&currency_code=USD&return=https%3A%2F%2Fwww.curseforge.com%2Fwow%2Faddons%2Fgarrison-mission-manager&cancel_return=https%3A%2F%2Fwww.curseforge.com%2Fwow%2Faddons%2Fgarrison-mission-manager&item_name=Garrison+Mission+Manager+%28from+CurseForge.com%29)[![Support author of Garrison Mission Manager on Patreon](https://media.forgecdn.net/attachments/192/602/support-on-patreon26.png)](https://www.patreon.com/rowaasr13)
 
-Garrison Mission Manager, v61
+Garrison Mission Manager, v62
 
 * https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 ## Change log
+
+### 2020-12-06 v62
+ * Internals: devel mode switcher/loader, so it's easier to keep both release and development versions side-by-side.
 
 ### 2020-11-18 v61
  * TOC update for 9.0.2.
@@ -15,9 +18,6 @@ Garrison Mission Manager, v61
  * TOC update for 9.0.1.
  * API update for Shadowlands.
  * Placeholders for upcoming Covenant functionality and internal clean-up.
-
- *Right now I'm drycoding this with some friends testing stuff for me. I will be busy until New Year and probably won't be buying expansion and time until then because I won't have much time to actually play. Thus there will be some delay with adding support for new mission table.*
- *However I don't mind spending some time coding, as long as I don't have to pay on top of that, so any donations submitted before then will all be directed towards buying expansion and game time. If you want to get me to see new mechanics faster, you're welcome to pitch in.*
 
 ### 2019-02-05 v59
  * Minor Battle for Azeroth compatibility fix.
