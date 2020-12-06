@@ -7,11 +7,11 @@ Garrison Mission Manager, v61
 
 ## Change log
 
-### 2019-11-18 v61
+### 2020-11-18 v61
  * TOC update for 9.0.2.
  * Fix CurseForge links in docs.
 
-### 2019-11-09 v60
+### 2020-11-09 v60
  * TOC update for 9.0.1.
  * API update for Shadowlands.
  * Placeholders for upcoming Covenant functionality and internal clean-up.
