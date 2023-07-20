@@ -319,7 +319,7 @@ function addon_env.MissionList_ButtonsInit(follower_type)
    local frame_prefix          = opt.gmm_button_mission_list_prefix
 
    local level_anchor = blizzard_mission_list.listScroll
-   local blizzard_buttons = blizzard_mission_list.listScroll.buttons
+   local blizzard_buttons = blizzard_mission_list.ScrollBox:GetFrames()
    for idx = 1, #blizzard_buttons do
       local blizzard_button = blizzard_buttons[idx]
       if not gmm_buttons[frame_prefix .. idx] then
@@ -492,8 +492,8 @@ local mission_expiration_format_hours = "%s" ..                                 
 local function MissionList_Update_More(self, caller, frame_prefix, follower_type, currency)
    -- Blizzard updates those when not visible too, but there's no reason to copy them.
    if not self:IsVisible() then return end
-   local scrollFrame = self.listScroll
-   local buttons = scrollFrame.buttons
+   local scrollFrame = self.ScrollBox
+   local buttons = scrollFrame:GetFrames()
    local numButtons = #buttons
 
    if self.showInProgress then
