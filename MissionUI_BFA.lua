@@ -54,8 +54,8 @@ function addon_env.BFAInitUI()
       MissionList_Update_More(MissionList, MissionList_Update_More_With_Settings, mission_list_prefix, follower_type, currency)
    end
 
-   hooksecurefunc(MissionList,            "Update", MissionList_Update_More_With_Settings)
-   hooksecurefunc(MissionList.listScroll, "update", MissionList_Update_More_With_Settings)
+   hooksecurefunc(MissionList,           "Update", MissionList_Update_More_With_Settings)
+   hooksecurefunc(MissionList.ScrollBox, "Update", MissionList_Update_More_With_Settings)
    MissionList_Update_More_With_Settings()
    addon_env.update_if_visible[MissionList] = MissionList_Update_More_With_Settings
 
