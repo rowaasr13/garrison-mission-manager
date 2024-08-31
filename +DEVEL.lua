@@ -1,6 +1,11 @@
 local a_name, a_env = ...
 local devel_db = _G['SR13-+DEVEL']
 
+-- [AUTOLOCAL START]
+local LoadAddOn = C_AddOns.LoadAddOn
+local _G = _G
+-- [AUTOLOCAL END]
+
 a_env.a_name = a_name
 
 local function GetLoadDevel(addon_name)

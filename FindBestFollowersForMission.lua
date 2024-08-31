@@ -8,16 +8,15 @@ local AddFollowerToMission = C_Garrison.AddFollowerToMission
 local After = C_Timer.After
 local C_Garrison = C_Garrison
 local CreateFrame = CreateFrame
+local Enum_GarrisonFollowerType_FollowerType_6_0_GarrisonFollower = Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower
+local Enum_GarrisonFollowerType_FollowerType_7_0_GarrisonFollower = Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower
+local Enum_GarrisonFollowerType_FollowerType_8_0_GarrisonFollower = Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower
 local GARRISON_CURRENCY = GARRISON_CURRENCY
 local GARRISON_SHIP_OIL_CURRENCY = GARRISON_SHIP_OIL_CURRENCY
-local GarrisonMissionFrame = GarrisonMissionFrame
 local GetFramesRegisteredForEvent = GetFramesRegisteredForEvent
 local GetMissionCost = C_Garrison.GetMissionCost
 local GetNumFollowersOnMission = C_Garrison.GetNumFollowersOnMission
 local GetPartyMissionInfo = C_Garrison.GetPartyMissionInfo
-local LE_FOLLOWER_TYPE_GARRISON_6_0 = Enum.GarrisonFollowerType.FollowerType_6_0
-local LE_FOLLOWER_TYPE_GARRISON_7_0 = Enum.GarrisonFollowerType.FollowerType_7_0
-local LE_FOLLOWER_TYPE_GARRISON_8_0 = Enum.GarrisonFollowerType.FollowerType_8_0
 local RemoveFollowerFromMission = C_Garrison.RemoveFollowerFromMission
 local _G = _G
 local dump = DevTools_Dump
@@ -107,7 +106,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
    end
 
    local mission_frame = _G[GarrisonFollowerOptions[followers.type].missionFrame]
-   local type70 = (followers.type == LE_FOLLOWER_TYPE_GARRISON_7_0 or followers.type == LE_FOLLOWER_TYPE_GARRISON_8_0)
+   local type70 = (followers.type == Enum_GarrisonFollowerType_FollowerType_7_0_GarrisonFollower or followers.type == Enum_GarrisonFollowerType_FollowerType_8_0_GarrisonFollower)
 
    local slots = mission.numFollowers
    if (slots > followers_count and not type70) or addon_env.b then return end
@@ -188,7 +187,7 @@ local function FindBestFollowersForMission(mission, followers, mode)
       end
    end
 
-   local salvage_yard_level = followers.type == LE_FOLLOWER_TYPE_GARRISON_6_0 and c_garrison_cache.salvage_yard_level
+   local salvage_yard_level = followers.type == Enum_GarrisonFollowerType_FollowerType_6_0_GarrisonFollower and c_garrison_cache.salvage_yard_level
    local all_followers_maxed = followers.all_maxed
 
    local overmax_reward = mission.overmaxRewards

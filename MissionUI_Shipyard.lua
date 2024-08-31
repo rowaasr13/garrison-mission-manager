@@ -7,12 +7,12 @@ if not addon_env.load_this then return end
 
 -- [AUTOLOCAL START]
 local After = C_Timer.After
+local Enum_GarrisonFollowerType_FollowerType_6_0_Boat = Enum.GarrisonFollowerType.FollowerType_6_0_Boat
 local GARRISON_SHIP_OIL_CURRENCY = GARRISON_SHIP_OIL_CURRENCY
 local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local GetFollowerSoftCap = C_Garrison.GetFollowerSoftCap
-local GetItemInfoInstant = GetItemInfoInstant
+local GetItemInfoInstant = C_Item.GetItemInfoInstant
 local GetNumActiveFollowers = C_Garrison.GetNumActiveFollowers
-local LE_FOLLOWER_TYPE_SHIPYARD_6_2 = Enum.GarrisonFollowerType.FollowerType_6_2
 local UnitGUID = UnitGUID
 local match = string.match
 local pairs = pairs
@@ -63,7 +63,7 @@ local function GarrisonShipyardMap_UpdateMissions_More()
       addon_env.top_for_mission_dirty = false
    end
 
-   local filtered_followers = GetFilteredFollowers(LE_FOLLOWER_TYPE_SHIPYARD_6_2)
+   local filtered_followers = GetFilteredFollowers(Enum_GarrisonFollowerType_FollowerType_6_0_Boat)
    local more_missions_to_cache
    local oil = GetCurrencyInfo(GARRISON_SHIP_OIL_CURRENCY).quantity
 
@@ -129,7 +129,7 @@ hooksecurefunc("GarrisonShipyardMap_UpdateMissions", GarrisonShipyardMap_UpdateM
 
 local function ShipyardInitUI()
    local prefix = "Shipyard" -- hardcoded, because it is used in OUR frame names and should be static for GMM_Click
-   local follower_type = LE_FOLLOWER_TYPE_SHIPYARD_6_2
+   local follower_type = Enum_GarrisonFollowerType_FollowerType_6_0_Boat
    local o = addon_env.InitGMMFollowerOptions({
       follower_type                = follower_type,
       gmm_prefix                   = prefix,
@@ -144,7 +144,7 @@ ShipyardInitUI()
 
 local BestForCurrentSelectedMission = addon_env.BestForCurrentSelectedMission
 hooksecurefunc(GarrisonShipyardFrame, "ShowMission", function()
-   BestForCurrentSelectedMission(LE_FOLLOWER_TYPE_SHIPYARD_6_2, MissionPage, "ShipyardMissionPage")
+   BestForCurrentSelectedMission(Enum_GarrisonFollowerType_FollowerType_6_0_Boat, MissionPage, "ShipyardMissionPage")
 end)
 
 gmm_buttons.StartShipyardMission = MissionPage.StartMissionButton
@@ -157,7 +157,7 @@ hooksecurefunc(GossipFrame, "Update", function(...)
    local guid = UnitGUID("npc")
    if not (guid and (match(guid, "^Creature%-0%-%d+%-%d+%-%d+%-94429%-") or match(guid, "^Creature%-0%-%d+%-%d+%-%d+%-95002%-"))) then return end
 
-   local filtered_followers = GetFilteredFollowers(LE_FOLLOWER_TYPE_SHIPYARD_6_2)
+   local filtered_followers = GetFilteredFollowers(Enum_GarrisonFollowerType_FollowerType_6_0_Boat)
    wipe(spec_count)
    for idx = 1, #filtered_followers do
       local follower = filtered_followers[idx]
@@ -174,7 +174,7 @@ hooksecurefunc(GossipFrame, "Update", function(...)
       print(spec_name[spec] .. ": " .. spec_count[spec])
    end
 
-   local max_followers = GetFollowerSoftCap(LE_FOLLOWER_TYPE_SHIPYARD_6_2)
-   local num_active_followers = GetNumActiveFollowers(LE_FOLLOWER_TYPE_SHIPYARD_6_2)
+   local max_followers = GetFollowerSoftCap(Enum_GarrisonFollowerType_FollowerType_6_0_Boat)
+   local num_active_followers = GetNumActiveFollowers(Enum_GarrisonFollowerType_FollowerType_6_0_Boat)
    print(GARRISON_FLEET .. ": " .. num_active_followers .. "/" .. max_followers)
 end)

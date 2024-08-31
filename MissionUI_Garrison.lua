@@ -4,14 +4,13 @@ if not addon_env.load_this then return end
 -- [AUTOLOCAL START]
 local C_Garrison = C_Garrison
 local CreateFrame = CreateFrame
+local Enum_GarrisonFollowerType_FollowerType_6_0_GarrisonFollower = Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower
 local GARRISON_CURRENCY = GARRISON_CURRENCY
-local GarrisonMissionFrame = GarrisonMissionFrame
 local GetFollowerAbilities = C_Garrison.GetFollowerAbilities
 local GetFollowerInfoForBuilding = C_Garrison.GetFollowerInfoForBuilding
 local GetItemInfo = GetItemInfo
 local GetLandingPageShipmentInfo = C_Garrison.GetLandingPageShipmentInfo
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
-local LE_FOLLOWER_TYPE_GARRISON_6_0 = Enum.GarrisonFollowerType.FollowerType_6_0
 local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
 local pairs = pairs
 local print = print
@@ -80,7 +79,7 @@ addon_env.UpgradeItems_InitButtons()
 addon_env.UpgradeItems_InitEvents(GarrisonMissionFrame, upgrade_buttons_parent)
 
 local mechanic_id = {}
-for idx, data in pairs (C_Garrison.GetAllEncounterThreats(LE_FOLLOWER_TYPE_GARRISON_6_0)) do
+for idx, data in pairs (C_Garrison.GetAllEncounterThreats(Enum_GarrisonFollowerType_FollowerType_6_0_GarrisonFollower)) do
    tinsert(mechanic_id, data.id)
 end
 
@@ -196,7 +195,7 @@ local function MissionPage_WarningInit()
 end
 
 local function GarrisonInitUI()
-   local follower_type = LE_FOLLOWER_TYPE_GARRISON_6_0
+   local follower_type = Enum_GarrisonFollowerType_FollowerType_6_0_GarrisonFollower
    local o = addon_env.InitGMMFollowerOptions({
       follower_type                = follower_type,
       gmm_prefix                   = "",
