@@ -556,7 +556,7 @@ function GarrisonMissionList_InitButton_GMM_ProcessTopTeamButtonsQueue(direct_to
          calculate_new = 0
       else
          calculate_new = 1
-         queue_top_team_ticker = C_Timer.NewTicker(0.1, GarrisonMissionList_InitButton_GMM_ProcessTopTeamButtonsQueue)
+         queue_top_team_ticker = C_Timer.NewTicker(0.05, GarrisonMissionList_InitButton_GMM_ProcessTopTeamButtonsQueue)
          -- print("started InitButton ticker")
          created_ticker = true
       end
