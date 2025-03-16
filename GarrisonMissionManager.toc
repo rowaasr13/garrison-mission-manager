@@ -36,3 +36,4 @@ MissionUI_BFA.lua
 MissionUI_Covenant.lua
 GarrisonBuilding.lua
 Broker.lua
+ExpansionLandingPage.lua
