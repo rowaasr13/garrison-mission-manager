@@ -5,6 +5,7 @@
 -- It is expected that you routinely empty queue by taking all elements from it, so methods can collapse indices back to beginning of empty array.
 
 local a_name, a_env = ...
+if a_env and not a_env.load_this then return end
 
 local export = a_env and a_env.internal_export.queue_utils
 
