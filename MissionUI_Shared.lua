@@ -1,4 +1,5 @@
 local addon_name, addon_env = ...
+local a_name, a_env = ...
 if not addon_env.load_this then return end
 
 -- [AUTOLOCAL START]
@@ -34,8 +35,6 @@ local type = type
 local wipe = wipe
 -- [AUTOLOCAL END]
 
-local gmm_buttons = addon_env.gmm_buttons
-local gmm_frames = addon_env.gmm_frames
 local top = addon_env.top
 local top_yield = addon_env.top_yield
 local top_unavailable = addon_env.top_unavailable
@@ -45,6 +44,14 @@ local button_suffixes = addon_env.button_suffixes
 local event_frame = addon_env.event_frame
 local GetFilteredFollowers = addon_env.GetFilteredFollowers
 local FindBestFollowersForMission = addon_env.FindBestFollowersForMission
+local export_buttons = addon_env.export.buttons
+
+local queue_init     = a_env.internal_export.queue_utils.queue_init
+local queue_is_empty = a_env.internal_export.queue_utils.queue_is_empty
+local queue_push     = a_env.internal_export.queue_utils.queue_push
+local queue_shift    = a_env.internal_export.queue_utils.queue_shift
+local QUEUE_FIRST    = a_env.internal_export.queue_utils.FIRST
+local QUEUE_LAST     = a_env.internal_export.queue_utils.LAST
 
 local ignored_followers
 function addon_env.LocalIgnoredFollowers()
@@ -251,7 +258,7 @@ function addon_env.MissionPage_ButtonsInit(follower_type)
       local suffix = button_suffixes[suffix_idx]
       for idx = 1, 3 do
          local name = button_prefix .. suffix .. idx
-         if not gmm_buttons[name] then
+         if not export_buttons[name] then
             local set_followers_button = CreateFrame("Button", nil, parent_frame, "UIPanelButtonTemplate")
             -- Ugly, but I can't just parent to BorderFrame - buttons would be visible even on map screen
             set_followers_button:SetFrameLevel(set_followers_button:GetFrameLevel() + 4)
@@ -278,12 +285,12 @@ function addon_env.MissionPage_ButtonsInit(follower_type)
             set_followers_button:SetScript('OnLeave', addon_env.HideGameTooltip)
 
             prev = set_followers_button
-            gmm_buttons[name] = set_followers_button
+            export_buttons[name] = set_followers_button
          end
       end
    end
-   gmm_buttons[button_prefix .. 'Yield1']:SetPoint("TOPLEFT", gmm_buttons[button_prefix .. '3'], "BOTTOMLEFT", 0, -50)
-   gmm_buttons[button_prefix .. 'Unavailable1']:SetPoint("TOPLEFT", gmm_buttons[button_prefix .. 'Yield3'], "BOTTOMLEFT", 0, -50)
+   export_buttons[button_prefix .. 'Yield1']:SetPoint("TOPLEFT", export_buttons[button_prefix .. '3'], "BOTTOMLEFT", 0, -50)
+   export_buttons[button_prefix .. 'Unavailable1']:SetPoint("TOPLEFT", export_buttons[button_prefix .. 'Yield3'], "BOTTOMLEFT", 0, -50)
 
    local button = CreateFrame("Button", nil, parent_frame)
    button:SetNormalTexture("Interface\\Buttons\\UI-LinkProfession-Up")
@@ -313,47 +320,47 @@ function addon_env.MissionPage_ButtonsInit(follower_type)
    end)
 end
 
-function addon_env.MissionList_ButtonsInit(follower_type)
-   local opt = gmm_follower_options[follower_type]
-   local blizzard_mission_list = opt.MissionList
-   local frame_prefix          = opt.gmm_button_mission_list_prefix
+-- Each box in all missions scroll list: expiration text in bottom-right corner
+addon_env.child_frame_cache.ExpirationText = addon_env.BuildChildFrameCache(function(blizzard_scrollbox_button)
+   local expiration = blizzard_scrollbox_button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+   expiration:SetWidth(500)
+   expiration:SetHeight(1)
+   expiration:SetPoint("BOTTOMRIGHT", blizzard_scrollbox_button, "BOTTOMRIGHT", -10, 8)
+   expiration:SetJustifyH("RIGHT")
 
-   local level_anchor = blizzard_mission_list.listScroll
-   local blizzard_buttons = blizzard_mission_list.ScrollBox:GetFrames()
-   for idx = 1, #blizzard_buttons do
-      local blizzard_button = blizzard_buttons[idx]
-      if not gmm_buttons[frame_prefix .. idx] then
-         -- move first reward to left a little, rest are anchored to first
-         local reward = blizzard_button.Rewards[1]
-         for point_idx = 1, reward:GetNumPoints() do
-            local point, relative_to, relative_point, x, y = reward:GetPoint(point_idx)
-            if point == "RIGHT" then
-               x = x - 60
-               reward:SetPoint(point, relative_to, relative_point, x, y)
-               break
-            end
-         end
+   return expiration
+end)
 
-         local set_followers_button = CreateFrame("Button", nil, blizzard_button, "UIPanelButtonTemplate")
-         set_followers_button:SetText(idx)
-         set_followers_button:SetWidth(80)
-         set_followers_button:SetHeight(40)
-         set_followers_button:SetPoint("LEFT", blizzard_button, "RIGHT", -65, 0)
-         set_followers_button:SetScript("OnClick", MissionList_PartyButtonOnClick)
-         set_followers_button.follower_type = follower_type
-         gmm_buttons[frame_prefix .. idx] = set_followers_button
-      end
+-- Each box in all missions scroll list: single button to set best team
+addon_env.child_frame_cache.MissionListSetTopFollowersButton = addon_env.BuildChildFrameCache(function(blizzard_scrollbox_button)
+   local set_followers_button = CreateFrame("Button", nil, blizzard_scrollbox_button, "UIPanelButtonTemplate")
+   set_followers_button:SetText(idx)
+   set_followers_button:SetWidth(80)
+   set_followers_button:SetHeight(40)
+   set_followers_button:SetPoint("LEFT", blizzard_scrollbox_button, "RIGHT", -65, 0)
+   set_followers_button:SetScript("OnClick", MissionList_PartyButtonOnClick)
 
-      if not gmm_frames[frame_prefix .. 'ExpirationText' .. idx] then
-         local expiration = blizzard_button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-         expiration:SetWidth(500)
-         expiration:SetHeight(1)
-         expiration:SetPoint("BOTTOMRIGHT", blizzard_button, "BOTTOMRIGHT", -10, 8)
-         expiration:SetJustifyH("RIGHT")
-         gmm_frames[frame_prefix .. 'ExpirationText' .. idx] = expiration
+   -- move first reward to left a little, rest are anchored to first
+   -- find data for re-alignment here and cache on our button, actual realignment is done on demand in function below
+   local reward1 = blizzard_scrollbox_button.Rewards[1]
+   for point_idx = 1, reward1:GetNumPoints() do
+      local point, relative_to, relative_point, x, y = reward1:GetPoint(point_idx)
+      if point == "RIGHT" then
+         set_followers_button.reward1_frame          = reward1
+         set_followers_button.reward1_point          = point
+         set_followers_button.reward1_relative_to    = relative_to
+         set_followers_button.reward1_relative_point = relative_point
+         set_followers_button.reward1_x              = x
+         set_followers_button.reward1_y              = y
+         break
       end
    end
-   -- GarrisonMissionFrame.MissionTab.MissionList.listScroll.scrollBar:SetFrameLevel(gmm_buttons['MissionList1']:GetFrameLevel() - 3)
+
+   return set_followers_button
+end)
+
+function addon_env.MissionList_ButtonsInit(follower_type)
+   --- TODO: FIXME: DELETE ME ---
 end
 
 local function BestForCurrentSelectedMission(type_id, mission_page, button_prefix)
@@ -375,7 +382,7 @@ local function BestForCurrentSelectedMission(type_id, mission_page, button_prefi
    for suffix_idx = 1, #button_suffixes do
       local suffix = button_suffixes[suffix_idx]
       for idx = 1, 3 do
-         local button = gmm_buttons[button_prefix .. suffix .. idx]
+         local button = export_buttons[button_prefix .. suffix .. idx]
          if addon_env.b then button:Disable() end
          local top_entry
          if suffix == 'Yield' then
@@ -404,7 +411,7 @@ local function BestForCurrentSelectedMission(type_id, mission_page, button_prefi
 
    local mission_page_pending_click = addon_env.mission_page_pending_click
    if mission_page_pending_click then
-      MissionPage_PartyButtonOnClick(gmm_buttons[mission_page_pending_click])
+      MissionPage_PartyButtonOnClick(export_buttons[mission_page_pending_click])
       addon_env.mission_page_pending_click = nil
    end
 end
@@ -433,30 +440,58 @@ local function ShowMission_More(self, missionInfo)
 end
 addon_env.ShowMission_More = ShowMission_More
 
-local function UpdateMissionListButton(mission, filtered_followers, blizzard_button, gmm_button, more_missions_to_cache, resources, inactive_alpha)
-   local cant_complete = mission.cost > resources
-   if not cant_complete then
-      local options = gmm_follower_options[filtered_followers.type]
-      if options.party_requires_one_non_troop then
-         cant_complete = not filtered_followers.free_non_troop
-      else
-         cant_complete = mission.numFollowers > filtered_followers.free
-      end
+local mission_expiration_format_days  = "%s" .. DAY_ONELETTER_ABBR:gsub(" ", "") .. " %02d:%02d"
+local mission_expiration_format_hours = "%s" ..                                        "%d:%02d"
+
+local queue_top_team_buttons = queue_init({})
+local queue_top_team_ticker
+local queue_top_team_cant_complete_token = {}
+
+-- local function UpdateMissionListButton(mission, filtered_followers, blizzard_button, gmm_button, more_missions_to_cache, resources, inactive_alpha)
+local function GarrisonMissionList_InitButton_GMM_DrawOrCalculateTopTeam(button, calculate_new)
+   local is_button_updated, is_calculated -- returns
+
+   if addon_env.top_for_mission_dirty then
+      wipe(top_for_mission)
+      addon_env.top_for_mission_dirty = false
    end
 
+   local GetElementData = button.GetElementData
+   if not GetElementData then
+      -- Some already discarded button
+      is_button_updated, is_calculated = false, false
+      return is_button_updated, is_calculated
+   end
+
+   local elementData = button:GetElementData()
+
+   local mission = elementData.mission
+   local top_followers_button = addon_env.child_frame_cache.MissionListSetTopFollowersButton[button]
+   local cant_complete = button[queue_top_team_cant_complete_token]
+   local inactive_alpha = nil -- TODO: read from options, need in shipyard
+
+   -- if calculate_new > 0 then
+   --    print("after-shifted button:", button, (button and button.id), (button and button.GetElementDataIndex and button:GetElementDataIndex()), calculate_new, cant_complete)
+   -- end
+
+   top_followers_button:Show()
    if cant_complete then
-      blizzard_button:SetAlpha(inactive_alpha or 0.3)
-      gmm_button:SetText()
-   else
-      local top_for_this_mission = top_for_mission[mission.missionID]
-      if not top_for_this_mission then
-         if more_missions_to_cache then
-            more_missions_to_cache = more_missions_to_cache + 1
-         else
-            more_missions_to_cache = 0
-            FindBestFollowersForMission(mission, filtered_followers, "mission_list")
-            local top1 = top[1]
-            top_for_this_mission = {}
+      button:SetAlpha(inactive_alpha or 0.3)
+      top_followers_button:SetText()
+      is_button_updated, is_calculated = true, false
+      return is_button_updated, is_calculated
+   end
+
+   button:SetAlpha(1)
+   local top_for_this_mission = top_for_mission[mission.missionID]
+   if not top_for_this_mission then
+      if calculate_new > 0 then
+         local followers_type = mission.followerTypeID
+         local filtered_followers = GetFilteredFollowers(followers_type)
+
+         FindBestFollowersForMission(mission, filtered_followers, "mission_list")
+         local top1 = top[1]
+         top_for_this_mission = {}
             top_for_this_mission.successChance = top1.successChance
             if top_for_this_mission.successChance then
                top_for_this_mission.materialMultiplier = top1.materialMultiplier
@@ -470,73 +505,129 @@ local function UpdateMissionListButton(mission, filtered_followers, blizzard_but
                top_for_this_mission.mission_level = top1.mission_level
             end
             top_for_mission[mission.missionID] = top_for_this_mission
-         end
-      end
-
-      if top_for_this_mission then
-         SetTeamButtonText(gmm_button, top_for_this_mission)
       else
-         gmm_button:SetText("...")
+         top_followers_button:SetText("...")
+         is_button_updated, is_calculated = false, false
+         return is_button_updated, is_calculated
       end
-      blizzard_button:SetAlpha(1)
    end
-   gmm_button:Show()
 
-   return more_missions_to_cache
+   if top_for_this_mission then
+      SetTeamButtonText(top_followers_button, top_for_this_mission)
+       -- --[[ debug ]] top_followers_button:SetText(button:GetElementDataIndex() .. ' ' .. top_followers_button:GetText())
+      is_button_updated, is_calculated = true, true
+      return is_button_updated, is_calculated
+   else
+      top_followers_button:SetText("...")
+      is_button_updated, is_calculated = false, false
+      return is_button_updated, is_calculated
+   end
 end
-addon_env.UpdateMissionListButton = UpdateMissionListButton
+addon_env.UpdateMissionListButton = function() end
 
--- Add more data to mission list over Blizzard's own
-local mission_expiration_format_days  = "%s" .. DAY_ONELETTER_ABBR:gsub(" ", "") .. " %02d:%02d"
-local mission_expiration_format_hours = "%s" ..                                        "%d:%02d"
-local function MissionList_Update_More(self, caller, frame_prefix, follower_type, currency)
-   -- Blizzard updates those when not visible too, but there's no reason to copy them.
-   if not self:IsVisible() then return end
-   local scrollFrame = self.ScrollBox
-   local buttons = scrollFrame:GetFrames()
-   local numButtons = #buttons
+local GarrisonMissionList_InitButton_GMM_ProcessTopTeamButtonsQueue
+function GarrisonMissionList_InitButton_GMM_ProcessTopTeamButtonsQueue(direct_token)
+   -- Start with checking queue! if it's empty, cancel ticker
 
-   if self.showInProgress then
-      for i = 1, numButtons do
-         gmm_buttons[frame_prefix .. i]:Hide()
-         gmm_frames[frame_prefix .. 'ExpirationText' .. i]:SetText()
-         buttons[i]:SetAlpha(1)
+   -- ticker call             => calculate_new = 1
+   -- direct call, has ticker => calculate_new = 0
+   -- direct call, no  ticker => calculate_new = 1, start new ticker
+
+   -- process ALL queue and draw everything where data exists
+   -- calculate new data only if calculate_new > 0
+
+   -- after calculate_new is used up, only draw
+
+   if queue_is_empty(queue_top_team_buttons) then
+      if queue_top_team_ticker then
+         queue_top_team_ticker:Cancel()
+         queue_top_team_ticker = nil
+         -- print("canceled InitButton ticker")
       end
       return
    end
 
-   local missions = self.availableMissions
-   local numMissions = #missions
-   if numMissions == 0 then return end
+   local direct_call = (direct_token == "DIRECT")
 
-   if addon_env.top_for_mission_dirty then
-      wipe(top_for_mission)
-      addon_env.top_for_mission_dirty = false
+   local calculate_new
+   local created_ticker
+   if direct_call then
+      if queue_top_team_ticker then
+         calculate_new = 0
+      else
+         calculate_new = 1
+         queue_top_team_ticker = C_Timer.NewTicker(0.1, GarrisonMissionList_InitButton_GMM_ProcessTopTeamButtonsQueue)
+         -- print("started InitButton ticker")
+         created_ticker = true
+      end
+   else
+      calculate_new = 1
    end
 
-   local missions = self.availableMissions
-   local offset = HybridScrollFrame_GetOffset(scrollFrame)
+   -- First use up all calculate_new allowance, then just draw whatever remains
+   while calculate_new > 0 do
+      local button = queue_shift(queue_top_team_buttons)
+      -- print("shifted button:", button, (button and button.id), (button and button.GetElementDataIndex and button:GetElementDataIndex()), calculate_new)
+      if not button then break end
+      local is_button_updated, is_calculated = GarrisonMissionList_InitButton_GMM_DrawOrCalculateTopTeam(button, calculate_new)
+      if is_calculated then calculate_new = calculate_new - 1 end
+   end
+   for idx = queue_top_team_buttons[QUEUE_FIRST], queue_top_team_buttons[QUEUE_LAST] do
+      local button = queue_top_team_buttons[idx]
+      GarrisonMissionList_InitButton_GMM_DrawOrCalculateTopTeam(button, calculate_new)
+   end
+end
 
-   local filtered_followers = GetFilteredFollowers(follower_type)
-   local more_missions_to_cache
-   local garrison_resources = GetCurrencyInfo(currency).quantity
+-- Hook every button update, do all "lightweight" operations here,
+-- top command calculation is offloaded to queue
+local function GarrisonMissionList_InitButton_GMM_PostHook(button, elementData, missionFrame)
+   -- Blizzard updates those when not visible too, but there's no reason to copy them.
+   if not button:IsVisible() then return end
 
+   local mission = elementData.mission
+   local top_followers_button = addon_env.child_frame_cache.MissionListSetTopFollowersButton[button]
+   local expiration_text_widget = addon_env.child_frame_cache.ExpirationText[button]
+
+   -- debug, this one always shows correct number, compare with whatever queue gets
+   -- local mission_name_text = button.Title:GetText()
+   -- button.Title:SetText(button.id .. "/" .. button:GetElementDataIndex() .. " " .. mission_name_text)
+
+   if mission.inProgress then
+      top_followers_button.reward1_frame:SetPoint(top_followers_button.reward1_point, top_followers_button.reward1_relative_to, top_followers_button.reward1_relative_point, top_followers_button.reward1_x, top_followers_button.reward1_y)
+      top_followers_button:Hide()
+      expiration_text_widget:SetText()
+      button:SetAlpha(1)
+      return
+   end
+
+   top_followers_button.reward1_frame:SetPoint(top_followers_button.reward1_point, top_followers_button.reward1_relative_to, top_followers_button.reward1_relative_point, top_followers_button.reward1_x - 60, top_followers_button.reward1_y)
+   top_followers_button:Show()
+
+   local garrison_resources = GetCurrencyInfo(mission.costCurrencyTypesID).quantity
+   local followers_type = mission.followerTypeID
+   local filtered_followers = GetFilteredFollowers(followers_type)
+
+   local cant_complete = mission.cost > garrison_resources
+   if not cant_complete then
+      local options = gmm_follower_options[followers_type]
+      if options.party_requires_one_non_troop then
+         cant_complete = not filtered_followers.free_non_troop
+      else
+         cant_complete = mission.numFollowers > filtered_followers.free
+      end
+   end
+   button[queue_top_team_cant_complete_token] = cant_complete
+
+   -- Top team button
+   queue_push(queue_top_team_buttons, button)
+   GarrisonMissionList_InitButton_GMM_ProcessTopTeamButtonsQueue("DIRECT")
+
+   -- Expiration timer
+   local is_rare = mission.isRare
+
+   local expiration_text_set
+   local offerEndTime = mission.offerEndTime
    local time = GetTime()
-
-   for i = 1, numButtons do
-      local button = buttons[i]
-      local alpha = 1
-      local index = offset + i
-      if index <= numMissions then
-         local mission = missions[index]
-         local gmm_button = gmm_buttons[frame_prefix .. i]
-
-         more_missions_to_cache = UpdateMissionListButton(mission, filtered_followers, button, gmm_button, more_missions_to_cache, garrison_resources)
-
-         local is_rare = mission.isRare
-
-         local expiration_text_set
-         local offerEndTime = mission.offerEndTime
 
          -- offerEndTime seems to be present on all missions, though Blizzard UI shows tooltips only on rare
          -- some Legion missions actually have no end time - seems like they're permanent
@@ -559,18 +650,19 @@ local function MissionList_Update_More(self, caller, frame_prefix, follower_type
                local hours = remaining % 24
                local days = (remaining - hours) / 24
                if days > 0 then
-                  gmm_frames[frame_prefix .. 'ExpirationText' .. i]:SetFormattedText(mission_expiration_format_days, color_code, days, hours, minutes)
-               else
-                  gmm_frames[frame_prefix .. 'ExpirationText' .. i]:SetFormattedText(mission_expiration_format_hours, color_code, hours, minutes)
-               end
-               expiration_text_set = true
-            end
+            expiration_text_widget:SetFormattedText(mission_expiration_format_days, color_code, days, hours, minutes)
+         else
+            expiration_text_widget:SetFormattedText(mission_expiration_format_hours, color_code, hours, minutes)
          end
+         expiration_text_set = true
+      end
+   end
 
-         if not expiration_text_set then
-            gmm_frames[frame_prefix .. 'ExpirationText' .. i]:SetText()
-         end
+   if not expiration_text_set then
+      expiration_text_widget:SetText()
+   end
 
+   -- Single ilevel indicator instead of separate level/ilevel
          -- Just overwrite level with ilevel if it is not 0. There's no use knowing what base level mission have.
          -- Blizzard UI also checks that mission is max "normal" UI, but there's at least one mission mistakenly marked as level 90, despite requiring 675 ilevel.
          -- 760 exception is for Order Hall missions bellow max level.
@@ -586,14 +678,14 @@ local function MissionList_Update_More(self, caller, frame_prefix, follower_type
             button.Level:SetFormattedText("|cffffffd9%d", mission.iLevel)
          end
       end
-   end
+hooksecurefunc("GarrisonMissionList_InitButton", GarrisonMissionList_InitButton_GMM_PostHook)
 
-   if more_missions_to_cache and more_missions_to_cache > 0 then
-      -- print(more_missions_to_cache, GetTime())
-      After(0.001, caller)
-   end
+local function GarrisonMissionList_InitButton_GMM_PostHookDEBUG(button, elementData, missionFrame)
+   GMMLASTBUTTONARGS = { button, elementData, missionFrame }
 end
-addon_env.MissionList_Update_More = MissionList_Update_More
+-- Disabled: hooksecurefunc("GarrisonMissionList_InitButton", GarrisonMissionList_InitButton_GMM_PostHookDEBUG)
+
+a_env.MissionList_Update_More = function() end -- TODO: DELETE ME!
 
 local maxed_follower_color_code = "|cff22aa22"
 

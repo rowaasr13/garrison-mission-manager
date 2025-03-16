@@ -27,7 +27,7 @@ local c_garrison_cache = addon_env.c_garrison_cache
 local Widget = addon_env.Widget
 local event_frame = addon_env.event_frame
 local event_handlers = addon_env.event_handlers
-local gmm_frames = addon_env.gmm_frames
+local gmm_frames
 
 local tts = LibStub:GetLibrary("LibTTScan-1.0", true)
 
@@ -203,7 +203,7 @@ local function GarrisonInitUI()
    })
 
    addon_env.MissionPage_ButtonsInit(follower_type)
-   MissionPage_WarningInit()
+   -- MissionPage_WarningInit()
    hooksecurefunc(GarrisonMissionFrame, "ShowMission", addon_env.ShowMission_More)
 
    addon_env.MissionList_ButtonsInit(follower_type)
@@ -215,7 +215,7 @@ local function GarrisonInitUI()
    hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList,           "Update", GarrisonMissionFrame_MissionList_Update_More)
    hooksecurefunc(GarrisonMissionFrame.MissionTab.MissionList.ScrollBox, "Update", GarrisonMissionFrame_MissionList_Update_More)
 
-   hooksecurefunc(GarrisonMissionFrame.FollowerList, "UpdateData", addon_env.GarrisonFollowerList_Update_More)
+   -- hooksecurefunc(GarrisonMissionFrame.FollowerList, "UpdateData", addon_env.GarrisonFollowerList_Update_More)
 
    GarrisonInitUI = nil
 end

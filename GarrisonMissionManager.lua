@@ -1,9 +1,6 @@
 local addon_name, addon_env = ...
 if not addon_env.load_this then return end
 
--- Confused about mix of CamelCase and_underscores?
--- Camel case comes from copypasta of how Blizzard calls returns/fields in their code and deriveates
--- Underscore are my own variables
 
 local c_garrison_cache = addon_env.c_garrison_cache
 local FindBestFollowersForMission = addon_env.FindBestFollowersForMission
@@ -198,11 +195,6 @@ function event_handlers:GARRISON_MISSION_NPC_OPENED()
 end
 event_frame:RegisterEvent("GARRISON_MISSION_NPC_OPENED")
 
-local gmm_buttons = {}
-addon_env.gmm_buttons = gmm_buttons
-local gmm_frames = {}
-addon_env.gmm_frames = gmm_frames
-
 function GMM_dumpl(pattern, ...)
    local names = { strsplit(",", pattern) }
    for idx = 1, select('#', ...) do
@@ -391,7 +383,7 @@ local info_cancel = {
    text = CANCEL
 }
 
-hooksecurefunc(GarrisonFollowerOptionDropDown, "initialize", function(self)
+local function GarrisonFollowerOptionDropDown_More(self)
    local followerID = self.followerID
    if not followerID then return end
    local follower = C_Garrison.GetFollowerInfo(followerID)
@@ -409,7 +401,8 @@ hooksecurefunc(GarrisonFollowerOptionDropDown, "initialize", function(self)
          UIDropDownMenu_AddButton(info_cancel)
       end
    end
-end)
+end
+if GarrisonFollowerOptionDropDown then hooksecurefunc(GarrisonFollowerOptionDropDown, "initialize", GarrisonFollowerOptionDropDown_More) end
 
 local function GarrisonFollowerList_Update_More(self)
    -- Somehow Blizzard UI insists on updating hidden frames AND explicitly updates them OnShow.
@@ -459,15 +452,11 @@ local function GarrisonFollowerList_Update_More(self)
       end
    end
 end
-hooksecurefunc(GarrisonMissionFrame.FollowerList, "UpdateData", GarrisonFollowerList_Update_More)
+-- hooksecurefunc(GarrisonMissionFrame.FollowerList, "UpdateData", GarrisonFollowerList_Update_More)
 
-gmm_buttons.StartMission = MissionPage.StartMissionButton
+addon_env.export.buttons.StartMission = MissionPage.StartMissionButton
 
--- Globals deliberately exposed for people outside
-function GMM_Click(button_name)
+function addon_env.export.GMM_Click(button_name)
    local button = gmm_buttons[button_name]
    if button and button:IsVisible() then button:Click() end
 end
-
--- /dump GarrisonMissionFrame.MissionTab.MissionList.listScroll.buttons
--- /dump GarrisonMissionFrame.MissionTab.MissionList.listScroll.scrollBar

@@ -1,11 +1,7 @@
 local addon_name, addon_env = ...
 if not addon_env.load_this then return end
 
--- Confused about mix of CamelCase and_underscores?
--- Camel case comes from copypasta of how Blizzard calls returns/fields in their code and deriveates
--- Underscore are my own variables
-
--- [AUTOLOCAL START] Automatic local aliases for Blizzard's globals
+-- [AUTOLOCAL START]
 local After = C_Timer.After
 local AssignFollowerToBuilding = C_Garrison.AssignFollowerToBuilding
 local C_Garrison = C_Garrison
@@ -28,12 +24,13 @@ local wipe = wipe
 -- [AUTOLOCAL END]
 
 local c_garrison_cache = addon_env.c_garrison_cache
-local gmm_buttons = addon_env.gmm_buttons
 local events_for_buildings = addon_env.events_for_buildings
 
 local event_frame = addon_env.event_frame
 local RegisterEvent = event_frame.RegisterEvent
 local UnregisterEvent = event_frame.UnregisterEvent
+
+local export_buttons = addon_env.export.buttons
 
 local GarrisonBuilding_UpdateCurrentFollowers
 local GarrisonBuilding_UpdateButtons
@@ -151,29 +148,29 @@ addon_env.GarrisonBuilding_UpdateBuildings = GarrisonBuilding_UpdateBuildings
 
 GarrisonBuilding_UpdateButtons = function()
    if assign_remove_in_progress or buildings_count == 0 then
-      gmm_buttons.remove_all_workers:Disable()
-      gmm_buttons.assign_all_workers:Hide()
-      gmm_buttons.assign_all_workers_disabled:Show()
+      export_buttons.remove_all_workers:Disable()
+      export_buttons.assign_all_workers:Hide()
+      export_buttons.assign_all_workers_disabled:Show()
    else
       if can_assign then
-         gmm_buttons.assign_all_workers:Show()
-         gmm_buttons.assign_all_workers:Enable()
-         gmm_buttons.assign_all_workers_disabled:Hide()
+         export_buttons.assign_all_workers:Show()
+         export_buttons.assign_all_workers:Enable()
+         export_buttons.assign_all_workers_disabled:Hide()
       else
          if can_assign_busy then
-            gmm_buttons.assign_all_workers:Hide()
-            gmm_buttons.assign_all_workers_disabled:Show()
+            export_buttons.assign_all_workers:Hide()
+            export_buttons.assign_all_workers_disabled:Show()
          else
-            gmm_buttons.assign_all_workers:Show()
-            gmm_buttons.assign_all_workers:Disable()
-            gmm_buttons.assign_all_workers_disabled:Hide()
+            export_buttons.assign_all_workers:Show()
+            export_buttons.assign_all_workers:Disable()
+            export_buttons.assign_all_workers_disabled:Hide()
          end
       end
 
       if can_remove then
-         gmm_buttons.remove_all_workers:Enable()
+         export_buttons.remove_all_workers:Enable()
       else
-         gmm_buttons.remove_all_workers:Disable()
+         export_buttons.remove_all_workers:Disable()
       end
    end
 end
@@ -383,7 +380,7 @@ local function GarrisonBuilding_ButtonsInit()
    button:SetScript("OnMouseDown", nil)
    button:SetScript("OnMouseUp", nil)
    button:HookScript("OnShow", addon_env.OnShowEmulateDisabled)
-   gmm_buttons['assign_all_workers_disabled'] = button
+   export_buttons['assign_all_workers_disabled'] = button
 
    local button = CreateFrame("Button", nil, anchor, "UIPanelButtonTemplate")
    button:SetText(GARRISON_FOLLOWERS)
@@ -394,7 +391,7 @@ local function GarrisonBuilding_ButtonsInit()
    button:SetScript('OnClick', AssignAllWorkers)
    button:SetScript('OnEnter', AssignAllWorkers_TooltipShow)
    button:SetScript('OnLeave', addon_env.HideGameTooltip)
-   gmm_buttons['assign_all_workers'] = button
+   export_buttons['assign_all_workers'] = button
    local prev = button
 
    local button = CreateFrame("Button", nil, anchor, "UIPanelButtonTemplate")
@@ -405,7 +402,7 @@ local function GarrisonBuilding_ButtonsInit()
    button:SetScript('OnClick', RemoveAllWorkers)
    button:SetScript('OnEnter', RemoveAllWorkers_TooltipShow)
    button:SetScript('OnLeave', addon_env.HideGameTooltip)
-   gmm_buttons['remove_all_workers'] = button
+   export_buttons['remove_all_workers'] = button
 end
 
 GarrisonBuilding_ButtonsInit()

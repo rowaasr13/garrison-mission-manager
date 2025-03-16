@@ -1,4 +1,4 @@
-## Interface: 100105
+## Interface: 110100
 
 ## Title: Garrison Mission Manager
 ## Version: v62
@@ -18,8 +18,12 @@
 ## SavedVariablesPerCharacter: SVPC_GarrisonMissionManager
 
 +DEVEL.lua
+export.lua
+
+queue_utils.lua
 LazyWidget.lua
 C_Garrison_cache.lua
+ChildFrameCache.lua
 FindBestFollowersForMission.lua
 GarrisonMissionManager.lua
 MissionUI_Shared.lua
