@@ -236,7 +236,7 @@ end
 local function MissionList_PartyButtonOnClick(self)
    if addon_env.RegisterManualInterraction then addon_env.RegisterManualInterraction() end
    local pending_click
-   local follower_type = self.follower_type
+   local follower_type = self:GetParent().info.followerTypeID -- or :GetElementData().mission.followerTypeID
    if follower_type then
       pending_click = gmm_follower_options[follower_type].gmm_button_mission_page_prefix .. '1'
    else
