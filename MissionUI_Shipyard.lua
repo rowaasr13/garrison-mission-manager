@@ -51,6 +51,7 @@ local shipyard_mission_list_gmm_loot_template = {
 local loot_frames = {}
 
 local function GarrisonShipyardMap_UpdateMissions_More()
+   --[[ TEMPORARY ]] do return end
    -- Blizzard updates those when not visible too, but there's no reason to copy them.
    local self = GarrisonShipyardFrame.MissionTab.MissionList
    if not self:IsVisible() then return end
@@ -147,7 +148,7 @@ hooksecurefunc(GarrisonShipyardFrame, "ShowMission", function()
    BestForCurrentSelectedMission(Enum_GarrisonFollowerType_FollowerType_6_0_Boat, MissionPage, "ShipyardMissionPage")
 end)
 
-gmm_buttons.StartShipyardMission = MissionPage.StartMissionButton
+-- gmm_buttons.StartShipyardMission = MissionPage.StartMissionButton
 
 local spec_count = {}
 local spec_name = {}
