@@ -722,7 +722,8 @@ hooksecurefunc("GarrisonMissionPortrait_SetFollowerPortrait", GarrisonMissionFra
 local function GarrisonFollowerList_Update_More(self)
    -- Somehow Blizzard UI insists on updating hidden frames AND explicitly updates them OnShow.
    --  Following suit is just a waste of CPU, so we'll update only when frame is actually visible.
-   if not self:IsVisible() then return end
+--[[ TEMPORARY ]] do return end
+   if not self:IsVisible() and self:IsShown() then return end
 
    local followerFrame = self:GetParent()
    local followers = followerFrame.FollowerList.followers
