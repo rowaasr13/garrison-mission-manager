@@ -468,7 +468,6 @@ local function GarrisonMissionList_InitButton_GMM_DrawOrCalculateTopTeam(button,
    local mission = elementData.mission
    local top_followers_button = addon_env.child_frame_cache.MissionListSetTopFollowersButton[button]
    local cant_complete = button[queue_top_team_cant_complete_token]
-   local inactive_alpha = nil -- TODO: read from options, need in shipyard
 
    -- if calculate_new > 0 then
    --    print("after-shifted button:", button, (button and button.id), (button and button.GetElementDataIndex and button:GetElementDataIndex()), calculate_new, cant_complete)
@@ -476,7 +475,6 @@ local function GarrisonMissionList_InitButton_GMM_DrawOrCalculateTopTeam(button,
 
    top_followers_button:Show()
    if cant_complete then
-      button:SetAlpha(inactive_alpha or 0.3)
       top_followers_button:SetText()
       is_button_updated, is_calculated = true, false
       return is_button_updated, is_calculated
@@ -617,6 +615,9 @@ local function GarrisonMissionList_InitButton_GMM_PostHook(button, elementData, 
       end
    end
    button[queue_top_team_cant_complete_token] = cant_complete
+   local inactive_alpha = nil -- options
+   local alpha = cant_complete and (inactive_alpha or 0.3) or 1
+   button:SetAlpha(alpha)
 
    -- Top team button
    queue_push(queue_top_team_buttons, button)
