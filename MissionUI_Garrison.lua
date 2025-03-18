@@ -98,6 +98,7 @@ end
 
 local shipment_followers = {}
 local function CheckPartyForProfessionFollowers()
+   --[[TEMPORARY]] do return end
    if not MissionPage:IsVisible() then return end
    local party_followers_count = #MissionPageFollowers
    local present
