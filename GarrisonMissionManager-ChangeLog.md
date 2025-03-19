@@ -1,11 +1,18 @@
-[![Donate to the author of Garrison Mission Manager](https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cn=Add+special+instructions+to+the+addon+author%28s%29&business=rowaasr13%40gmail.com&bn=PP-DonationsBF%3Abtn_donateCC_LG.gif%3ANonHosted&lc=US&cmd=_donations&rm=1&no_shipping=1&currency_code=USD&return=https%3A%2F%2Fwww.curseforge.com%2Fwow%2Faddons%2Fgarrison-mission-manager&cancel_return=https%3A%2F%2Fwww.curseforge.com%2Fwow%2Faddons%2Fgarrison-mission-manager&item_name=Garrison+Mission+Manager+%28from+CurseForge.com%29)[![Support author of Garrison Mission Manager on Patreon](https://media.forgecdn.net/attachments/192/602/support-on-patreon26.png)](https://www.patreon.com/rowaasr13)
+[Support development: Looking for EU TWW activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)
 
-Garrison Mission Manager, v62
+Garrison Mission Manager, v63
 
 * https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 ## Change log
+
+### 2025-03-19 v63
+ * TOC/API update for 11.1.0 - The War Within: Undermine(d).
+ * Individual mission pages and mission list should now work without errors in WoD/Legion/BFA garrisons.
+ * Menu with garrison landing pages for all expansions are now available by right-click on landing page icon on minimap.
+ * Follower list enhancements, buttons on shipyard map and WoD mission page profession warnings are disabled in this version while I work on fixing pass for them.
+ * Internals: process individual mission list buttons instead of entire list at once, queue calculating several missions instead of relying on mission list logic to redraw them.
 
 ### 2020-12-06 v62
  * Internals: devel mode switcher/loader, so it's easier to keep both release and development versions side-by-side.
