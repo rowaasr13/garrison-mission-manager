@@ -69,7 +69,7 @@ local function InitUI(gmm_options)
 end
 
 addon_env.AddInitUI({
-   follower_type = Enum.GarrisonFollowerType.FollowerType_9_0,
+   follower_type = Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower,
    gmm_prefix    = 'Covenant',
    init          = InitUI,
 })
