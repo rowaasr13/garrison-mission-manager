@@ -1,13 +1,13 @@
-[Support development: Looking for EU TWW activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)
+* <ins>[Support development: Looking for EU TWW activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)</ins>
 
-Garrison Mission Manager, v63
+# Garrison Mission Manager, v63
 
 * https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 ## Change log
 
-### 2025-03-19 v63
+### 2025-03-20 v63
  * TOC/API update for 11.1.0 - The War Within: Undermine(d).
  * Individual mission pages and mission list should now work without errors in WoD/Legion/BFA garrisons.
  * Menu with garrison landing pages for all expansions are now available by right-click on landing page icon on minimap.

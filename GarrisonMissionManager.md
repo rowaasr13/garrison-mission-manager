@@ -1,6 +1,6 @@
-[Support development: Looking for EU TWW activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)
+* <ins>[Support development: Looking for EU TWW activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)</ins>
 
-Garrison Mission Manager, v63
+# Garrison Mission Manager, v63
 
 * https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -18,8 +18,8 @@ GMM checks all combinations of all followers and selects those that give best to
 
 # Shared features
 
-## WoD garrison/shipyard landing page
-After GMM is loaded (i.e. you've opened any garrison interface or landing page at least once), right clicking the minimap button will show WoD garrison/shipyard landing page even if you already have Class Hall. (Just like all other feature this requires GMM to be loaded -  i.e. you need any garrison interface or landing page at least once or install [GMM - Load On Login](https://mods.curse.com/addons/wow/gmm-on-login)).
+## Garrison landing pages menu
+By default minimap landing page button leads you to landing page of most recent expansion. GMM adds right-click menu that allows you access past expansion landing pages for garrisons in WoD, Legion, BfA and Shadowlands.
 
 ## Additional team selection features
 
