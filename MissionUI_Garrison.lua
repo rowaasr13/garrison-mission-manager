@@ -27,7 +27,6 @@ local c_garrison_cache = addon_env.c_garrison_cache
 local Widget = addon_env.Widget
 local event_frame = addon_env.event_frame
 local event_handlers = addon_env.event_handlers
-local gmm_frames
 
 local tts = LibStub:GetLibrary("LibTTScan-1.0", true)
 
@@ -96,25 +95,52 @@ local function DrawAbilityCounters(frame, followerID, followerInfo)
    end
 end
 
+-- Mission party's 3 followers: warning text frame
+addon_env.child_frame_cache.MissionPageFollowerWarning = addon_env.BuildChildFrameCache(function(mission_page_follower_frame)
+   local warning = mission_page_follower_frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+   warning:SetWidth(185)
+   warning:SetHeight(1)
+   warning:SetPoint("BOTTOM", mission_page_follower_frame, "TOP", 0, -68)
+   return warning
+end)
+
+-- Mission party's 3 followers: follower's current XP
+addon_env.child_frame_cache.MissionPageFollowerXP = addon_env.BuildChildFrameCache(function(mission_page_follower_frame)
+   return Widget{type = "Texture", parent = mission_page_follower_frame, SubLayer = 3, Width = 104, Height = 200, BOTTOMLEFT = {55, 2}, Color = { 0.212, 0, 0.337, 1 }, Hide = true }
+end)
+
+-- Mission party's 3 followers: follower's XP gain base
+addon_env.child_frame_cache.MissionPageFollowerXPGainBase = addon_env.BuildChildFrameCache(function(mission_page_follower_frame)
+   return Widget{type = "Texture", parent = mission_page_follower_frame, SubLayer = 2, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0.6, 1, 0, 1 }, Hide = true }
+end)
+
+-- Mission party's 3 followers: follower's XP gain bonus
+addon_env.child_frame_cache.MissionPageFollowerXPGainBonus = addon_env.BuildChildFrameCache(function(mission_page_follower_frame)
+   return Widget{type = "Texture", parent = mission_page_follower_frame, SubLayer = 1, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0, 0.75, 1, 1 }, Hide = true }
+end)
+
 local shipment_followers = {}
-local function CheckPartyForProfessionFollowers()
-   --[[TEMPORARY]] do return end
-   if not MissionPage:IsVisible() then return end
+local function CheckPartyForProfessionFollowers(self) -- self == MissionFrame
+   if not self:IsVisible() then return end
+
+   local MissionPage = self.MissionTab.MissionPage
+   local MissionPageFollowers = MissionPage.Followers
+
    local party_followers_count = #MissionPageFollowers
    local present
    for idx = 1, party_followers_count do
-      if MissionPageFollowers[idx].info then present = true end
-      gmm_frames["MissionPageFollowerWarning" .. idx]:Hide()
-
-      local follower = MissionPageFollowers[idx].info
-      local xp_bar = gmm_frames["MissionPageFollowerXP" .. idx]
+      local mission_page_follower_frame = MissionPageFollowers[idx]
+      local follower = mission_page_follower_frame.info
+      if follower then present = true end
+      addon_env.child_frame_cache.MissionPageFollowerWarning[mission_page_follower_frame]:Hide()
+      local xp_bar = addon_env.child_frame_cache.MissionPageFollowerXP[mission_page_follower_frame]
       if (not follower or follower.xp == 0 or follower.levelXP == 0) then
          xp_bar:Hide()
-         gmm_frames["MissionPageFollowerXPGainBase" .. idx]:Hide()
-         gmm_frames["MissionPageFollowerXPGainBonus" .. idx]:Hide()
+         addon_env.child_frame_cache.MissionPageFollowerXPGainBase[mission_page_follower_frame]:Hide()
+         addon_env.child_frame_cache.MissionPageFollowerXPGainBonus[mission_page_follower_frame]:Hide()
       else
-         xp_bar:Hide()
          xp_bar:SetWidth((follower.xp/follower.levelXP) * 104)
+         xp_bar:Show()
       end
    end
    if not present then return end
@@ -162,7 +188,8 @@ local function CheckPartyForProfessionFollowers()
    end
 
    for idx = 1, party_followers_count do
-      local warning = gmm_frames["MissionPageFollowerWarning" .. idx]
+      local mission_page_follower_frame = MissionPageFollowers[idx]
+      local warning = addon_env.child_frame_cache.MissionPageFollowerWarning[mission_page_follower_frame]
       local building_name = shipment_followers[idx .. 'b']
       local time_left = shipment_followers[idx .. 't']
       local incomplete_shipments = shipment_followers[idx .. 'r']
@@ -176,22 +203,12 @@ local function CheckPartyForProfessionFollowers()
       end
    end
 end
-addon_env.CheckPartyForProfessionFollowers = CheckPartyForProfessionFollowers
+addon_env.CheckPartyForProfessionFollowers = function() CheckPartyForProfessionFollowers(GarrisonMissionFrame) end
 hooksecurefunc(GarrisonMissionFrame, "UpdateMissionParty", CheckPartyForProfessionFollowers)
 
-local function MissionPage_WarningInit()
+local function MissionPage_WarningInit(MissionFrame)
    for idx = 1, #MissionPageFollowers do
-      local follower_frame = MissionPageFollowers[idx]
-      -- TODO: inherit from name?
-      local warning = follower_frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-      warning:SetWidth(185)
-      warning:SetHeight(1)
-      warning:SetPoint("BOTTOM", follower_frame, "TOP", 0, -68)
-      gmm_frames["MissionPageFollowerWarning" .. idx] = warning
-
-      gmm_frames["MissionPageFollowerXP" .. idx]          = Widget{type = "Texture", parent = follower_frame, SubLayer = 3, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0.212, 0, 0.337 }, Hide = true }
-      gmm_frames["MissionPageFollowerXPGainBase" .. idx]  = Widget{type = "Texture", parent = follower_frame, SubLayer = 2, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0.6, 1, 0 }, Hide = true }
-      gmm_frames["MissionPageFollowerXPGainBonus" .. idx] = Widget{type = "Texture", parent = follower_frame, SubLayer = 1, Width = 104, Height = 4, BOTTOMLEFT = {55, 2}, Color = { 0, 0.75, 1 }, Hide = true }
+      -- force pre-init here?
    end
 end
 
@@ -204,7 +221,7 @@ local function GarrisonInitUI()
    })
 
    addon_env.MissionPage_ButtonsInit(follower_type)
-   -- MissionPage_WarningInit()
+   MissionPage_WarningInit(GarrisonMissionFrame)
    hooksecurefunc(GarrisonMissionFrame, "ShowMission", addon_env.ShowMission_More)
 
    addon_env.MissionList_ButtonsInit(follower_type)
