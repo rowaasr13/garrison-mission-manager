@@ -20,6 +20,11 @@ function GMMExpansionLandingPagesMenu(owner, rootDescription)
          local has_sections = button_data.has_sections
          click_handler = function(data)
             if (GarrisonLandingPage and GarrisonLandingPage:IsShown() and GarrisonLandingPage.garrTypeID == garrison_id) then return end
+
+            if InCombatLockdown() then
+               return
+            end
+
             HideUIPanel(GarrisonLandingPage)
             local sections = GarrisonLandingPage.Report.Sections
             if has_sections then sections:Show() else sections:Hide() end
@@ -36,14 +41,24 @@ function GMMExpansionLandingPagesMenu(owner, rootDescription)
    until true end
 end
 
-local original_onclick = ExpansionLandingPageMinimapButton:GetScript("OnClick")
 local function ExpansionLandingPageMinimapButton_GMMOnClickPreHook(self, button, down)
    if button == "RightButton" then
       MenuUtil.CreateContextMenu(self, GMMExpansionLandingPagesMenu)
       return
    end
-
-   return original_onclick(self, button, down)
 end
-ExpansionLandingPageMinimapButton:SetScript("OnClick", ExpansionLandingPageMinimapButton_GMMOnClickPreHook)
-ExpansionLandingPageMinimapButton:RegisterForClicks("AnyUp")
+
+local frame_click_router = CreateFrame("Button", nil, ExpansionLandingPageMinimapButton, "SecureActionButtonTemplate")
+frame_click_router:SetAllPoints()
+frame_click_router:RegisterForClicks("AnyUp", "AnyDown")
+
+local frame_right_click = CreateFrame("Button")
+frame_right_click:SetScript("OnClick", ExpansionLandingPageMinimapButton_GMMOnClickPreHook)
+
+-- Left-click
+frame_click_router:SetAttribute("type1", "click")
+frame_click_router:SetAttribute('clickbutton1', ExpansionLandingPageMinimapButton)
+
+-- Right-click
+frame_click_router:SetAttribute("type2", "click")
+frame_click_router:SetAttribute('clickbutton2', frame_right_click)
