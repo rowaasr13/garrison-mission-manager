@@ -729,10 +729,23 @@ local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, foll
 end
 hooksecurefunc("GarrisonMissionPortrait_SetFollowerPortrait", GarrisonMissionFrame_SetFollowerPortrait_More)
 
-local function GarrisonFollowerList_Update_More(self)
+local function GarrisonFollowerList_InitButton_GMM_PostHook(frame, elementData)
+   -- There are other kind of buttons in list, skip them.
+   local follower = elementData.follower
+   if not follower then return end
+   if not follower.isCollected then return end
    -- Somehow Blizzard UI insists on updating hidden frames AND explicitly updates them OnShow.
-   --  Following suit is just a waste of CPU, so we'll update only when frame is actually visible.
---[[ TEMPORARY ]] do return end
+   -- Following suit is just a waste of CPU, so we'll update only when frame is actually visible.
+   if not frame:IsVisible() and frame:IsShown() then return end
+
+   local button = frame.Follower
+   button.ILevel:Hide()
+   SetFollowerPortrait_Level_Post(button.PortraitFrame, follower, follower.level, follower.iLevel, false)
+end
+hooksecurefunc("GarrisonFollowerList_InitButton", GarrisonFollowerList_InitButton_GMM_PostHook)
+
+local function GarrisonFollowerList_Update_More(self)
+   --[[ Extract follower ignoring handling for WoD Garrison only and remove ]] do return end
    if not self:IsVisible() and self:IsShown() then return end
 
    local followerFrame = self:GetParent()
@@ -763,15 +776,6 @@ local function GarrisonFollowerList_Update_More(self)
                   local BusyFrame = follower_frame.BusyFrame
                   BusyFrame.Texture:SetColorTexture(0.5, 0, 0, 0.3)
                   BusyFrame:Show()
-               end
-
-               if follower.isMaxLevel then
-                  level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
-                  level_border:SetWidth(70)
-                  local i_level = follower.iLevel
-                  portrait_frame.Level:SetFormattedText("%s%s %d", ilevel_maximums[i_level] and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
-                  follower_frame.ILevel:SetText(nil)
-                  show_ilevel = true
                end
             end
          end
