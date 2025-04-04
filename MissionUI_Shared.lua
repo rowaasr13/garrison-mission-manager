@@ -688,14 +688,28 @@ end
 
 a_env.MissionList_Update_More = function() end -- TODO: DELETE ME!
 
-local maxed_follower_color_code = "|cff22aa22"
+local maxed_follower_color = CreateColorFromHexString('ff22aa22')
+local maxed_follower_color_code = maxed_follower_color:GenerateHexColorMarkup()
+
+local function SetFollowerPortrait_Level_Post(portraitFrame, followerInfo, level, i_level, boosted)
+   if followerInfo.isMaxLevel then
+      portraitFrame:SetILevel(i_level)
+
+      local color_code
+      if (ilevel_maximums[i_level] and not boosted) then color_code = maxed_follower_color_code end
+      if color_code then
+         portraitFrame.Level:SetFormattedText("%s%s", color_code, portraitFrame.Level:GetText())
+      end
+   end
+end
 
 local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, followerInfo, forMissionPage)
-   if not forMissionPage then return end
-
-   local MissionPage = portraitFrame:GetParent():GetParent()
-   local mentor_level = MissionPage.mentorLevel
-   local mentor_i_level = MissionPage.mentorItemLevel
+   local mentor_level, mentor_i_level
+   if forMissionPage then
+      local MissionPage = portraitFrame:GetParent():GetParent()
+      mentor_level = MissionPage.mentorLevel
+      mentor_i_level = MissionPage.mentorItemLevel
+   end
 
    local level = followerInfo.level
    local i_level = followerInfo.iLevel
@@ -711,12 +725,7 @@ local function GarrisonMissionFrame_SetFollowerPortrait_More(portraitFrame, foll
       boosted = true
    end
 
-   if followerInfo.isMaxLevel then
-      local level_border = portraitFrame.LevelBorder
-      level_border:SetAtlas("GarrMission_PortraitRing_iLvlBorder")
-      level_border:SetWidth(70)
-      portraitFrame.Level:SetFormattedText("%s%s %d", (ilevel_maximums[i_level] and not boosted) and maxed_follower_color_code or "", ITEM_LEVEL_ABBR, i_level)
-   end
+   SetFollowerPortrait_Level_Post(portraitFrame, followerInfo, level, i_level, boosted)
 end
 hooksecurefunc("GarrisonMissionPortrait_SetFollowerPortrait", GarrisonMissionFrame_SetFollowerPortrait_More)
 
