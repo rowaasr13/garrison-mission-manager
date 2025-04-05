@@ -7,6 +7,10 @@
 
 ## Change log
 
+### 2025-04-XX v64
+ * Restore iLvl (pLvl) display in follower portraits at various screens: mission page, follower list, follower stats and add new display in mission complete screen.
+ * Better mechanism for catching clicks on Landing Page icon, allows left-click in combat at expense on working on button down instead of button up.
+
 ### 2025-03-20 v63
  * TOC/API update for 11.1.0 - The War Within: Undermine(d).
  * Individual mission pages and mission list should now work without errors in WoD/Legion/BFA garrisons.
