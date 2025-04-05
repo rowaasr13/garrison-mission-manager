@@ -744,6 +744,14 @@ local function GarrisonFollowerList_InitButton_GMM_PostHook(frame, elementData)
 end
 hooksecurefunc("GarrisonFollowerList_InitButton", GarrisonFollowerList_InitButton_GMM_PostHook)
 
+local function GarrisonFollowerMissionComplete_SetFollowerLevel_GMM_PostHook(self, followerFrame, followerInfo)
+   local maxLevel = self:GetParent().followerMaxLevel
+   local level = min(followerInfo.level, maxLevel)
+
+   SetFollowerPortrait_Level_Post(followerFrame.PortraitFrame, followerInfo, level, followerInfo.iLevel, false)
+end
+a_env.GarrisonFollowerMissionComplete_SetFollowerLevel_GMM_PostHook = GarrisonFollowerMissionComplete_SetFollowerLevel_GMM_PostHook
+
 local function GarrisonFollowerList_Update_More(self)
    --[[ Extract follower ignoring handling for WoD Garrison only and remove ]] do return end
    if not self:IsVisible() and self:IsShown() then return end
