@@ -1,14 +1,15 @@
 * <ins>[Support development: Looking for EU TWW activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)</ins>
 
-# Garrison Mission Manager, v63
+# Garrison Mission Manager, v64
 
 * https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 ## Change log
 
-### 2025-04-XX v64
- * Restore iLvl (pLvl) display in follower portraits at various screens: mission page, follower list, follower stats and add new display in mission complete screen.
+### 2025-04-10 v64
+ * Restore iLvl (pLvl) display in follower portraits at various screens: mission page, follower list, follower stats.
+ * Restore WoD mission page profession warnings.
  * Better mechanism for catching clicks on Landing Page icon, allows left-click in combat at expense on working on button down instead of button up.
 
 ### 2025-03-20 v63
