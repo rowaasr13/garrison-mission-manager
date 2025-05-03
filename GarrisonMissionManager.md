@@ -5,7 +5,7 @@
 * https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
-A tool to assists you with selecting best team for Battle for Azeroth mission table, Legion's Class Hall and WoD's Garrison/Shipyard missions and other followers management tasks.
+A tool to assists you with selecting best team for Battle for Azeroth (BfA)'s mission table, Legion's Class Hall and Warlords of Draenor (WoD)'s Garrison/Shipyard missions and other followers management tasks.
 
 # Additional downloads
 * [LibTTScan](https://www.curseforge.com/wow/addons/libttscan-1) - to show Artifact Power amount on mission rewards.
