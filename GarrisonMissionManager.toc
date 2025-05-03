@@ -1,7 +1,7 @@
-## Interface: 110100
+## Interface: 110105
 
 ## Title: Garrison Mission Manager
-## Version: v64
+## Version: v65
 ## Notes: Assists you with selecting best team for Battle for Azeroth mission table, Legion's Class Hall and WoD's Garrison/Shipyard missions and other followers management tasks
 ## Author: Oleg "Rowaa[SR13]" Volkov
 
@@ -12,7 +12,7 @@
 ## LoadOnDemand: 1
 ## LoadWith: Blizzard_GarrisonUI, Blizzard_OrderHallUI
 ## RequiredDeps: Blizzard_GarrisonUI, Blizzard_OrderHallUI
-## OptionalDeps: LibStub, LibDataBroker-1.1, Bagnon, Titan, LibTTScan-1.0, SR13-TimeRecord, SR13-+DEVEL
+## OptionalDeps: LibStub, LibDataBroker-1.1, Bagnon, Titan, LibTTScan-1.0, CanIMogIt, SR13-TimeRecord, SR13-+DEVEL
 
 ## SavedVariables: SV_GarrisonMissionManager
 ## SavedVariablesPerCharacter: SVPC_GarrisonMissionManager
