@@ -9,7 +9,7 @@ local menu_data = {
    { type = "garrison", id = Enum.GarrisonType.Type_9_0_Garrison, menu_button_text = _G.EXPANSION_NAME8, has_sections = true },
 }
 
-function GMMExpansionLandingPagesMenu(owner, rootDescription)
+local function GMMExpansionLandingPagesMenu(owner, rootDescription)
    rootDescription:CreateTitle(GARRISON_MISSIONS)
 
    for idx = 1, #menu_data do repeat
