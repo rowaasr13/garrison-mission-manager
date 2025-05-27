@@ -1,4 +1,5 @@
 local addon_name, addon_env = ...
+local a_name, a_env = ...
 if not addon_env.load_this then return end
 local is_devel = addon_env.is_devel
 
@@ -63,9 +64,63 @@ local function UpdateEnemyToAllyPowerRatio(self, missionPage)
    end
 end
 
+-- Each of 3 quest displays in landing page's "callings" section
+addon_env.child_frame_cache.CallingExpirationText = addon_env.BuildChildFrameCache(function(blizzard_covenant_calling_quest)
+   local expiration = blizzard_covenant_calling_quest:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+   expiration:SetPoint("BOTTOM", blizzard_covenant_calling_quest, "BOTTOM", 0, 0)
+   expiration:SetJustifyH("CENTER")
+   local fontFile, height, flags = expiration:GetFont()
+   expiration:SetFont(fontFile, height, (flags or "") .. ',OUTLINE')
+
+   return expiration
+end)
+
+local qel_success = {}
+local function RetryQuestTimeLeft(questID, callback)
+   -- QuestEventListener alone is not enough, so combine it with .After
+   local last_success = qel_success[questID]
+   if last_success and ((GetTime() - last_success) > 60) then
+      last_success = nil
+      qel_success[questID] = last_success
+   end
+
+   if not last_success then
+      return QuestEventListener:AddCallback(questID, function()
+         qel_success[questID] = GetTime()
+         return callback()
+      end)
+   end
+
+   return C_Timer.After(0.5, callback)
+end
+
+local expiration_text_args = { if_more_than_day_show_only_days = true }
+local function CovenantCallingQuestMixin_GMMHook_Update(self)
+   local expiration_text_widget = addon_env.child_frame_cache.CallingExpirationText[self]
+   local questID = self.calling.questID
+
+   if not questID then return expiration_text_widget:SetText(nil) end
+
+   local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID)
+
+   if not secondsRemaining then
+      -- data is not loaded yet, print ticker and retry,
+      expiration_text_widget:SetText(string.rep('.', GetTime() % 3 + 1))
+      return RetryQuestTimeLeft(questID, function() return CovenantCallingQuestMixin_GMMHook_Update(self) end)
+   end
+
+   return a_env.SetFormattedExpirationText(expiration_text_widget, secondsRemaining, expiration_text_args)
+end
+
+local function Blizzard_CovenantCallings_GMMHook_Init()
+   hooksecurefunc(CovenantCallingQuestMixin, "Update", CovenantCallingQuestMixin_GMMHook_Update)
+end
+
 local function InitUI(gmm_options)
    MissionPage_RatioInit(gmm_options)
    hooksecurefunc(CovenantMissionFrame, "UpdateAllyPower", UpdateEnemyToAllyPowerRatio)
+
+   EventUtil.ContinueOnAddOnLoaded("Blizzard_CovenantCallings", Blizzard_CovenantCallings_GMMHook_Init)
 end
 
 addon_env.AddInitUI({
