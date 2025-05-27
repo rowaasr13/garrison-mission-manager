@@ -440,8 +440,31 @@ local function ShowMission_More(self, missionInfo)
 end
 addon_env.ShowMission_More = ShowMission_More
 
-local mission_expiration_format_days  = "%s" .. DAY_ONELETTER_ABBR:gsub(" ", "") .. " %02d:%02d"
-local mission_expiration_format_hours = "%s" ..                                        "%d:%02d"
+local expiration_text_format_days      = "%s" .. DAY_ONELETTER_ABBR:gsub(" ", "") .. " %02d:%02d"
+local expiration_text_format_only_days = "%s" .. DAY_ONELETTER_ABBR:gsub(" ", "")
+local expiration_text_format_hours     = "%s" ..                                        "%d:%02d"
+local function SetFormattedExpirationText(font_string, total_seconds, args)
+   local if_more_than_day_show_only_days = args and args.if_more_than_day_show_only_days
+
+   local color_code = (total_seconds < (60 * 60 * 8)) and RED_FONT_COLOR_CODE or ''
+
+   local seconds = total_seconds % 60
+   total_seconds = (total_seconds - seconds) / 60
+   local minutes = total_seconds % 60
+   total_seconds = (total_seconds - minutes) / 60
+   local hours = total_seconds % 24
+   local days = (total_seconds - hours) / 24
+   if days > 0 then
+      if if_more_than_day_show_only_days then
+         return font_string:SetFormattedText(expiration_text_format_only_days, color_code, days)
+      else
+         return font_string:SetFormattedText(expiration_text_format_days, color_code, days, hours, minutes)
+      end
+   else
+      return font_string:SetFormattedText(expiration_text_format_hours, color_code, hours, minutes)
+   end
+end
+a_env.SetFormattedExpirationText = SetFormattedExpirationText
 
 local queue_top_team_buttons = queue_init({})
 local queue_top_team_ticker
@@ -630,31 +653,20 @@ local function GarrisonMissionList_InitButton_GMM_PostHook(button, elementData, 
    local offerEndTime = mission.offerEndTime
    local time = GetTime()
 
-         -- offerEndTime seems to be present on all missions, though Blizzard UI shows tooltips only on rare
-         -- some Legion missions actually have no end time - seems like they're permanent
-         if offerEndTime then
-            local xp_only_rewards
-            if not is_rare then
-               for _, reward in pairs(mission.rewards) do
-                  if reward.followerXP and xp_only_rewards == nil then xp_only_rewards = true end
-                  if not reward.followerXP then xp_only_rewards = false break end
-               end
-            end
-
-            if not xp_only_rewards then
-               local remaining = offerEndTime - time -- seconds at this line, but will be reduced to minutes/hours/days below
-               local color_code = (remaining < (60 * 60 * 8)) and RED_FONT_COLOR_CODE or ''
-               local seconds = remaining % 60
-               remaining = (remaining - seconds) / 60
-               local minutes = remaining % 60
-               remaining = (remaining - minutes) / 60
-               local hours = remaining % 24
-               local days = (remaining - hours) / 24
-               if days > 0 then
-            expiration_text_widget:SetFormattedText(mission_expiration_format_days, color_code, days, hours, minutes)
-         else
-            expiration_text_widget:SetFormattedText(mission_expiration_format_hours, color_code, hours, minutes)
+   -- offerEndTime seems to be present on all missions, though Blizzard UI shows tooltips only on rare
+   -- some Legion missions actually have no end time - seems like they're permanent
+   if offerEndTime then
+      local xp_only_rewards
+      if not is_rare then
+         for _, reward in pairs(mission.rewards) do
+            if reward.followerXP and xp_only_rewards == nil then xp_only_rewards = true end
+            if not reward.followerXP then xp_only_rewards = false break end
          end
+      end
+
+      if not xp_only_rewards then
+         local remaining = offerEndTime - time -- seconds
+         SetFormattedExpirationText(expiration_text_widget, remaining)
          expiration_text_set = true
       end
    end
