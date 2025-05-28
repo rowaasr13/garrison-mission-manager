@@ -1,6 +1,6 @@
 * <ins>[Support development: Looking for EU TWW activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)</ins>
 
-# Garrison Mission Manager, v64
+# Garrison Mission Manager, v66
 
 * https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
@@ -55,7 +55,7 @@ Followers with appropriate profession traits can boost working orders in product
 GMM adds buttons at garrison architect table that will allow you to automatically mass-assign all available workers to buildings or mass-remove them. Note that Blizzard throttles follower assignment/removal, so it could take a second or two to finish. Be sure to wait for buttons to switch states and usual follower assign/remove click sound before leaving architect table. GMM will always prefer the best follower for building - that is, with highest level available, because that influences actual yield and will not select lower level followers when higher level follower is busy. If you have several same level followers,  GMM will select free follower with lowest ilevel. Tooltips on the buttons will show which follower will be added/removed from each building. If best intended follower is not available - e.g. on the mission, it will be show in orange on assign button tooltip. Buildings that have a slot but don't have suitable followers at all will be shown in red.
 
 ## LDB module
-If you have any display addon that supports LDB modules - e.g. Titan Panel or FuBar - GMM adds a module that for now will show list of buildings with followers both as icons on panel and tooltip similar to that on mass "Remove" button to help you quickly asses if your follower is working in those buildings that don't have readily visible indication like Lumber Mill, Garden or Mine or to remind you that some of your followers are assigned when you're hanging at mission table. The tooltip will also include list of buildings that you have no followers for in red. Note that GMM only loads on-demand with Blizzard's garrison UI, so you won't see display or even module itself listed in available modules list until you load garrison UI by interacting with any garrison facility - e.g. mission or architect table. You can also simply click "garrison report" on your minimap to load it.
+If you have any display addon that supports LDB modules - e.g. Titan Panel/FuBar/Bazooka - GMM adds a module that for now will show list of buildings with followers both as icons on panel and tooltip similar to that on mass "Remove" button to help you quickly asses if your follower is working in those buildings that don't have readily visible indication like Lumber Mill, Garden or Mine or to remind you that some of your followers are assigned when you're hanging at mission table. The tooltip will also include list of buildings that you have no followers for in red. Note that GMM only loads on-demand with Blizzard's garrison UI, so you won't see display or even module itself listed in available modules list until you load garrison UI by interacting with any garrison facility - e.g. mission or architect table. You can also simply click "garrison report" on your minimap to load it.
 
 # Shipyard-specific features
 
@@ -63,5 +63,10 @@ If you have any display addon that supports LDB modules - e.g. Titan Panel or Fu
 [(screenshot)](https://media-elerium.cursecdn.com/attachments/96/210/GMM_FleetSummary.png)
 
 When you access ship builder, you'll see a number of each type of ships you have in chat window, so you can quickly decide what to build.
+
+# Covenant-specific features
+
+## Calling expiration time
+Callings on Covenant Landing Page have expiration time shown right on quest giver portrait for quick look-up. Note that it might take up to 30 seconds from freshly logging in for timers to be available - quest tooltips aren't showing time to expiration at that moment either. There will be "..." ticker in place of expiration time while information is loading.
 
 GMM aims to be fast and lightweight, keeping CPU and memory use to the minimum, requiring no configuration and generally just doing the right thing with a single click.

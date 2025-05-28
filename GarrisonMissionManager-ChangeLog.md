@@ -1,11 +1,17 @@
 * <ins>[Support development: Looking for EU TWW activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)</ins>
 
-# Garrison Mission Manager, v64
+# Garrison Mission Manager, v66
 
 * https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 ## Change log
+
+### 2025-05-28 v66
+ * Add expiration time display for Callings on Covenant Landing Page.
+
+### 2025-05-03 v65
+ * Chores: docs, github.
 
 ### 2025-04-10 v64
  * Restore iLvl (pLvl) display in follower portraits at various screens: mission page, follower list, follower stats.
