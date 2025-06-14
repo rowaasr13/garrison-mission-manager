@@ -53,14 +53,16 @@ local function UpdateEnemyToAllyPowerRatio(self, missionPage)
       print("allies win:",  alliesWinTurn)
    end
 
-   if alliesWinTurn < enemiesWinTurn then
+   if (alliesAttack == 0 or alliesCurrentHealth == 0) then
+      ratio_current_health:SetText("------")
+   elseif alliesWinTurn < enemiesWinTurn then
       -- allies winning faster -> success rate is better than 50/50
       if is_devel then print("ally win confidence:", enemiesWinTurn / alliesWinTurn) end
-      ratio_current_health:SetFormattedText("W %0.2f", enemiesWinTurn / alliesWinTurn)
+      ratio_current_health:SetFormattedText("%sW %0.2f", GREEN_FONT_COLOR_CODE, enemiesWinTurn / alliesWinTurn)
    else
       -- enemies winning faster
       if is_devel then print("enemy confidence (we lose):",  alliesWinTurn / enemiesWinTurn) end
-      ratio_current_health:SetFormattedText("L %0.2f", alliesWinTurn / enemiesWinTurn)
+      ratio_current_health:SetFormattedText("%sL %0.2f", RED_FONT_COLOR_CODE, alliesWinTurn / enemiesWinTurn)
    end
 end
 
