@@ -172,6 +172,13 @@ local function GetCallingLocation(questID, text, objectiveType, required)
       elseif covenant_id == Enum.CovenantType.Necrolord then return quest_locations[4]
       end
    end
+
+   -- return "The Maw" for "kill 3" quests and cache them
+   if objectiveType == "monster" and required == 3 then
+      location = quest_locations[5]
+      cache_quest_id_to_location[questID] = location
+      return location
+   end
 end
 
 local function GetCallingObjectiveByQuestID(questID)
