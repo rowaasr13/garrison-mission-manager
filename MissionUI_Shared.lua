@@ -705,12 +705,19 @@ local maxed_follower_color_code = maxed_follower_color:GenerateHexColorMarkup()
 
 local function SetFollowerPortrait_Level_Post(portraitFrame, followerInfo, level, i_level, boosted)
    if followerInfo.isMaxLevel then
-      portraitFrame:SetILevel(i_level)
-
       local color_code
-      if (ilevel_maximums[i_level] and not boosted) then color_code = maxed_follower_color_code end
+      if portraitFrame.SetILevel then
+         portraitFrame:SetILevel(i_level)
+
+         if (ilevel_maximums[i_level] and not boosted) then color_code = maxed_follower_color_code end
+      else
+         -- Shadowlands don't have ilevel. If follower level alone is maxed - follower is maxed.
+         color_code = maxed_follower_color_code
+      end
+
       if color_code then
-         portraitFrame.Level:SetFormattedText("%s%s", color_code, portraitFrame.Level:GetText())
+         local text_frame = portraitFrame.Level or portraitFrame.LevelText
+         text_frame:SetFormattedText("%s%s", color_code, text_frame:GetText())
       end
    end
 end
