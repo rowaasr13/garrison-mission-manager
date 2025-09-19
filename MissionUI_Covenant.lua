@@ -163,21 +163,19 @@ local function GetCallingLocation(questID, text, objectiveType, required)
       end
    end
 
-   -- return home location for "complete 3 quests at home" quests and don't cache them
-   if objectiveType == "object" and required == 3 then
-      local covenant_id = C_Covenants.GetActiveCovenantID()
-      if     covenant_id == Enum.CovenantType.Kyrian    then return quest_locations[1]
-      elseif covenant_id == Enum.CovenantType.Venthyr   then return quest_locations[2]
-      elseif covenant_id == Enum.CovenantType.NightFae  then return quest_locations[3]
-      elseif covenant_id == Enum.CovenantType.Necrolord then return quest_locations[4]
-      end
-   end
-
    -- return "The Maw" for "kill 3" quests and cache them
    if objectiveType == "monster" and required == 3 then
       location = quest_locations[5]
       cache_quest_id_to_location[questID] = location
       return location
+   end
+
+   -- if nothing matched, assume it's home location for "complete 3 quests at home" and don't cache it
+   local covenant_id = C_Covenants.GetActiveCovenantID()
+   if     covenant_id == Enum.CovenantType.Kyrian    then return quest_locations[1]
+   elseif covenant_id == Enum.CovenantType.Venthyr   then return quest_locations[2]
+   elseif covenant_id == Enum.CovenantType.NightFae  then return quest_locations[3]
+   elseif covenant_id == Enum.CovenantType.Necrolord then return quest_locations[4]
    end
 end
 
