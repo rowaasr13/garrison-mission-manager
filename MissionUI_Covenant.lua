@@ -11,8 +11,8 @@ local ratio_current_health
 local function MissionPage_RatioInit(gmm_options)
    local Board = gmm_options.MissionPage.Board
    ratio_current_health = Board:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-   ratio_current_health:SetWidth(50)
-   ratio_current_health:SetHeight(0)
+   ratio_current_health:SetWidth(0)
+   ratio_current_health:SetHeight(1)
    ratio_current_health:SetJustifyH("LEFT")
    ratio_current_health:SetPoint("BOTTOMLEFT", Board.AllyHealthValue, "TOPLEFT", 0, 15)
 end
