@@ -6,7 +6,7 @@ local menu_data = {
    { type = "garrison", id = Enum.GarrisonType.Type_6_0_Garrison, menu_button_text = _G.EXPANSION_NAME5 },
    { type = "garrison", id = Enum.GarrisonType.Type_7_0_Garrison, menu_button_text = _G.EXPANSION_NAME6 },
    { type = "garrison", id = Enum.GarrisonType.Type_8_0_Garrison, menu_button_text = _G.EXPANSION_NAME7 },
-   { type = "garrison", id = Enum.GarrisonType.Type_9_0_Garrison, menu_button_text = _G.EXPANSION_NAME8, has_sections = true },
+   { type = "garrison", id = Enum.GarrisonType.Type_9_0_Garrison, menu_button_text = _G.EXPANSION_NAME8, has_sections = true, unlock_check = C_CovenantCallings.AreCallingsUnlocked },
 }
 
 local function GMMExpansionLandingPagesMenu(owner, rootDescription)
@@ -34,7 +34,12 @@ local function GMMExpansionLandingPagesMenu(owner, rootDescription)
       end
 
       local menu_button = rootDescription:CreateButton(button_data.menu_button_text, click_handler)
-      menu_button:SetEnabled(C_Garrison.IsLandingPageMinimapButtonVisible(garrison_id))
+      local unlocked = C_Garrison.IsLandingPageMinimapButtonVisible(garrison_id)
+      if (not unlocked) and (button_data.unlock_check) then
+         unlocked = button_data.unlock_check()
+      end
+
+      menu_button:SetEnabled(unlocked)
    until true end
 end
 
