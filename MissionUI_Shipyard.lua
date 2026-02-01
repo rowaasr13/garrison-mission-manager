@@ -155,8 +155,15 @@ local spec_name = {}
 local spec_list = {}
 -- GossipFrameSharedMixin => GossipFrameMixin
 hooksecurefunc(GossipFrame, "Update", function(...)
-   local guid = UnitGUID("npc")
-   if not (guid and (match(guid, "^Creature%-0%-%d+%-%d+%-%d+%-94429%-") or match(guid, "^Creature%-0%-%d+%-%d+%-%d+%-95002%-"))) then return end
+   if UnitCreatureID then
+      local creature_id = UnitCreatureID("npc")
+      if issecretvalue(creature_id) then return end
+      if not (creature_id == 94429 or creature_id == 95002) then return end
+   else
+      local guid = UnitGUID("npc")
+      if issecretvalue and issecretvalue(guid) then return end
+      if not (guid and (match(guid, "^Creature%-0%-%d+%-%d+%-%d+%-94429%-") or match(guid, "^Creature%-0%-%d+%-%d+%-%d+%-95002%-"))) then return end
+   end
 
    local filtered_followers = GetFilteredFollowers(Enum_GarrisonFollowerType_FollowerType_6_0_Boat)
    wipe(spec_count)
