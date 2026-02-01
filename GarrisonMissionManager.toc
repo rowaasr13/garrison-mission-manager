@@ -1,4 +1,4 @@
-## Interface: 110105
+## Interface: 120000
 
 ## Title: Garrison Mission Manager
 ## Version: v66
