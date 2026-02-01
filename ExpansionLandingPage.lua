@@ -29,9 +29,6 @@ local function GMMExpansionLandingPagesMenu(owner, rootDescription)
             local sections = GarrisonLandingPage.Report.Sections
             if has_sections then sections:Show() else sections:Hide() end
             ShowGarrisonLandingPage(garrison_id)
-
-            GarrisonLandingPageTab3:SetScript("OnEnter", nil) -- Blizz bug
-            GarrisonLandingPageTab3:SetScript("OnLeave", nil) -- Blizz bug
          end
          button_data.click_handler = click_handler
       end
