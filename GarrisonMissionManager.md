@@ -66,7 +66,10 @@ When you access ship builder, you'll see a number of each type of ships you have
 
 # Covenant-specific features
 
-## Calling expiration time
-Callings on Covenant Landing Page have expiration time shown right on quest giver portrait for quick look-up. Note that it might take up to 30 seconds from freshly logging in for timers to be available - quest tooltips aren't showing time to expiration at that moment either. There will be "..." ticker in place of expiration time while information is loading.
+## Calling expiration time and zone
+Callings on Covenant Landing Page have expiration time shown right on quest giver portrait for quick look-up. Note that it might take up to 30 seconds from freshly logging in for timers to be available - quest tooltips aren't showing time to expiration at that moment either. There will be "..." ticker in place of expiration time while information is loading. Callings will also show zone for quest so you can see at glance where to go without checking each quest individually.
+
+## Win/Lose approximation display
+Covenant missions will show colored W/L approximation based on ally/enemy health and attack. Use it as ROUGH estimate if you will succeed at mission or not.
 
 GMM aims to be fast and lightweight, keeping CPU and memory use to the minimum, requiring no configuration and generally just doing the right thing with a single click.
