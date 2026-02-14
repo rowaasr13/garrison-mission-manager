@@ -1,11 +1,17 @@
 * <ins>[Support development: Looking for EU TWW activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)</ins>
 
-# Garrison Mission Manager, v66
+# Garrison Mission Manager, v67
 
 * https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 ## Change log
+
+### 2026-02-14 v67
+ * Add quest location display for Callings on Covenant Landing Page - now you can see all everything you need about Callings without mousing over each one.
+ * Add rough win/loss power comparison on Covenant mission squad page (It was there from sometime back in original Shadowlands, just hidden behind dev version switch. Some time ago it was already enabled for everyone, this is only a clean-up + coloring).
+ * Add AddonCompartment entry to access landing pages from expansions when there is no map landing page icon.
+ * Update to Midnight pre-patch changes.
 
 ### 2025-05-28 v66
  * Add expiration time display for Callings on Covenant Landing Page.
