@@ -50,6 +50,17 @@ local function ExpansionLandingPageMinimapButton_GMMOnClickPreHook(self, button,
    end
 end
 
+AddonCompartmentFrame:RegisterAddon({
+   text = a_name,
+   icon = "Interface\\ICONS\\Achievement_Garrison_Tier01_" .. UnitFactionGroup("player"),
+   notCheckable = true,
+   func = function(self, menuInputData, menu)
+      MenuUtil.CreateContextMenu(self, GMMExpansionLandingPagesMenu)
+   end,
+   funcOnEnter = function() end,
+   funcOnLeave = function() end,
+})
+
 local frame_click_router = CreateFrame("Button", nil, ExpansionLandingPageMinimapButton, "SecureActionButtonTemplate")
 frame_click_router:SetAllPoints()
 frame_click_router:RegisterForClicks("AnyUp", "AnyDown")
