@@ -6,7 +6,7 @@ local menu_data = {
    { type = "garrison", id = Enum.GarrisonType.Type_6_0_Garrison, menu_button_text = _G.EXPANSION_NAME5 },
    { type = "garrison", id = Enum.GarrisonType.Type_7_0_Garrison, menu_button_text = _G.EXPANSION_NAME6 },
    { type = "garrison", id = Enum.GarrisonType.Type_8_0_Garrison, menu_button_text = _G.EXPANSION_NAME7 },
-   { type = "garrison", id = Enum.GarrisonType.Type_9_0_Garrison, menu_button_text = _G.EXPANSION_NAME8, has_sections = true, unlock_check = C_CovenantCallings.AreCallingsUnlocked },
+   { type = "garrison", id = Enum.GarrisonType.Type_9_0_Garrison, menu_button_text = _G.EXPANSION_NAME8, has_sections = true, unlock_check = function() return C_Covenants.GetActiveCovenantID() ~= 0 end },
 }
 
 local function GMMExpansionLandingPagesMenu(owner, rootDescription)
