@@ -181,17 +181,23 @@ end
 
 local function GetCallingObjectiveByQuestID(questID)
    local text, objectiveType, finished, fulfilled, required = GetQuestObjectiveInfo(questID, 1, false)
+   local key = questID .. '.required'
+   if required then
+      SV_GarrisonMissionManager[key] = required
+   else
+      required = SV_GarrisonMissionManager[key]
+   end
    local location = cache_quest_id_to_location[questID]
    if not location then
       location = GetCallingLocation(questID, text, objectiveType, required)
    else
    end
 
-   if fulfilled == nil then
-      return location
-   elseif objectiveType == "progressbar" then
+   if objectiveType == "progressbar" then
       return GetQuestProgressBarPercent(questID) .. '% ' .. location
    else
+      if not required then return location end
+      if not fulfilled then fulfilled = 0 end
       return fulfilled .. '/' .. required .. ' ' .. location
    end
 end
