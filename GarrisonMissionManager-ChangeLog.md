@@ -1,4 +1,4 @@
-* <ins>[Support development: Looking for EU TWW activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)</ins>
+* <ins>[Support development: Looking for EU Midnight activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)</ins>
 
 # Garrison Mission Manager, v67
 

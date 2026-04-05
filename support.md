@@ -1,6 +1,6 @@
-## Looking for EU TWW activation codes
+## Looking for EU Midnight activation codes
 
-Right now I'm playing WoW very sporadically and thus working on Garrison Mission Manager at same pace. To resume active playing I look for ***EU region*** activation code for ***The War Within***. Just in case: only activation codes available for my account, friend gifts or any other means do not work.
+Right now I'm playing WoW very sporadically and thus working on Garrison Mission Manager at same pace. To resume active playing I look for ***EU region*** activation code for ***Midnight*** expansion. Just in case: only activation codes available for my account, friend gifts or any other means do not work.
 
 *Two* is preferable, but one would be great too. I'm not sure if they are released as standalone products for TWW in EU or as part of any promotion. The one source that I know exists for sure is Epic edition boxes that have code printed inside. So if anybody have any spare codes from ANY source - be it code from epic box you don't need for some reason or any other code you've got anywhere else, it would be of great help to me.
 
