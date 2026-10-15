@@ -3,7 +3,7 @@ if not addon_env.load_this then return end
 
 -- [AUTOLOCAL START]
 local CreateFrame = CreateFrame
-local GetItemInfoInstant = GetItemInfoInstant
+local GetItemInfoInstant = C_Item.GetItemInfoInstant
 local type = type
 -- [AUTOLOCAL END]
 
