@@ -1,11 +1,16 @@
 * <ins>[Support development: Looking for EU Midnight activation codes](https://github.com/rowaasr13/garrison-mission-manager/blob/master/support.md)</ins>
 
-# Garrison Mission Manager, v67
+# Garrison Mission Manager, v68
 
 * https://www.curseforge.com/wow/addons/garrison-mission-manager
 * http://www.wowinterface.com/downloads/info23375-GarrisonMissionManager.html
 
 ## Change log
+
+### 2026-10-25 v68
+ * TOC/API update for 12.1.5 (120105) - Midnight: The Promise of Tomorrow.
+ * Improve detection of landing page being active for Shadowlands Covenant in expansion menu.
+ * Data for some covenant callings quests is unavailable when quest is not picked up yet - cache it after seeing quest in quest log once to improve at-a-glance display for those.
 
 ### 2026-02-14 v67
  * Add quest location display for Callings on Covenant Landing Page - now you can see all everything you need about Callings without mousing over each one.
